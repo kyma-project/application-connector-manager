@@ -26,12 +26,12 @@ jobs:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-#    - name: create-module
-#      run: make -C hack/ci module-build
-#      env:
-#        IMG: "europe-docker.pkg.dev/kyma-project/dev/application-connector-manager:PR-${{ github.event.number }}"
-#        KUSTOMIZE_VERSION: "v4.5.6"
-#        MODULE_REGISTRY: "https://ghcr.io/acm/unsigned"
-#        MODULE_SHA: "PR-${{ github.event.number }}"
-#    - name: Adding markdown
-#      run: echo -e "### application-connector-manager.yaml\n\`\`\`\n$(cat moduletemplate.yaml)\n\`\`\`" >> $GITHUB_STEP_SUMMARY
+    - name: create-module
+      run: make -C hack/ci module-build
+      env:
+        IMG: "europe-docker.pkg.dev/kyma-project/dev/application-connector-manager:PR-${{ github.event.number }}"
+        KUSTOMIZE_VERSION: "v4.5.6"
+        MODULE_REGISTRY: "https://ghcr.io/acm/unsigned"
+        MODULE_SHA: "PR-${{ github.event.number }}"
+    - name: Adding markdown
+      run: echo -e "### application-connector-manager.yaml\n\`\`\`\n$(cat moduletemplate.yaml)\n\`\`\`" >> $GITHUB_STEP_SUMMARY
