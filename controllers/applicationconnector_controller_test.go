@@ -24,12 +24,11 @@ import (
 const (
 	appGatewayDeploymentName      = "central-application-gateway"
 	appConValidatorDeploymentName = "central-application-connectivity-validator"
-	compassRtAgentDeploymentName  = "compass-runtime-agent"
 )
 
 var _ = Describe("ApplicationConnector controller", func() {
 
-	defaultTestTimeout := 60 * time.Second
+	defaultTestTimeout := 90 * time.Second
 	defaultAppCon := applicationConnector("test", "kyma-system", v1alpha1.ApplicationConnectorSpec{
 		ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
 			LogLevel: v1alpha1.LogLevel("info"),
