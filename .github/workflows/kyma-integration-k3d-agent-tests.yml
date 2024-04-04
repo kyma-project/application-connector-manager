@@ -18,4 +18,3 @@ jobs:
       compass-host: ${{ secrets.COMPASS_HOST }}
       compass-client-id: ${{ secrets.COMPASS_CLIENT_ID }}
       compass-client-secret: ${{ secrets.COMPASS_CLIENT_SECRET }}
-      
