@@ -1,8 +1,8 @@
-# Application Connector module
+# Application Connector Module
 
 ## What is Application Connectivity in Kyma?
 
-Application Connectivity in Kyma is an area that: 
+Application Connectivity in Kyma is an area that:
 
 - Simplifies and secures the connection between external systems and Kyma
 - Stores and handles the metadata of external systems
@@ -10,14 +10,15 @@ Application Connectivity in Kyma is an area that:
 - Manages secure access to external systems
 - Provides monitoring and tracing capabilities to facilitate operational aspects
 
-Depending on your use case, Application Connectivity works in one of the two modes: 
+Depending on your use case, Application Connectivity works in one of the two modes:
+
 - **Standalone mode** (default) - a standalone mode where Kyma is not connected to [Compass](https://github.com/kyma-incubator/compass)
 - **Compass mode** - using [Runtime Agent](00-30-runtime-agent-overview.md) and integration with [Compass](https://github.com/kyma-incubator/compass) to automate connection and registration of services using mTLS certificates
 
 > [!WARNING]
 > Runtime Agent is currently not integrated into the Application Connector module. Proceed with caution and consult the respective documentation for the Application Connector module's current configuration and functionality.
 
-## Application Connector module
+## Application Connector Module
 
 The Application Connector module allows you to install, uninstall, and configure all features of Kyma's Application Connector on your Kubernetes cluster using the Application Connector Manager service.
 
@@ -35,7 +36,7 @@ Application Connector:
 - Stores and handles the metadata of external APIs
 - Proxies calls sent from internals of the Kyma cluster (for example, from [Function](https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr)) to external APIs registered as the connected external solution (Application)
 - Provides certificate handling for the [Eventing](https://kyma-project.io/#/eventing-manager/user/README) flow in the Compass scenario
-- Delivers events from the connected external solution to the internal Kyma Event Publisher in the Compass scenario 
+- Delivers events from the connected external solution to the internal Kyma Event Publisher in the Compass scenario
 - Manages secure access to external systems
 
 All the Application Connector components scale independently, which allows you to adjust it to fit the needs of the implementation built using Kyma.
@@ -51,7 +52,7 @@ The following authentication methods for your secured APIs are supported:
 - OAuth 2.0 mTLS
 - Client Certificates
 
-> [!NOTE] 
+> [!NOTE]
 > Non-secured APIs are supported too, however, they are not recommended in the production environment.
 
 In addition to authentication methods, Application Connector supports Cross-Site Request Forgery (CSRF) Tokens.
@@ -62,7 +63,7 @@ Application Connector supports any API that adheres to the REST principles and i
 
 When you enable the Application Connector module, Application Connector Manager takes care of installation and configuration of all the Application Connector module components on your cluster. It manages the lifecycle of the Application Connector module based on the dedicated ApplicationConnector custom resource (CR).
 
-## Useful links
+## Useful Links
 
 If you want to perform some simple and more advanced tasks, check the [Application Connectivity tutorials](tutorials/README.md).
 
