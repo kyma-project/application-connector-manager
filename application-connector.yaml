@@ -998,14 +998,14 @@ spec:
   selector:
     matchLabels:
       app: compass-runtime-agent
-      release: compass-runtime-agent
+      release: application-connector
   template:
     metadata:
       annotations:
         sidecar.istio.io/inject: "true"
       labels:
         app: compass-runtime-agent
-        release: compass-runtime-agent
+        release: application-connector
     spec:
       securityContext:
         runAsUser: 65535
