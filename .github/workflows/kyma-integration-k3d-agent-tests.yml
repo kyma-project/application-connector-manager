@@ -15,7 +15,7 @@ jobs:
     # it could cause the secret leakeages
     uses: "./.github/workflows/reusable-k3d-agent-test.yml"
     with:
-      k3d-version: v5.4.6
+      k3d-version: v5.6.0
     secrets:
       compass-host: ${{ secrets.COMPASS_HOST }}
       compass-client-id: ${{ secrets.COMPASS_CLIENT_ID }}
