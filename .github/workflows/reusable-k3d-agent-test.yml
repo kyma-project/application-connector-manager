@@ -5,7 +5,7 @@ on:
        k3d-version:
          required: true
          type: string
-         default: v5.4.6
+         default: v5.6.0
     secrets:
       compass-host:
         required: true
