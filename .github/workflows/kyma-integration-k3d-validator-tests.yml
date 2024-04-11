@@ -4,7 +4,7 @@ on:
     branches: [ main ]
   pull_request:
 jobs:
-  test:
+  test: #please update https://github.com/kyma-project/test-infra/blob/main/prow/config.yaml if this name is changed
     runs-on: ubuntu-latest
     steps:
       - uses: azure/setup-helm@v4.1.0

@@ -10,7 +10,7 @@ on:
       - synchronize
       - ready_for_review
 jobs:
-  run-cra-k3d:
+  run-cra-k3d: #please update https://github.com/kyma-project/test-infra/blob/main/prow/config.yaml if this name is changed
     # we're using reusable because we can't modify workflows as contributors
     # it could cause the secret leakeages
     uses: "./.github/workflows/reusable-k3d-agent-test.yml"

@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build: #please update https://github.com/kyma-project/test-infra/blob/main/prow/config.yaml if this name is changed
     permissions:
       contents: read # for actions/checkout to fetch code
     name: Build

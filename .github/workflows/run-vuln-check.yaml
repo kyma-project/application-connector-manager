@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 jobs:
-  govuln:
+  govuln: #please update https://github.com/kyma-project/test-infra/blob/main/prow/config.yaml if this name is changed
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
