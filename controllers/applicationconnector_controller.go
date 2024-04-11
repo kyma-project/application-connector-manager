@@ -160,7 +160,7 @@ func (h hpaResourceVersionChangedPredicate) Update(e event.UpdateEvent) bool {
 
 	result := !conditionsEqual || !replicasEqual
 	if result {
-		h.log.With("conditionsEqual", conditionsEqual, "replicasEqual", replicasEqual).Debugf("reconciliation triggered by HPA: %s/%s", oldObj.Namespace, oldObj.Name)
+		h.log.With("conditionsEqual", conditionsEqual, "replicasEqual", replicasEqual).Debugf("reconciliation triggegggred by HPA: %s/%s", oldObj.Namespace, oldObj.Name)
 	}
 	return result
 }
