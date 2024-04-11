@@ -251,7 +251,7 @@ spec:
       serviceAccountName: central-application-connectivity-validator
       containers:
         - name: central-application-connectivity-validator
-          image: europe-docker.pkg.dev/kyma-project/prod/central-application-connectivity-validator:v20240313-68aa5ab8
+          image: europe-docker.pkg.dev/kyma-project/prod/central-application-connectivity-validator:v20240404-457ea77c
           imagePullPolicy: IfNotPresent
           args:
             - "/app/centralapplicationconnectivityvalidator"
@@ -332,7 +332,7 @@ spec:
       serviceAccountName: central-application-gateway
       containers:
         - name: central-application-gateway
-          image: europe-docker.pkg.dev/kyma-project/prod/central-application-gateway:v20240318-2fd4cc1d
+          image: europe-docker.pkg.dev/kyma-project/prod/central-application-gateway:v20240404-3975244b
           imagePullPolicy: IfNotPresent
           args:
             - "/app/applicationgateway"
@@ -816,10 +816,6 @@ rules:
   - apiGroups: ["metrics.k8s.io"]
     resources: ["nodes"]
     verbs: ["get", "list"]
-  - apiGroups: [""]
-    resources: ["secrets"]
-    resourceNames: ["compass-agent-configuration", "cluster-client-certificates"]
-    verbs: ["get", "delete"]
 ---
 # Source: compass-runtime-agent/templates/cluster-role-binding.yaml
 kind: ClusterRoleBinding
@@ -1033,7 +1029,7 @@ spec:
             - containerPort: 8090
               hostPort: 0
               name: http-health
-          image: europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:v20240313-a62de288
+          image: europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:v20240402-b8ff9e34
           imagePullPolicy: IfNotPresent
           args:
             - "/app/compass-runtime-agent"
@@ -1068,14 +1064,6 @@ spec:
               value: "https://console.kyma.example.com"
             - name: APP_HEALTH_PORT
               value: "8090"
-            - name: APP_CA_CERT_SECRET_TO_MIGRATE
-              value: "istio-system/app-connector-certs"
-            - name: APP_CA_CERT_SECRET_KEYS_TO_MIGRATE
-              value: '["cacert"]'
-            - name: APP_AGENT_CONFIGURATION_SECRET_TO_MIGRATE
-              value: "compass-system/compass-agent-configuration"
-            - name: APP_CLUSTER_CERTIFICATES_SECRET_TO_MIGRATE
-              value: "compass-system/cluster-client-certificates"
             - name: APP_CENTRAL_GATEWAY_SERVICE_URL
               value: "http://central-application-gateway.kyma-system.svc.cluster.local:8082"
           livenessProbe:
