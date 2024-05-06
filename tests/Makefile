@@ -24,7 +24,9 @@ image-validator-test:
 	docker build -t $(VALIDATOR_TEST_IMAGE) -f Dockerfile.connectivity-validator .
 
 publish-compass-runtime-agent-test: image-compass-runtime-agent-test
+	@echo "::group::publish-compass-runtime-agent-test"
 	docker push $(COMPASS_TEST_IMAGE)
+	@echo "::endgroup::"
 
 .PHONY: image-compass-runtime-agent-test
 image-compass-runtime-agent-test:

@@ -22,16 +22,6 @@ jobs:
         run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
       - name: Insall yq
         run: sudo add-apt-repository ppa:rmescandon/yq && sudo apt update && sudo apt install yq -y
-      - name: Set up cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-            /home/runner/work/application-connector-manager/application-connector-manager/bin
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
       - name: Run unit tests
         run: make -C tests/hack/ci k3d-validator-tests
       - name: Archive test results

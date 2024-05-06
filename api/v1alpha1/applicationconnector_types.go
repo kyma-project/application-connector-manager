@@ -54,6 +54,8 @@ const (
 	ArgCentralAppGatewayProxyTimeout   = "--proxyTimeout"
 
 	EnvRuntimeAgentControllerSyncPeriod         = "APP_CONTROLLER_SYNC_PERIOD"
+	EnvRuntimeAgentAppRuntimeEventsURL          = "APP_RUNTIME_EVENTS_URL"
+	EnvRuntimeAgnetAppRuntimeConsoleURL         = "APP_RUNTIME_CONSOLE_URL"
 	EnvRuntimeAgentCertValidityRenevalThreshold = "APP_CERT_VALIDITY_RENEWAL_THRESHOLD"
 	EnvRuntimeAgentMinimalCompassSyncTime       = "APP_MINIMAL_COMPASS_SYNC_TIME"
 

@@ -14,6 +14,7 @@ import (
 	"github.com/onsi/gomega/types"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
 var _ = Describe("ACM sFnUpdate", func() {
@@ -27,6 +28,7 @@ var _ = Describe("ACM sFnUpdate", func() {
 	updateTimeout := time.Second * 5
 
 	defaultState := &systemState{
+		domainName: defaulDomainName,
 		instance: v1alpha1.ApplicationConnector{
 			Spec: v1alpha1.ApplicationConnectorSpec{
 				ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
@@ -55,10 +57,15 @@ var _ = Describe("ACM sFnUpdate", func() {
 		Entry(
 			"happy path",
 			ctx,
-			&fsm{Cfg: Cfg{
-				Objs: testData[modtest.TdUpdateAcmValid],
-				Deps: testData[modtest.TdUpdateDepsValid],
-			}},
+			&fsm{
+				Cfg: Cfg{
+					Objs: testData[modtest.TdUpdateAcmValid],
+					Deps: testData[modtest.TdUpdateDepsValid],
+				},
+				K8s: K8s{
+					Client: fake.NewFakeClient(),
+				},
+			},
 			defaultState,
 			testUpdateOptions{
 				MatchExpectedErr: BeNil(),
@@ -67,6 +74,7 @@ var _ = Describe("ACM sFnUpdate", func() {
 					gvkDeployment: {
 						"central-application-gateway":                haveAppGatewaySpec(defaultState.instance.Spec.ApplicationGatewaySpec),
 						"central-application-connectivity-validator": haveAppConnValidatorSpec(defaultState.instance.Spec.AppConValidatorSpec),
+						"compass-runtime-agent":                      haveRuntimeAgentDefaults(craDTO{Domain: defaulDomainName, Replicas: 1}),
 					},
 					commontypes.Gateway: {
 						"kyma-gateway-application-connector": haveDomainNamePropagatedInGateway(fmt.Sprintf("gateway.%s", defaultState.instance.Spec.DomainName)),
@@ -80,7 +88,11 @@ var _ = Describe("ACM sFnUpdate", func() {
 		Entry(
 			"no deployment",
 			ctx,
-			&fsm{},
+			&fsm{
+				K8s: K8s{
+					Client: fake.NewFakeClient(),
+				},
+			},
 			defaultState,
 			testUpdateOptions{
 				MatchExpectedErr: BeNil(),

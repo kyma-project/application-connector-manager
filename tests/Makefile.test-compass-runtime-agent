@@ -51,5 +51,7 @@ install-compass-runtime-agent-test: create-resources
 
 .PHONY: clean-compass-runtime-agent-test
 clean-compass-runtime-agent-test:
+	@echo "::group::clean-compass-runtime-agent-test"
 	helm template ${PWD}/tests/resources/charts/compass-runtime-agent-test | kubectl delete -f -
 	kubectl delete ns $(NAMESPACE) --ignore-not-found
+	@echo "::endgroup::"

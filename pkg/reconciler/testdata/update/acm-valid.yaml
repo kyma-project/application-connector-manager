@@ -154,3 +154,104 @@ spec:
             privileged: false
             allowPrivilegeEscalation: false
       priorityClassName: central-application-connectivity-validator-priority-class
+---
+# Source: compass-runtime-agent/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: compass-runtime-agent
+  namespace: kyma-system
+  labels:
+    app: compass-runtime-agent
+    release: application-connector
+    app.kubernetes.io/name: compass-runtime-agent
+    app.kubernetes.io/managed-by: application-connector-manager
+    app.kubernetes.io/instance: application-connector
+    app.kubernetes.io/part-of: application-connector-manager
+spec:
+  selector:
+    matchLabels:
+      app: compass-runtime-agent
+      release: compass-runtime-agent
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+      labels:
+        app: compass-runtime-agent
+        release: compass-runtime-agent
+    spec:
+      securityContext:
+        runAsUser: 65535
+        runAsGroup: 65535
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: compass-runtime-agent
+      containers:
+        - name: compass-runtime-agent
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+            procMount: default
+            readOnlyRootFilesystem: true
+          ports:
+            - containerPort: 8090
+              hostPort: 0
+              name: http-health
+          image: europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:v20240402-b8ff9e34
+          imagePullPolicy: IfNotPresent
+          args:
+            - "/app/compass-runtime-agent"
+          env:
+            - name: APP_AGENT_CONFIGURATION_SECRET
+              value: "kyma-system/compass-agent-configuration"
+            - name: APP_CONTROLLER_SYNC_PERIOD
+              value: "180s"
+            - name: APP_MINIMAL_COMPASS_SYNC_TIME
+              value: "15s"
+            - name: APP_CERT_VALIDITY_RENEWAL_THRESHOLD
+              value: "0.3"
+            - name: APP_CLUSTER_CERTIFICATES_SECRET
+              value: "kyma-system/cluster-client-certificates"
+            - name: APP_CA_CERTIFICATES_SECRET
+              value: "istio-system/kyma-gateway-certs-cacert"
+            - name: APP_SKIP_COMPASS_TLS_VERIFY
+              value: "true"
+            - name: APP_SKIP_APPS_TLS_VERIFY
+              value: "false"
+            - name: APP_GATEWAY_PORT
+              value: "8080"
+            - name: APP_UPLOAD_SERVICE_URL
+              value: ""
+            - name: APP_QUERY_LOGGING
+              value: "false"
+            - name: APP_METRICS_LOGGING_TIME_INTERVAL
+              value: "30m"
+            - name: APP_RUNTIME_EVENTS_URL
+              value: "https://gateway.kyma.example.com"
+            - name: APP_RUNTIME_CONSOLE_URL
+              value: "https://console.kyma.example.com"
+            - name: APP_HEALTH_PORT
+              value: "8090"
+            - name: APP_CENTRAL_GATEWAY_SERVICE_URL
+              value: "http://central-application-gateway.kyma-system.svc.cluster.local:8082"
+          livenessProbe:
+            httpGet:
+              port: 8090
+              path: "/healthz"
+            initialDelaySeconds: 50
+            timeoutSeconds: 1
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              port: 8090
+              path: "/healthz"
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 2
+      priorityClassName: compass-runtime-agent-priority-class

@@ -1,4 +1,4 @@
-name: k3d CRA test
+name: Run compass-runtime-agent integration tests on k3d 
 on:
   workflow_call:
     inputs:
@@ -14,7 +14,7 @@ on:
       compass-client-secret:
         required: true
 jobs:
-  test-cra:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: azure/setup-helm@v4.1.0
@@ -30,16 +30,6 @@ jobs:
           K3D_URL: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh
           DEFAULT_K3D_VERSION: ${{ inputs.k3d-version }}
         run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
-      - name: setup-cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-            /home/runner/work/application-connector-manager/application-connector-manager/bin
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
       - name: run-tests
         env:
           COMPASS_CLIENT_ID: ${{ secrets.compass-client-id }}
