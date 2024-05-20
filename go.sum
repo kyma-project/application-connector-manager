@@ -161,12 +161,12 @@ istio.io/api v1.21.0-rc.0.0.20240306012220-bd9313120ef9 h1:rqzo7tqk5QeZK3ijqeSFV
 istio.io/api v1.21.0-rc.0.0.20240306012220-bd9313120ef9/go.mod h1:TFCMUCAHRjxBv1CsIsFCsYHPHi4axVI4vdIzVr8eFjY=
 istio.io/client-go v1.21.0 h1:Fr4Tcnmdk3SOXoeeyHzCgpKfTWVgkeuIYm7tRdARo5A=
 istio.io/client-go v1.21.0/go.mod h1:xFI6wdIPsXqUfE1P/sae1ImFN3KXcYCjKn1S24coFZI=
-k8s.io/api v0.29.3 h1:2ORfZ7+bGC3YJqGpV0KSDDEVf8hdGQ6A03/50vj8pmw=
-k8s.io/api v0.29.3/go.mod h1:y2yg2NTyHUUkIoTC+phinTnEa3KFM6RZ3szxt014a80=
+k8s.io/api v0.30.1 h1:kCm/6mADMdbAxmIh0LBjS54nQBE+U4KmbCfIkF5CpJY=
+k8s.io/api v0.30.1/go.mod h1:ddbN2C0+0DIiPntan/bye3SW3PdwLa11/0yqwvuRrJM=
 k8s.io/apiextensions-apiserver v0.29.3 h1:9HF+EtZaVpFjStakF4yVufnXGPRppWFEQ87qnO91YeI=
 k8s.io/apiextensions-apiserver v0.29.3/go.mod h1:po0XiY5scnpJfFizNGo6puNU6Fq6D70UJY2Cb2KwAVc=
-k8s.io/apimachinery v0.30.0 h1:qxVPsyDM5XS96NIh9Oj6LavoVFYff/Pon9cZeDIkHHA=
-k8s.io/apimachinery v0.30.0/go.mod h1:iexa2somDaxdnj7bha06bhb43Zpa6eWH8N8dbqVjTUc=
+k8s.io/apimachinery v0.30.1 h1:ZQStsEfo4n65yAdlGTfP/uSHMQSoYzU/oeEbkmF7P2U=
+k8s.io/apimachinery v0.30.1/go.mod h1:iexa2somDaxdnj7bha06bhb43Zpa6eWH8N8dbqVjTUc=
 k8s.io/client-go v0.29.3 h1:R/zaZbEAxqComZ9FHeQwOh3Y1ZUs7FaHKZdQtIc2WZg=
 k8s.io/client-go v0.29.3/go.mod h1:tkDisCvgPfiRpxGnOORfkljmS+UrW+WtXAy2fTvXJB0=
 k8s.io/component-base v0.29.3 h1:Oq9/nddUxlnrCuuR2K/jp6aflVvc0uDvxMzAWxnGzAo=

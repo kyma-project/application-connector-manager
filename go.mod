@@ -9,9 +9,9 @@ require (
 	go.uber.org/zap v1.27.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	istio.io/client-go v1.21.0
-	k8s.io/api v0.29.3
+	k8s.io/api v0.30.1
 	k8s.io/apiextensions-apiserver v0.29.3
-	k8s.io/apimachinery v0.30.0
+	k8s.io/apimachinery v0.30.1
 	k8s.io/client-go v0.29.3
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b
 	sigs.k8s.io/controller-runtime v0.17.2
