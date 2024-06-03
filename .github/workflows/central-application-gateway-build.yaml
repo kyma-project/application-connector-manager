@@ -26,6 +26,7 @@ runs-on: ubuntu-latest
         tags: |
           type=sha
           type=ref,event=pr
+          type=raw,value={{date 'YYYYMMDD'}}-{{sha}}
 
     - name: Build and push Docker image
       id: build-and-push
