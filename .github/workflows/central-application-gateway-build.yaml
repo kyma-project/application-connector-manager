@@ -10,18 +10,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Log into registry ${{ env.IMAGE_REGISTRY }}
+    - name: Log into ghcr.io registry
       uses: docker/login-action@v3
       with:
-        registry: ${{ env.IMAGE_REGISTRY }}
-        username: ${{ secrets.GH_CR_USER }}
-        password: ${{ secrets.GH_CR_PAT }}
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Extract Docker metadata
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ${{ env.IMAGE_REGISTRY }}/${{ env.ORGANIZATION }}/${{ env.REPOSITORY_NAME }}/${{ env.IMAGE_NAME }}
+        images: ghcr.io/${{ github.repository }}/central-application-gateway
         tags: |
           type=sha
           type=ref,event=pr
