@@ -3,8 +3,6 @@ on:
   pull_request:
 jobs:
   gateway-build-pr:
-    env:
-      IMAGE: ttl.sh/central-application-gateway
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -32,7 +30,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: {{ env.IMAGE }}
+        images: ttl.sh/central-application-gateway
         tags: type=raw,value=1d
         # tags: |
         #   type=sha
