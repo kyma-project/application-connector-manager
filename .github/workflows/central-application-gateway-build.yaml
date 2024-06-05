@@ -30,7 +30,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ghcr.io/${{ github.repository }}/central-application-gateway
+        images: ghcr.io/${{ github.repository }}/test-images/central-application-gateway
         tags: |
           type=sha
           type=ref,event=pr
@@ -46,5 +46,5 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         push: true
-        cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/central-application-gateway:buildcache
-        cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/central-application-gateway:buildcache,mode=max
+        cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/test-images/central-application-gateway:buildcache
+        cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/test-images/central-application-gateway:buildcache,mode=max
