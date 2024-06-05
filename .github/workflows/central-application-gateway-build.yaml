@@ -3,6 +3,8 @@ on:
   pull_request:
 jobs:
   gateway-build-pr:
+    env:
+      IMAGE: ttl.sh/central-application-gateway
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -30,11 +32,12 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ghcr.io/${{ github.repository }}/test-images/central-application-gateway
-        tags: |
-          type=sha
-          type=ref,event=pr
-          type=raw,value={{date 'YYYYMMDD'}}-{{sha}}
+        images: {{ env.IMAGE }}
+        tags: type=raw,value=1d
+        # tags: |
+        #   type=sha
+        #   type=ref,event=pr
+        #   type=raw,value={{date 'YYYYMMDD'}}-{{sha}}
 
     - name: Build and push Docker image
       id: build-and-push
@@ -46,5 +49,5 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         push: true
-        cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/test-images/central-application-gateway:buildcache
-        cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/test-images/central-application-gateway:buildcache,mode=max
+        # cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/test-images/central-application-gateway:buildcache
+        # cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/test-images/central-application-gateway:buildcache,mode=max
