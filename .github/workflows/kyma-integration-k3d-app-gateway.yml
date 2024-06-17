@@ -4,6 +4,52 @@ on:
     branches: [ main ]
   pull_request:
 jobs:
+  gateway-build-pr:
+    env:
+      IMAGE: ttl.sh/central-application-gateway
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Log into ghcr.io registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Extract Docker metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.IMAGE }}
+        tags: |
+          type=sha
+          type=ref,event=pr
+          type=raw,value={{date 'YYYYMMDD'}}-{{sha}}
+          type=raw,value=1d
+
+    - name: Build and push Docker image
+      id: build-and-push
+      uses: docker/build-push-action@v5
+      with:
+        context: ./components/central-application-gateway
+        file: ./components/central-application-gateway/Dockerfile
+        platforms: linux/amd64,linux/arm64
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        push: true
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -20,7 +66,14 @@ jobs:
           K3D_URL: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh
           DEFAULT_K3D_VERSION: v5.6.0
         run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
+
+      - name: Figure out image tag
+        id: tag
+        run: echo "::set-output name=tag::$(git rev-parse --short HEAD)-$(date +'%Y%m%d')"
+
       - name: Run unit tests
+        env:
+          IMG=${{ steps.tag.outputs.tag }}
         run: make -C tests/hack/ci k3d-gateway-tests
       - name: Archive test results
         if: always()
