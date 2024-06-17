@@ -75,11 +75,10 @@ jobs:
         run: echo "tag=$(date +'%Y%m%d')-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Run unit tests
-        env:
-          IMG: ${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}
+        # env:
+          # IMG: ${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}
         run: |
-          echo "Using image $IMG"
-          docker pull $IMG
+          # echo "Using image $IMG"
           make -C tests/hack/ci k3d-gateway-tests
       - name: Archive test results
         if: always()
