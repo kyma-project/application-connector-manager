@@ -4,6 +4,7 @@ PROJECT_ROOT  ?= ../../..
 CLUSTER_NAME  ?= kyma
 REGISTRY_PORT ?= 5001
 REGISTRY_NAME ?= ${CLUSTER_NAME}-registry
+IMG ?= k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${MANAGER_IMAGE_TAG}
 
 # Operating system architecture
 OS_ARCH ?= $(shell uname -m)
@@ -21,7 +22,7 @@ application-connector-module-image:
 application-connector-deploy:
 	@echo "::group::application-connector-deploy"
 	@make -C ${PROJECT_ROOT}/hack/common deploy \
-		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${MANAGER_IMAGE_TAG}
+		IMG=${IMG}
 	@echo "::endgroup::"
 
 .PHONY: install-application-connector
