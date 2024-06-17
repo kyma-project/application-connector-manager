@@ -3,10 +3,10 @@ on:
   push:
     branches: [ main ]
   pull_request:
+env:
+  IMAGE: ttl.sh/central-application-gateway
 jobs:
   gateway-build-pr:
-    env:
-      IMAGE: ttl.sh/central-application-gateway
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -76,7 +76,7 @@ jobs:
 
       - name: Run unit tests
         env:
-          IMG: ${{ steps.tag.outputs.tag }}
+          IMG: ${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}
         run: make -C tests/hack/ci k3d-gateway-tests
       - name: Archive test results
         if: always()
