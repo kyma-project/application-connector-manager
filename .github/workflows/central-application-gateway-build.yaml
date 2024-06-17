@@ -1,6 +1,5 @@
 name: central-application-gateway-build
-on:
-  pull_request:
+on: [workflow_call]
 jobs:
   gateway-build-pr:
     env:
@@ -31,11 +30,11 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         images: ${{ env.IMAGE }}
-        tags: type=raw,value=1d
-        # tags: |
-        #   type=sha
-        #   type=ref,event=pr
-        #   type=raw,value={{date 'YYYYMMDD'}}-{{sha}}
+        tags: |
+          type=sha
+          type=ref,event=pr
+          type=raw,value={{date 'YYYYMMDD'}}-{{sha}}
+          type=raw,value=1d
 
     - name: Build and push Docker image
       id: build-and-push
@@ -47,5 +46,3 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         push: true
-        # cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/test-images/central-application-gateway:buildcache
-        # cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/test-images/central-application-gateway:buildcache,mode=max
