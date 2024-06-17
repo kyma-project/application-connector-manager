@@ -52,6 +52,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    needs: gateway-build-pr
     steps:
       - uses: azure/setup-helm@v4.1.0
         id: install
@@ -73,7 +74,7 @@ jobs:
 
       - name: Run unit tests
         env:
-          IMG=${{ steps.tag.outputs.tag }}
+          IMG: ${{ steps.tag.outputs.tag }}
         run: make -C tests/hack/ci k3d-gateway-tests
       - name: Archive test results
         if: always()
