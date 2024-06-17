@@ -26,7 +26,7 @@ application-connector-deploy:
 	@echo "::endgroup::"
 
 .PHONY: install-application-connector
-install-application-connector: application-connector-module-image application-connector-deploy apply-appcon
+install-application-connector: application-connector-deploy apply-appcon
 	@echo "::group::install-application-connector"
 	kubectl wait -n kyma-system \
 		applicationconnectors/applicationconnector-sample \
