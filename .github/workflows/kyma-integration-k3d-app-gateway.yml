@@ -70,7 +70,7 @@ jobs:
 
       - name: Figure out image tag
         id: tag
-        run: echo "::set-output name=tag::$(git rev-parse --short HEAD)-$(date +'%Y%m%d')"
+        run: echo "tag=$(git rev-parse --short HEAD)-$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
 
       - name: Run unit tests
         env:
