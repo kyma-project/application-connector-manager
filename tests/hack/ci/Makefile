@@ -59,6 +59,7 @@ create-k3d: ## Create k3d with kyma CRDs.
 		-p 9090-9099:9090-9099@loadbalancer \
 		--agents 2 \
 		--registry-create k3d-${REGISTRY_NAME}:${REGISTRY_PORT}
+	kubectl version
 	@echo "::endgroup::"
 
 .PHONY: apply-appcon
