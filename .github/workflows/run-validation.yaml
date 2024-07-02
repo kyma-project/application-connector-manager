@@ -21,6 +21,9 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: 1.22.4
+    - name: Install K3D
+      run: |
+        curl -s -f https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.6.0 bash
 
     - name: Run integration tests without lifecycle-manager
       run: make -C hack/common run-without-lifecycle-manager
