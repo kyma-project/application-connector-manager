@@ -17,5 +17,5 @@ jobs:
         go-version-file: components/compass-runtime-agent/go.mod
         cache-dependency-path: components/compass-runtime-agent/go.sum
     - name: Run unit tests
-      working-directory: ./components/compass-runtime-agent
-      run: make test
+      working-directory: ./components/
+      run: make test-cra

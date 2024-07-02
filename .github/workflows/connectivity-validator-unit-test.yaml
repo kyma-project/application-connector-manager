@@ -17,5 +17,5 @@ jobs:
         go-version-file: components/central-application-connectivity-validator/go.mod
         cache-dependency-path: components/central-application-connectivity-validator/go.sum
     - name: Run unit tests
-      working-directory: ./components/central-application-connectivity-validator
-      run: make test
+      working-directory: ./components/
+      run: make test-validator
