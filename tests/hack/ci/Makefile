@@ -143,11 +143,3 @@ compass-runtime-agent-test-image:
 		DOCKER_PUSH_REPOSITORY=localhost:${REGISTRY_PORT} \
 		DOCKER_TAG=002
 	@echo "::endgroup::"
-
-.PHONY: install-compass-runtime-agent
-install-compass-runtime-agent: compass-runtime-agent-test-image
-	@echo "::group::install-compass-runtime-agent"
-	@helm template ${PROJECT_ROOT}/tests/hack/ci/resources/charts/compass-runtime-agent \
-		-n kyma-system \
-		| kubectl apply -f -
-	@echo "::endgroup::"
