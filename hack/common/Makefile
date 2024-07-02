@@ -51,18 +51,6 @@ run-without-lifecycle-manager: \
 create-k3d: ## Create k3d with kyma CRDs.
 	${KYMA} provision k3d --registry-port ${REGISTRY_PORT} --name ${CLUSTER_NAME} -p 8080:80@loadbalancer -p 8443:443@loadbalancer --ci
 
-.PHONY: delete-k3d
-delete-k3d: ## Delete k3d with kyma CRDs.
-delete-k3d: delete-k3d-cluster delete-k3d-registry
-
-.PHONY: delete-k3d-registry
-delete-k3d-registry: ## Delete k3d kyma registry.
-	-k3d registry delete ${REGISTRY_NAME}
-
-.PHONY: patch-with-istio-crds
-patch-with-istio-crds: ## Delete k3d kyma cluster.
-	kubectl apply -f ./k3d-patches/patch-istio-crds.yaml
-
 .PHONY: create-k3d
 create-k3d: ## Create k3d with kyma CRDs.
 	${KYMA} provision k3d --registry-port ${REGISTRY_PORT} --name ${CLUSTER_NAME} -p 8080:80@loadbalancer -p 8443:443@loadbalancer --ci
@@ -73,18 +61,6 @@ create-k3d: ## Create k3d with kyma CRDs.
 verify-appcon: ## Wait for ApplicationConnector CR to be in Ready state.
 	@./verify_appcon_status.sh
 
-.PHONY: verify-kyma
-verify-kyma: ## Wait for Kyma CR to be in Ready state.
-	@./verify_kyma_status.sh
-
-.PHONY: fix-template
-fix-template: ## Create template-k3d.yaml based on moduletemplate.yaml with right URLs.
-	@cat ${PROJECT_ROOT}/moduletemplate.yaml \
-	| sed -e 's/remote/control-plane/g' \
-		-e 's/${REGISTRY_PORT}/5000/g' \
-	      	-e 's/localhost/k3d-${REGISTRY_NAME}.localhost/g' \
-	> ${PROJECT_ROOT}/template-k3d.yaml
-
 .PHONY: enable-module
 enable-module: ## Patch application-connector module in the right Kyma CR.
 	kubectl patch kymas.operator.kyma-project.io \
@@ -92,12 +68,6 @@ enable-module: ## Patch application-connector module in the right Kyma CR.
 		-n kyma-system \
 		--type=merge \
 		--patch-file ./k3d-patches/patch-kyma.yaml
-
-.PHONY: patch-mod-mgr-role
-patch-mod-mgr-role: ## Path lifecycle-manager clusterrole.
-	kubectl patch clusterrole \
-		lifecycle-manager-manager-role \
-		--patch-file=./k3d-patches/patch-k3d-lifecycle-manager-clusterrole.yaml
 
 .PHONY: install-module
 install-module: ## Kyma alpha deploy with k3d moduletemplate.
@@ -126,15 +96,7 @@ module-image:
 	@make -C ${PROJECT_ROOT} module-image \
 		IMG=localhost:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${MANAGER_IMAGE_TAG}
 
-.PHONY: clean-charts
-clean-charts:
-	@rm -rf ${PROJECT_ROOT}/charts
-
 .PHONY: deploy
 deploy:
 	@make -C ${PROJECT_ROOT} deploy \
 		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${MANAGER_IMAGE_TAG}
-
-.PHONY: yq-install
-yq-install:
-	@make -C ${PROJECT_ROOT} yq
