@@ -1,6 +1,6 @@
 module github.com/kyma-project/application-connector-manager
 
-go 1.22.3
+go 1.22.5
 
 require (
 	github.com/onsi/ginkgo/v2 v2.17.2
