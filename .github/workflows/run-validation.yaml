@@ -26,4 +26,4 @@ jobs:
         curl -s -f https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.6.0 bash
 
     - name: Run integration tests without lifecycle-manager
-      run: make -C hack/common run-without-lifecycle-manager
+      run: make -C hack run-without-lifecycle-manager

@@ -15,13 +15,13 @@ OS_TYPE ?= $(shell uname)
 .PHONY: application-connector-module-image
 application-connector-module-image:
 	@echo "::group::application-connector-module-image"
-	@make -C ${PROJECT_ROOT}/hack/common module-image
+	@make -C ${PROJECT_ROOT}/hack module-image
 	@echo "::endgroup::"
 
 .PHONY: application-connector-deploy
 application-connector-deploy:
 	@echo "::group::application-connector-deploy"
-	@make -C ${PROJECT_ROOT}/hack/common deploy \
+	@make -C ${PROJECT_ROOT}/hack deploy \
 		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${MANAGER_IMAGE_TAG}
 	@echo "::endgroup::"
 
@@ -66,7 +66,7 @@ create-k3d: ## Create k3d with kyma CRDs.
 .PHONY: apply-appcon
 apply-appcon: ## Apply the k3d application-connector CR
 	@echo "::group::apply-appcon"
-	@make -C ${PROJECT_ROOT}/hack/common apply-appcon
+	@make -C ${PROJECT_ROOT}/hack apply-appcon
 	@echo "::endgroup::"
 
 .PHONY: apply-appcon-crd

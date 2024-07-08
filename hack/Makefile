@@ -5,7 +5,7 @@ REGISTRY_NAME ?= ${CLUSTER_NAME}-registry
 MANAGER_IMAGE_NAME ?= appcon-manager-dev-local
 MANAGER_IMAGE_TAG ?= 0.0.1
 
-PROJECT_ROOT ?= ../..
+PROJECT_ROOT ?= ../
 
 KYMA ?= ${PROJECT_ROOT}/bin/kyma-unstable
 
