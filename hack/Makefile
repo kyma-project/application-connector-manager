@@ -59,7 +59,7 @@ create-k3d: ## Create k3d with kyma CRDs.
 
 .PHONY: verify-appcon
 verify-appcon: ## Wait for ApplicationConnector CR to be in Ready state.
-	@./verify_appcon_status.sh
+	@./common/verify_appcon_status.sh
 
 .PHONY: enable-module
 enable-module: ## Patch application-connector module in the right Kyma CR.
@@ -67,7 +67,7 @@ enable-module: ## Patch application-connector module in the right Kyma CR.
 		default-kyma \
 		-n kyma-system \
 		--type=merge \
-		--patch-file ./k3d-patches/patch-kyma.yaml
+		--patch-file ./common/k3d-patches/patch-kyma.yaml
 
 .PHONY: install-module
 install-module: ## Kyma alpha deploy with k3d moduletemplate.
