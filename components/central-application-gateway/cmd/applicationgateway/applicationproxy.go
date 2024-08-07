@@ -46,7 +46,6 @@ func main() {
 	setupLogger.Info("Starting Application Gateway")
 
 	options := parseArgs(setupLogger)
-
 	logCfg := zap.NewProductionConfig()
 	logCfg.Level.SetLevel(*options.logLevel)
 
