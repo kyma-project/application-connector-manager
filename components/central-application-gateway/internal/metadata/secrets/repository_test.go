@@ -9,6 +9,7 @@ import (
 	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/secrets/mocks"
 	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apperrors"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -76,6 +77,26 @@ func TestRepository_Get(t *testing.T) {
 
 		assert.Nil(t, secrets)
 		secretsManagerMock.AssertExpectations(t)
+	})
+
+	t.Run("Verify caching of secret entities", func(t *testing.T) {
+		// given
+		secret := makeSecret("new-secret", "CLIENT_ID", "CLIENT_SECRET", "secretId", "default-ec")
+		secretsManagerMock := &mocks.Manager{}
+		secretsManagerMock.On("Get", context.Background(), "new-secret", metav1.GetOptions{}).
+			Once(). //Once() is mandatory to make this test meaningful!
+			Return(secret, nil)
+
+		repository := NewRepository(secretsManagerMock)
+		require.NotNil(t, repository)
+
+		// when
+		for i := 0; i < 100; i++ {
+			// only first secret will be retrieved from manager and afterwards from cache otherwise manager mock will fail
+			secret, err := repository.Get("new-secret")
+			assert.NoError(t, err)
+			assert.Equal(t, []byte("CLIENT_ID"), secret["clientId"])
+		}
 	})
 }
 
