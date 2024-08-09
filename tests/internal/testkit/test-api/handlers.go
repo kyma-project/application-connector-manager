@@ -40,7 +40,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(res)
 
 	if err != nil {
-		log.Println("Couldn't encode the response body to JSON:", r.URL)
+		log.Println("Could not encode the response body to JSON:", r.URL)
 	}
 }
 
