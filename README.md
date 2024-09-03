@@ -40,3 +40,15 @@ See also:
 - [Lifecycle Manager documentation](https://github.com/kyma-project/lifecycle-manager#lifecycle-manager)
 - [Application Connector module documentation](docs/user/README.md) 
 - [Modularization of Kyma](https://kyma-project.io/#/?id=kyma-modules)
+
+## Contributing
+
+See the [Contributing Rules](CONTRIBUTING.md).
+
+## Code of Conduct
+
+See the [Code of Conduct](CODE_OF_CONDUCT.md) document.
+
+## Licensing
+
+See the [license](./LICENSE) file.
