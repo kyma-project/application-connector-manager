@@ -1,0 +1,111 @@
+name: Validator
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/validator.yaml"
+      - "components/central-application-connectivity-validator/**"
+      - "!components/central-application-connectivity-validator/**.md"
+      - "tests/**"
+      - "!tests/**.md"
+      - "!tests/Dockerfile.*"
+      - "tests/Dockerfile.connectivity-validator"
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - ".github/workflows/validator.yaml"
+      - "components/central-application-connectivity-validator/**"
+      - "!components/central-application-connectivity-validator/**.md"
+      - "tests/**"
+      - "!tests/**.md"
+      - "!tests/Dockerfile.*"
+      - "tests/Dockerfile.connectivity-validator"
+
+permissions:
+  id-token: write # This is required for requesting the JWT token
+  contents: read # This is required for actions/checkout
+
+jobs:
+  setup:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      validator: ${{ steps.detect-files.outputs.validator_any_changed }}
+      test: ${{ steps.detect-files.outputs.test_any_changed }}
+    steps:
+    - name: Detect files
+      id: detect-files
+      uses: tj-actions/changed-files@d6babd6899969df1a11d14c368283ea4436bca78
+      with:
+        files_yaml: |
+          validator:
+            - components/central-application-connectivity-validator/**
+            - .github/workflows/validator.yaml
+          test:
+            - tests/**
+            - .github/workflows/validator.yaml
+
+  unit-tests:
+    needs: setup
+    if: needs.setup.outputs.validator == 'true'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Set up go environment
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: components/central-application-connectivity-validator/go.mod
+        cache-dependency-path: components/central-application-connectivity-validator/go.sum
+    - name: Run unit tests
+      working-directory: ./components/central-application-connectivity-validator
+      run: make test
+  
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/setup-helm@v4.1.0
+        id: install
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up go environment
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.22.4
+      - name: Install k3d
+        env:
+          K3D_URL: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh
+          DEFAULT_K3D_VERSION: v5.6.0
+        run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
+      - name: Insall yq
+        run: sudo add-apt-repository ppa:rmescandon/yq && sudo apt update && sudo apt install yq -y
+      - name: Run unit tests
+        run: make -C tests/hack/ci k3d-validator-tests
+      - name: Archive test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-connectivity-validator-test-results
+          path: application-connectivity-validator-test.log
+
+  build-test-image:
+    needs: setup
+    if: needs.setup.outputs.test == 'true'
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: connectivity-validator-test
+      dockerfile: Dockerfile.connectivity-validator
+      context: tests
+
+  build-image:
+    needs: setup
+    if: needs.setup.outputs.validator == 'true'
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: central-application-connectivity-validator
+      dockerfile: Dockerfile
+      context: components/central-application-connectivity-validator
+      export-tags: true

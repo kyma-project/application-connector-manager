@@ -21,6 +21,8 @@ jobs:
         id: install-helm
       - name: checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
       - name: Set up go environment
         uses: actions/setup-go@v4
         with:

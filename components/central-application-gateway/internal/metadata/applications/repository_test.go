@@ -179,6 +179,25 @@ func TestGetServices(t *testing.T) {
 		})
 	}
 
+	t.Run("Verify caching of application entities", func(t *testing.T) {
+		// given
+		managerMock := &mocks.Manager{}
+		managerMock.On("Get", context.Background(), "cachedApp", metav1.GetOptions{}).
+			Once(). //Once() is mandatory to make this test meaningful!
+			Return(createApplication("cachedApp", false), nil)
+
+		repository := applications.NewServiceRepository(managerMock)
+		require.NotNil(t, repository)
+
+		// when
+		for i := 0; i < 100; i++ {
+			// only first object will be retrieved from manager and afterwards from cache otherwise manager mock will fail
+			svc, err := repository.GetByServiceName("cachedApp", "service-1")
+			assert.NoError(t, err)
+			assert.NotNil(t, svc)
+		}
+	})
+
 }
 
 func createApplication(name string, skipVerify bool) *v1alpha1.Application {

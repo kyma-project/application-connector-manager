@@ -16,7 +16,7 @@
   - [Debugging](#debugging)
     - [Running Locally](#running-locally)
     - [Running Without Cleanup](#running-without-cleanup)
-      
+
 ## Design and Architecture
 
 The tests consist of:
@@ -213,7 +213,7 @@ To run the mock application locally, follow these steps:
 
    </details>
    </div>
-6. Run [Application Gateway](https://github.com/kyma-project/kyma/tree/main/components/central-application-gateway) with the `-kubeConfig {PATH_TO_YOUR_KUBECONFIG_FILE}` parameter.
+6. Run [Application Gateway](https://github.com/kyma-project/application-connector-manager/tree/main/components/central-application-gateway) with the `-kubeConfig {PATH_TO_YOUR_KUBECONFIG_FILE}` parameter.
 
 You can now send requests to Application Gateway, and debug its behavior locally.
 

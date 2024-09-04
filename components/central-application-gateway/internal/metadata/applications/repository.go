@@ -4,12 +4,15 @@ package applications
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
+	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
 	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/normalization"
+	"github.com/patrickmn/go-cache"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -29,7 +32,9 @@ type Manager interface {
 }
 
 type repository struct {
-	appManager Manager
+	appManager     Manager
+	cache          *cache.Cache
+	cacheRetention time.Duration
 }
 
 // Credentials stores information about credentials needed to call an API
@@ -79,7 +84,16 @@ type ServiceRepository interface {
 
 // NewServiceRepository creates a new ApplicationServiceRepository
 func NewServiceRepository(appManager Manager) ServiceRepository {
-	return &repository{appManager: appManager}
+	cacheRetention, err := time.ParseDuration(os.Getenv("ACM_GATEWAY_APPCACHE_RETENTION"))
+	if err != nil || cacheRetention <= 0 {
+		cacheRetention = 5 * time.Minute
+	}
+	zap.L().Info("Configuring application cache to store application data for %.2fm", zap.Float64("cacheRetention", cacheRetention.Minutes()))
+	return &repository{
+		appManager:     appManager,
+		cache:          cache.New(cacheRetention, 3*time.Minute),
+		cacheRetention: cacheRetention,
+	}
 }
 
 // Get reads Service from Application by service name (bundle SKR mode) and apiName (entry
@@ -128,6 +142,19 @@ func (r *repository) get(appName string, predicate func(service v1alpha1.Service
 }
 
 func (r *repository) getApplication(appName string) (*v1alpha1.Application, apperrors.AppError) {
+	var app *v1alpha1.Application
+	cacheKey := fmt.Sprintf("app-%s", appName)
+	if cachedItem, found := r.cache.Get(cacheKey); found {
+		if cachedItem == nil {
+			zap.L().Warn("found empty application entity '%s' in cache - this is not expected, deleting it from cache now",
+				zap.String("appName", appName))
+			r.cache.Delete(cacheKey)
+		} else {
+			app := cachedItem.(*v1alpha1.Application)
+			return app, nil
+		}
+	}
+
 	app, err := r.appManager.Get(context.Background(), appName, v1.GetOptions{})
 	if err != nil {
 		if k8serrors.IsNotFound(err) {
@@ -144,6 +171,9 @@ func (r *repository) getApplication(appName string) (*v1alpha1.Application, appe
 		return nil, apperrors.Internal(message)
 	}
 
+	if err := r.cache.Add(cacheKey, app, r.cacheRetention); err != nil {
+		zap.L().Warn("Failed to update application cache entity '%s': %v", zap.String("appName", cacheKey), zap.Error(err))
+	}
 	return app, nil
 }
 

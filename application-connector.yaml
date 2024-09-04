@@ -1029,7 +1029,7 @@ spec:
             - containerPort: 8090
               hostPort: 0
               name: http-health
-          image: europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:v20240613-2d81da38
+          image: europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:v20240613-ede06287
           imagePullPolicy: IfNotPresent
           args:
             - "/app/compass-runtime-agent"

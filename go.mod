@@ -1,6 +1,6 @@
 module github.com/kyma-project/application-connector-manager
 
-go 1.22.3
+go 1.22.5
 
 require (
 	github.com/onsi/ginkgo/v2 v2.17.2
@@ -11,7 +11,7 @@ require (
 	istio.io/client-go v1.22.1
 	k8s.io/api v0.30.1
 	k8s.io/apiextensions-apiserver v0.29.5
-	k8s.io/apimachinery v0.30.1
+	k8s.io/apimachinery v0.30.3
 	k8s.io/client-go v0.29.5
 	k8s.io/utils v0.0.0-20240502163921-fe8a2dddb1d0
 	sigs.k8s.io/controller-runtime v0.17.2

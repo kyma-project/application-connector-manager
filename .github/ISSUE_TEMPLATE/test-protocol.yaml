@@ -1,0 +1,61 @@
+name: Test Protocol
+description: Document a manual testing cycle
+title: "Test release X.X.X"
+labels: [] # TODO: Add label for release tests?
+projects: ["kyma-project/24"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: ACM Release
+      description: Link to tested release version
+      placeholder: ex. https://github.com/kyma-project/application-connector-manager/releases/tag/1.1.5
+    validations:
+      required: true
+  - type: input
+    id: date
+    attributes:
+      label: Test date
+      description: Date of the test execution
+      placeholder: YYYY-MM-DD
+    validations:
+      required: true
+  - type: input
+    id: tester
+    attributes:
+      label: Tester
+      description: Who performed the test?
+      placeholder: '@your-username'
+    validations:
+      required: true
+  - type: checkboxes
+    id: pre
+    attributes:
+      label: Pre-requisites
+      description: Steps to perform before the test
+      options:
+        - label: Configure System Landscape and Formations in BTP Cockpit
+        - label: Access to back-office and storefront possible
+  - type: checkboxes
+    id: test
+    attributes:
+      label: Test flow
+      description: Steps of the test
+      options:
+        - label: Register events in back-office
+        - label: Prepare Serverless Function in Kyma
+        - label: Trigger an event in EC
+        - label: Verify event was delivered and API called
+  - type: textarea
+    id: test-problems
+    attributes:
+      label: Did anything go wrong?
+      description: Which part didn't work + issue link
+  - type: checkboxes
+    id: cleanup
+    attributes:
+      label: Cleanup
+      description: Steps to clean up
+      options:
+        - label: In back-office, delete the created Destination Target and Customer
+        - label: In BTP delete the System and the Formation

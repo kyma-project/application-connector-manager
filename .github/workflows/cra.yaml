@@ -1,0 +1,130 @@
+name: CRA
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/cra.yaml"
+      - "components/compass-runtime-agent/**"
+      - "!components/compass-runtime-agent/**.md"
+      - "!components/compass-runtime-agent/hack/boilerplate.go.txt"
+      - "tests/**"
+      - "!tests/**.md"
+      - "!tests/Dockerfile.*"
+      - "tests/Dockerfile.compass-runtime-agent"
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - ".github/workflows/cra.yaml"
+      - "components/compass-runtime-agent/**"
+      - "!components/compass-runtime-agent/**.md"
+      - "!components/compass-runtime-agent/hack/boilerplate.go.txt"
+      - "tests/**"
+      - "!tests/**.md"
+      - "!tests/Dockerfile.*"
+      - "tests/Dockerfile.compass-runtime-agent"
+
+permissions:
+  id-token: write # This is required for requesting the JWT token
+  contents: read # This is required for actions/checkout
+
+jobs:
+  setup:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      cra: ${{ steps.detect-files.outputs.cra_any_changed }}
+      test: ${{ steps.detect-files.outputs.test_any_changed }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}
+    - name: Detect files
+      id: detect-files
+      uses: tj-actions/changed-files@d6babd6899969df1a11d14c368283ea4436bca78
+      with:
+        files_yaml: |
+          cra:
+            - components/compass-runtime-agent/**
+            - .github/workflows/cra.yaml
+          test:
+            - tests/**
+            - .github/workflows/cra.yaml
+
+  unit-tests:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    needs: setup
+    if: needs.setup.outputs.cra == 'true'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}
+    - name: Set up go environment
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: components/compass-runtime-agent/go.mod
+        cache-dependency-path: components/compass-runtime-agent/go.sum
+    - name: Run unit tests
+      working-directory: ./components/compass-runtime-agent
+      run: make test | tee test.log
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test.log
+        path: test.log
+    - name: Generate summary
+      run: |
+          {
+            echo '## Test Log'
+            echo '```'
+            cat test.log
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY
+
+  k3d-integration:
+    # we're using reusable because we can't modify workflows as contributors
+    # it could cause the secret leakeages
+    uses: "./.github/workflows/reusable-k3d-agent-test.yml"
+    with:
+      k3d-version: v5.6.0
+    secrets:
+      compass-host: ${{ secrets.COMPASS_HOST }}
+      compass-client-id: ${{ secrets.COMPASS_CLIENT_ID }}
+      compass-client-secret: ${{ secrets.COMPASS_CLIENT_SECRET }}
+
+  build-test-image:
+    needs: setup
+    if: needs.setup.outputs.test == 'true'
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: compass-runtime-agent-test
+      dockerfile: Dockerfile.compass-runtime-agent
+      context: tests
+
+  build-image:
+    needs: setup
+    if: needs.setup.outputs.cra == 'true'
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: compass-runtime-agent
+      dockerfile: Dockerfile
+      context: components/compass-runtime-agent
+  
+  print-images:
+    runs-on: ubuntu-latest
+    needs: [build-image]
+    steps:
+      - name: "Generate summary"
+        run: |
+          {
+            echo '## Images'
+            echo '```json'
+            echo '${{ needs.build-image.outputs.images }}' | jq
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,117 @@
+name: App Gateway
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/gateway.yaml"
+      - "components/central-application-gateway/**"
+      - "!components/central-application-gateway/**.md"
+      - "tests/**"
+      - "!tests/**.md"
+      - "!tests/Dockerfile.*"
+      - "tests/Dockerfile.gateway"
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - ".github/workflows/gateway.yaml"
+      - "components/central-application-gateway/**"
+      - "!components/central-application-gateway/**.md"
+      - "tests/**"
+      - "!tests/**.md"
+      - "!tests/Dockerfile.*"
+      - "tests/Dockerfile.gateway"
+
+permissions:
+  id-token: write # This is required for requesting the JWT token
+  contents: read # This is required for actions/checkout
+
+jobs:
+  setup:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      gateway: ${{ steps.detect-files.outputs.gateway_any_changed }}
+      test: ${{ steps.detect-files.outputs.test_any_changed }}
+    steps:
+    - name: Detect files
+      id: detect-files
+      uses: tj-actions/changed-files@d6babd6899969df1a11d14c368283ea4436bca78
+      with:
+        files_yaml: |
+          gateway:
+            - components/central-application-gateway/**
+            - .github/workflows/gateway.yaml
+          test:
+            - tests/**
+            - .github/workflows/gateway.yaml
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: setup
+    if: needs.setup.outputs.gateway == 'true'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Set up go environment
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: components/central-application-gateway/go.mod
+        cache-dependency-path: components/central-application-gateway/go.sum
+    - name: Run unit tests
+      working-directory: ./components/central-application-gateway
+      run: go test ./...
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/setup-helm@v4.1.0
+        id: install
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up go environment
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.22.4
+      - name: Install k3d
+        env:
+          K3D_URL: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh
+          DEFAULT_K3D_VERSION: v5.6.0
+        run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
+      - name: Run unit tests
+        run: make -C tests/hack/ci k3d-gateway-tests
+      - name: Archive test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-gateway-test-results
+          path: application-gateway-test.log
+
+  build-test-image:
+    needs: setup
+    if: needs.setup.outputs.test == 'true'
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: gateway-test
+      dockerfile: Dockerfile.gateway
+      context: tests
+    
+  build-mock-app-image:
+    needs: setup
+    if: needs.setup.outputs.test == 'true'
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: mock-app
+      dockerfile: Dockerfile.mockapp
+      context: tests
+
+  build-image:
+    needs: setup
+    if: needs.setup.outputs.gateway == 'true'
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: central-application-gateway
+      dockerfile: Dockerfile
+      context: components/central-application-gateway

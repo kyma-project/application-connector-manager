@@ -1,7 +1,7 @@
 # Build the manager binary
-FROM golang:1.22.4 as builder
+FROM golang:1.22.5-alpine as builder
 
-WORKDIR /workspace
+WORKDIR /acm-workspace
 
 # Copy the Go Modules manifests
 COPY go.mod go.sum ./
@@ -21,9 +21,9 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o manager main.go
 FROM gcr.io/distroless/static:nonroot
 
 WORKDIR /
-COPY --chown=65532:65532 --from=builder /workspace/manager .
-COPY --chown=65532:65532 --from=builder /workspace/application-connector.yaml .
-COPY --chown=65532:65532 --from=builder /workspace/application-connector-dependencies.yaml .
+COPY --chown=65532:65532 --from=builder /acm-workspace/manager .
+COPY --chown=65532:65532 --from=builder /acm-workspace/application-connector.yaml .
+COPY --chown=65532:65532 --from=builder /acm-workspace/application-connector-dependencies.yaml .
 USER 65532:65532
 
 ENTRYPOINT ["/manager"]

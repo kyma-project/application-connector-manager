@@ -61,7 +61,7 @@ Application Connector supports any API that adheres to the REST principles and i
 
 ## Application Connector Manager
 
-When you enable the Application Connector module, Application Connector Manager takes care of installation and configuration of all the Application Connector module components on your cluster. It manages the lifecycle of the Application Connector module based on the dedicated ApplicationConnector custom resource (CR).
+When you add the Application Connector module, Application Connector Manager takes care of installation and configuration of all the Application Connector module components on your cluster. It manages the lifecycle of the Application Connector module based on the dedicated ApplicationConnector custom resource (CR).
 
 ## Useful Links
 
