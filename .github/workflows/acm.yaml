@@ -5,8 +5,8 @@ on:
     branches:
       - main
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
-      - '[0-9]+.[0-9]+.[0-9]+-*'
+      - "[0-9]+.[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+-*"
     paths:
       - .github/workflows/acm.yaml
       - main.go
@@ -50,31 +50,32 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ github.head_ref }}
-    - name: Set up go environment
-      uses: actions/setup-go@v4
-      with:
-        go-version-file: go.mod
-    - name: Run unit tests
-      run: make test | tee test.log
-    - name: Upload test logs artifact
-      uses: actions/upload-artifact@v4
-      if: success() || failure()
-      with:
-        name: test.log
-        path: test.log
-    - name: Generate summary
-      if: success() || failure()
-      run: |
-        {
-          echo '## Test Log'
-          echo '```'
-          cat test.log
-          echo '```'
-        } >> $GITHUB_STEP_SUMMARY
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          repository: ${{ github.repository}}
+      - name: Set up go environment
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+      - name: Run unit tests
+        run: make test | tee test.log
+      - name: Upload test logs artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: test.log
+          path: test.log
+      - name: Generate summary
+        if: success() || failure()
+        run: |
+          {
+            echo '## Test Log'
+            echo '```'
+            cat test.log
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY
 
   build-image:
     needs: setup
