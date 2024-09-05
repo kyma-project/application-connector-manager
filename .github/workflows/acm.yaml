@@ -74,9 +74,9 @@ jobs:
             echo '## ACM Test Log'
             echo "<details>"
             echo "<summary>click to expand logs</summary>"
-            echo '```'
+            printf '\n```\n'
             cat test.log
-            echo '```'
+            printf '\n```\n'
             echo "</details>"
           } >> $GITHUB_STEP_SUMMARY
 
@@ -97,7 +97,7 @@ jobs:
         run: |
           {
             echo '## ACM Images'
-            echo '```json'
+            printf '\n```json\n'
             echo '${{ needs.build-image.outputs.images }}' | jq
-            echo '```'
+            printf '\n```\n'
           } >> $GITHUB_STEP_SUMMARY

@@ -47,10 +47,12 @@ jobs:
           path: compass-runtime-agent-test.log
       - name: test summary
         run: |
-          echo "# K3D Agent Test Summary:" >> $GITHUB_STEP_SUMMARY
-          echo "<details>" >> $GITHUB_STEP_SUMMARY
-          echo "<summary>Click to expand logs</summary>" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat compass-runtime-agent-test.log >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "# K3D Agent Test Summary:"
+            echo "<details>"
+            echo "<summary>Click to expand logs</summary>"
+            printf '\n```\n'
+            cat compass-runtime-agent-test.log
+            printf '\n```\n'
+            echo "</details>"
+          } >> $GITHUB_STEP_SUMMARY

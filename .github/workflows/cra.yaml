@@ -98,9 +98,9 @@ jobs:
             echo '## CRA Unit Tests'
             echo "<details>"
             echo "<summary>click to expand logs</summary>"
-            echo '```'
+            printf '\n```\n'
             cat ./components/compass-runtime-agent/test.log
-            echo '```'
+            printf '\n```\n'
             echo "</details>"
           } >> $GITHUB_STEP_SUMMARY
 
@@ -145,7 +145,7 @@ jobs:
         run: |
           {
             echo '## CRA Images'
-            echo '```json'
+            printf '\n```json\n'
             if [ "${{ needs.build-image.result }}" == "success" ]; then
               echo '${{ needs.build-image.outputs.images }}' | jq
             fi
@@ -154,5 +154,5 @@ jobs:
               echo '${{ needs.build-test-image.outputs.images }}' | jq
             fi
 
-            echo '```'
+            printf '\n```\n'
           } >> $GITHUB_STEP_SUMMARY
