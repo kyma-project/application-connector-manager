@@ -4,7 +4,6 @@ package applications
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
@@ -83,11 +82,7 @@ type ServiceRepository interface {
 }
 
 // NewServiceRepository creates a new ApplicationServiceRepository
-func NewServiceRepository(appManager Manager) ServiceRepository {
-	cacheRetention, err := time.ParseDuration(os.Getenv("ACM_GATEWAY_APPCACHE_RETENTION"))
-	if err != nil || cacheRetention <= 0 {
-		cacheRetention = 5 * time.Minute
-	}
+func NewServiceRepository(appManager Manager, cacheRetention time.Duration) ServiceRepository {
 	zap.L().Info("Configuring application cache to store application data for %.2fm", zap.Float64("cacheRetention", cacheRetention.Minutes()))
 	return &repository{
 		appManager:     appManager,

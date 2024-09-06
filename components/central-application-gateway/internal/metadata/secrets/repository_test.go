@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/kyma-project/kyma/components/central-application-gateway/internal/k8sconsts"
 	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/secrets/mocks"
@@ -20,7 +21,7 @@ func TestRepository_Get(t *testing.T) {
 	t.Run("should get given secret", func(t *testing.T) {
 		// given
 		secretsManagerMock := &mocks.Manager{}
-		repository := NewRepository(secretsManagerMock)
+		repository := NewRepository(secretsManagerMock, time.Minute*5)
 
 		secret := makeSecret("new-secret", "CLIENT_ID", "CLIENT_SECRET", "secretId", "default-ec")
 		secretsManagerMock.On("Get", context.Background(), "new-secret", metav1.GetOptions{}).Return(secret, nil)
@@ -39,7 +40,7 @@ func TestRepository_Get(t *testing.T) {
 	t.Run("should return an error in case fetching fails", func(t *testing.T) {
 		// given
 		secretsManagerMock := &mocks.Manager{}
-		repository := NewRepository(secretsManagerMock)
+		repository := NewRepository(secretsManagerMock, time.Minute*5)
 
 		secretsManagerMock.On("Get", context.Background(), "secret-name", metav1.GetOptions{}).Return(
 			nil,
@@ -60,7 +61,7 @@ func TestRepository_Get(t *testing.T) {
 	t.Run("should return not found if secret does not exist", func(t *testing.T) {
 		// given
 		secretsManagerMock := &mocks.Manager{}
-		repository := NewRepository(secretsManagerMock)
+		repository := NewRepository(secretsManagerMock, time.Minute*5)
 
 		secretsManagerMock.On("Get", context.Background(), "secret-name", metav1.GetOptions{}).Return(
 			nil,
@@ -87,7 +88,7 @@ func TestRepository_Get(t *testing.T) {
 			Once(). //Once() is mandatory to make this test meaningful!
 			Return(secret, nil)
 
-		repository := NewRepository(secretsManagerMock)
+		repository := NewRepository(secretsManagerMock, time.Minute*5)
 		require.NotNil(t, repository)
 
 		// when

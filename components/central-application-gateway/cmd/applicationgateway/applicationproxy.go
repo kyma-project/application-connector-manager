@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -24,6 +27,8 @@ import (
 	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/client/clientset/versioned"
 	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/httptools"
 	"github.com/oklog/run"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
@@ -38,14 +43,54 @@ func main() {
 	setupLogger := zap.Must(zap.NewProduction())
 	defer func(setupLogger *zap.Logger) {
 		err := setupLogger.Sync()
-		if err != nil {
-			panic(err)
+		if err != nil && !errors.Is(err, syscall.ENOTTY) {
+			panic(fmt.Sprintf("Failed to synchronize logger: %v", err))
 		}
 	}(setupLogger)
 
-	setupLogger.Info("Starting Application Gateway")
+	initViper(setupLogger)
 
-	options := parseArgs(setupLogger)
+	//init command
+	opts := &options{}
+	var rootCmd = &cobra.Command{
+		Use:   "acm",
+		Short: "Root short description",
+		Long:  "Root long description",
+		Run: func(cmd *cobra.Command, args []string) {
+			runCmd(setupLogger, opts)
+		},
+	}
+
+	//parse args
+	parseArgs(rootCmd, opts, setupLogger)
+
+	if err := rootCmd.Execute(); err != nil {
+		setupLogger.Error("Failed to execute command: %v", zap.Error(err))
+	}
+}
+
+func initViper(setupLogger *zap.Logger) {
+	viper.SetEnvPrefix("ACM_GATEWAY")
+	viper.AutomaticEnv()
+
+	configFile := viper.GetString("config")
+	if len(configFile) > 0 {
+		err := viper.ReadInConfig()
+		if err != nil {
+			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+				setupLogger.Error("Config file '%s' not found. Check the path provided in env-var '%s'",
+					zap.String("configFile", configFile),
+					zap.String("envVar", strings.ToUpper(fmt.Sprintf("%s_%s", viper.GetEnvPrefix(), "config"))))
+			} else {
+				setupLogger.Panic("Failed to parse config file: %v", zap.Error(err))
+			}
+		}
+	}
+}
+
+func runCmd(setupLogger *zap.Logger, options *options) {
+
+	setupLogger.Info("Starting Application Gateway")
 
 	logCfg := zap.NewProductionConfig()
 	logCfg.Level.SetLevel(*options.logLevel)
@@ -76,14 +121,14 @@ func main() {
 	serviceDefinitionService, err := newServiceDefinitionService(
 		k8sConfig,
 		coreClientset,
-		options.applicationSecretsNamespace,
+		options,
 	)
 	if err != nil {
 		log.Fatal("Unable to create ServiceDefinitionService:'", zap.Error(err))
 	}
 
-	internalHandler := newInternalHandler(serviceDefinitionService, options)
-	internalHandlerForCompass := newInternalHandlerForCompass(serviceDefinitionService, options)
+	internalHandler := newInternalHandler(serviceDefinitionService, *options)
+	internalHandlerForCompass := newInternalHandlerForCompass(serviceDefinitionService, *options)
 	externalHandler := externalapi.NewHandler(logCfg.Level)
 
 	internalHandler = httptools.RequestLogger("Internal handler: ", internalHandler)
@@ -190,20 +235,20 @@ func newAuthenticationStrategyFactory(oauthClientTimeout int) authorization.Stra
 	})
 }
 
-func newServiceDefinitionService(k8sConfig *restclient.Config, coreClientset kubernetes.Interface, namespace string) (metadata.ServiceDefinitionService, error) {
-	applicationServiceRepository, apperror := newApplicationRepository(k8sConfig)
+func newServiceDefinitionService(k8sConfig *restclient.Config, coreClientset kubernetes.Interface, options *options) (metadata.ServiceDefinitionService, error) {
+	applicationServiceRepository, apperror := newApplicationRepository(k8sConfig, options.applicationCacheRetention)
 	if apperror != nil {
 		return nil, apperror
 	}
 
-	secretsRepository := newSecretsRepository(coreClientset, namespace)
+	secretsRepository := newSecretsRepository(coreClientset, options.applicationSecretsNamespace, options.secretCacheRetention)
 
 	serviceAPIService := serviceapi.NewService(secretsRepository)
 
 	return metadata.NewServiceDefinitionService(serviceAPIService, applicationServiceRepository), nil
 }
 
-func newApplicationRepository(config *restclient.Config) (applications.ServiceRepository, apperrors.AppError) {
+func newApplicationRepository(config *restclient.Config, cacheRetention time.Duration) (applications.ServiceRepository, apperrors.AppError) {
 	applicationClientset, err := versioned.NewForConfig(config)
 	if err != nil {
 		return nil, apperrors.Internal("failed to create k8s application client, %s", err)
@@ -211,13 +256,13 @@ func newApplicationRepository(config *restclient.Config) (applications.ServiceRe
 
 	rei := applicationClientset.ApplicationconnectorV1alpha1().Applications()
 
-	return applications.NewServiceRepository(rei), nil
+	return applications.NewServiceRepository(rei, cacheRetention), nil
 }
 
-func newSecretsRepository(coreClientset kubernetes.Interface, namespace string) secrets.Repository {
+func newSecretsRepository(coreClientset kubernetes.Interface, namespace string, cacheRetention time.Duration) secrets.Repository {
 	sei := coreClientset.CoreV1().Secrets(namespace)
 
-	return secrets.NewRepository(sei)
+	return secrets.NewRepository(sei, cacheRetention)
 }
 
 func newCSRFClient(timeout int) csrf.Client {

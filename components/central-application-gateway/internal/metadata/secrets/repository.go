@@ -4,7 +4,6 @@ package secrets
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
 	"go.uber.org/zap"
@@ -37,11 +36,7 @@ type Manager interface {
 }
 
 // NewRepository creates a new secrets repository
-func NewRepository(secretsManager Manager) Repository {
-	cacheRetention, err := time.ParseDuration(os.Getenv("ACM_GATEWAY_SECRETCACHE_RETENTION"))
-	if err != nil || cacheRetention <= 0 {
-		cacheRetention = 5 * time.Minute
-	}
+func NewRepository(secretsManager Manager, cacheRetention time.Duration) Repository {
 	zap.L().Info("Configuring application cache to store application data for %.2fm", zap.Float64("cacheRetention", cacheRetention.Minutes()))
 	return &repository{
 		secretsManager: secretsManager,

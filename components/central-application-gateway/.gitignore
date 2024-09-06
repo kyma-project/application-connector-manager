@@ -6,6 +6,7 @@
 *.dylib
 bin
 /applicationgateway
+/cmd/applicationgateway
 
 # Test binary, build with `go test -c`
 *.test

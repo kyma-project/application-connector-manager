@@ -3,6 +3,7 @@ package applications_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/applications"
 	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/applications/mocks"
@@ -84,7 +85,7 @@ func TestGetServices(t *testing.T) {
 			managerMock.On("Get", context.Background(), "production", metav1.GetOptions{}).
 				Return(testCase.application, nil)
 
-			repository := applications.NewServiceRepository(managerMock)
+			repository := applications.NewServiceRepository(managerMock, time.Minute*5)
 			require.NotNil(t, repository)
 
 			// when
@@ -132,7 +133,7 @@ func TestGetServices(t *testing.T) {
 			managerMock.On("Get", context.Background(), "production", metav1.GetOptions{}).
 				Return(testCase.application, nil)
 
-			repository := applications.NewServiceRepository(managerMock)
+			repository := applications.NewServiceRepository(managerMock, time.Minute*5)
 			require.NotNil(t, repository)
 
 			// when
@@ -167,7 +168,7 @@ func TestGetServices(t *testing.T) {
 			managerMock.On("Get", context.Background(), "production", metav1.GetOptions{}).
 				Return(testCase.application, nil)
 
-			repository := applications.NewServiceRepository(managerMock)
+			repository := applications.NewServiceRepository(managerMock, time.Minute*5)
 			require.NotNil(t, repository)
 
 			// when
@@ -186,7 +187,7 @@ func TestGetServices(t *testing.T) {
 			Once(). //Once() is mandatory to make this test meaningful!
 			Return(createApplication("cachedApp", false), nil)
 
-		repository := applications.NewServiceRepository(managerMock)
+		repository := applications.NewServiceRepository(managerMock, time.Minute*5)
 		require.NotNil(t, repository)
 
 		// when
