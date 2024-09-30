@@ -3,7 +3,7 @@ module github.com/kyma-project/application-connector-manager
 go 1.23.1
 
 require (
-	github.com/onsi/ginkgo/v2 v2.20.1
+	github.com/onsi/ginkgo/v2 v2.20.2
 	github.com/onsi/gomega v1.34.2
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/zap v1.27.0
