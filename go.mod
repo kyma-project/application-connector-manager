@@ -56,7 +56,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/net v0.30.0 // indirect
+	golang.org/x/net v0.37.0 // indirect
 	golang.org/x/oauth2 v0.21.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/term v0.30.0 // indirect
@@ -85,6 +85,6 @@ replace (
 	golang.org/x/term => golang.org/x/term v0.24.0
 	golang.org/x/text => golang.org/x/text v0.18.0
 	golang.org/x/time => golang.org/x/time v0.6.0
-	golang.org/x/tools => golang.org/x/tools v0.24.0
+	golang.org/x/tools => golang.org/x/tools v0.31.0
 	google.golang.org/protobuf => google.golang.org/protobuf v1.36.5
 )

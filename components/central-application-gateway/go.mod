@@ -40,7 +40,7 @@ require (
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
-	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/net v0.37.0 // indirect
 	golang.org/x/oauth2 v0.21.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/term v0.30.0 // indirect
@@ -66,5 +66,5 @@ replace (
 	golang.org/x/term => golang.org/x/term v0.24.0
 	golang.org/x/text => golang.org/x/text v0.18.0
 	golang.org/x/time => golang.org/x/time v0.6.0
-	golang.org/x/tools => golang.org/x/tools v0.24.0
+	golang.org/x/tools => golang.org/x/tools v0.31.0
 )
