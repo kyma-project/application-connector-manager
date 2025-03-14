@@ -54,7 +54,7 @@ func init() {
 }
 
 func main() {
-	fmt.fmt.Printf("Testing build pipelines")
+	fmt.Printf("Testing build pipelines")
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
