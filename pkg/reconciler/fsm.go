@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"runtime"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sync"
 
 	"github.com/kyma-project/application-connector-manager/api/v1alpha1"
@@ -14,7 +15,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
@@ -28,7 +28,7 @@ func (f stateFn) name() string {
 	return runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
 }
 
-type Watch = func(src source.Source, eventhandler handler.EventHandler, predicates ...predicate.Predicate) error
+type Watch = func(src source.TypedSource[reconcile.Request]) error
 
 type K8s struct {
 	client.Client

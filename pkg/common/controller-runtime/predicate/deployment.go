@@ -16,6 +16,15 @@ type deploymentPredicate struct {
 	log *zap.SugaredLogger
 }
 
+var NewDeploymentPredicate2 = predicate.TypedResourceVersionChangedPredicate[*unstructured.Unstructured]{
+	TypedFuncs: predicate.TypedFuncs[*unstructured.Unstructured]{
+		CreateFunc:  nil,
+		DeleteFunc:  nil,
+		UpdateFunc:  nil,
+		GenericFunc: nil,
+	},
+}
+
 func NewDeploymentPredicate(log *zap.SugaredLogger) predicate.Predicate {
 	return &deploymentPredicate{
 		log: log,

@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"k8s.io/apimachinery/pkg/labels"
 	"reflect"
 
 	"github.com/kyma-project/application-connector-manager/api/v1alpha1"
@@ -70,7 +71,7 @@ type ApplicationConnetorReconciler interface {
 	SetupWithManager(mgr ctrl.Manager) error
 }
 
-type Watch = func(src source.Source, eventhandler handler.EventHandler, predicates ...predicate.Predicate) error
+type Watch = func(src source.TypedSource[reconcile.Request]) error
 
 type applicationConnectorReconciler struct {
 	log *zap.SugaredLogger
@@ -135,23 +136,32 @@ var ommitStatusChanged = predicate.Or(
 	predicate.GenerationChangedPredicate{},
 )
 
+var hpaResourceVersionChangedPredicate2 = predicate.TypedResourceVersionChangedPredicate[*unstructured.Unstructured]{
+	TypedFuncs: predicate.TypedFuncs[*unstructured.Unstructured]{
+		CreateFunc:  nil,
+		DeleteFunc:  nil,
+		UpdateFunc:  nil,
+		GenericFunc: nil,
+	},
+}
+
 type hpaResourceVersionChangedPredicate struct {
-	predicate.ResourceVersionChangedPredicate
+	predicate.TypedResourceVersionChangedPredicate[*unstructured.Unstructured]
 	log *zap.SugaredLogger
 }
 
-func (h hpaResourceVersionChangedPredicate) Update(e event.UpdateEvent) bool {
-	if update := h.ResourceVersionChangedPredicate.Update(e); !update {
+func (h hpaResourceVersionChangedPredicate) Update(e event.TypedUpdateEvent[*unstructured.Unstructured]) bool {
+	if update := h.TypedResourceVersionChangedPredicate.Update(e); !update {
 		return false
 	}
 
 	var newObj v2.HorizontalPodAutoscaler
-	if err := runtime.DefaultUnstructuredConverter.FromUnstructured(e.ObjectNew.(*unstructured.Unstructured).Object, &newObj); err != nil {
+	if err := runtime.DefaultUnstructuredConverter.FromUnstructured(e.ObjectNew.Object, &newObj); err != nil {
 		return true
 	}
 
 	var oldObj v2.HorizontalPodAutoscaler
-	if err := runtime.DefaultUnstructuredConverter.FromUnstructured(e.ObjectOld.(*unstructured.Unstructured).Object, &oldObj); err != nil {
+	if err := runtime.DefaultUnstructuredConverter.FromUnstructured(e.ObjectOld.Object, &oldObj); err != nil {
 		return true
 	}
 
@@ -179,48 +189,66 @@ var (
 	}
 )
 
+func LabelSelectorPredicate(s metav1.LabelSelector) (predicate.TypedPredicate[*unstructured.Unstructured], error) {
+	selector, err := metav1.LabelSelectorAsSelector(&s)
+	if err != nil {
+		return predicate.TypedFuncs[*unstructured.Unstructured]{}, err
+	}
+
+	//
+	return predicate.NewTypedPredicateFuncs[*unstructured.Unstructured](func(u *unstructured.Unstructured) bool {
+		return selector.Matches(labels.Set(u.GetLabels()))
+	}), nil
+}
+
 // SetupWithManager sets up the controller with the Manager.
 func (r *applicationConnectorReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	labelSelectorPredicate, err := predicate.LabelSelectorPredicate(
-		metav1.LabelSelector{
-			MatchLabels: map[string]string{
-				"app.kubernetes.io/part-of": "application-connector-manager",
-			},
-		},
-	)
-	if err != nil {
-		return err
-	}
+	//labelSelectorPredicate, err := predicate.LabelSelectorPredicate[*unstructured.Unstructured](
+	//	metav1.LabelSelector{
+	//		MatchLabels: map[string]string{
+	//			"app.kubernetes.io/part-of": "application-connector-manager",
+	//		},
+	//	},
+	//)
+
+	//MatchLabels: map[string]string{
+	//	"app.kubernetes.io/part-of": "application-connector-manager",
+	//}
+
+	var labelSelectorPredicate predicate.TypedLabelChangedPredicate[*unstructured.Unstructured]
 
 	b := ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.ApplicationConnector{}, builder.WithPredicates(ommitStatusChanged))
 
 	// create functtion to register wached objects
 	watchFn := func(u unstructured.Unstructured) {
-		var objPredicate predicate.Predicate = &predicate.ResourceVersionChangedPredicate{}
+		objPredicate := predicate.TypedResourceVersionChangedPredicate[*unstructured.Unstructured]{}
 
 		if u.GroupVersionKind() == hpaGroupVersionKind {
-			objPredicate = hpaResourceVersionChangedPredicate{
-				log: r.log,
-			}
+			objPredicate = hpaResourceVersionChangedPredicate2
 		}
 
 		if u.GroupVersionKind() == deploymentVersionKind {
-			objPredicate = acm_predicate.NewDeploymentPredicate(r.log)
+			objPredicate = acm_predicate.NewDeploymentPredicate2
 		}
 
 		r.log.With("gvk", u.GroupVersionKind().String()).Infoln("adding watcher")
+		allLabelSelectors := predicate.And(labelSelectorPredicate, objPredicate)
 
-		b = b.WatchesRawSource(
-			source.Kind(mgr.GetCache(), &u),
-			handler.EnqueueRequestsFromMapFunc(r.mapFunction),
-			builder.WithPredicates(
-				predicate.And(
-					labelSelectorPredicate,
-					objPredicate,
-				),
-			),
-		)
+		kind := source.Kind(mgr.GetCache(), &unstructured.Unstructured{}, &handler.TypedEnqueueRequestForObject[*unstructured.Unstructured]{}, allLabelSelectors)
+		b = b.WatchesRawSource(kind)
+
+		//b = b.WatchesRawSource(
+		//	source.Kind(mgr.GetCache(), &u),
+		//	handler.EnqueueRequestsFromMapFunc(r.mapFunction),
+		//	builder.WithPredicates(
+		//		predicate.And(
+		//			labelSelectorPredicate,
+		//			objPredicate,
+		//		),
+		//	),
+		//)
+
 	}
 	// register watch for each managed type of object
 	if err := registerWatchDistinct(r.Objs, watchFn); err != nil {
