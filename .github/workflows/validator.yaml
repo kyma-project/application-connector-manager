@@ -33,63 +33,107 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     outputs:
-      validator: ${{ steps.detect-files.outputs.validator_any_changed }}
-      test: ${{ steps.detect-files.outputs.test_any_changed }}
+      validator: ${{ steps.detect-files.outputs.validator_any_changed || steps.fallback-values.outputs.validator_any_changed }}
+      test: ${{ steps.detect-files.outputs.test_any_changed || steps.fallback-values.outputs.test_any_changed }}
     steps:
-    - name: Detect files
-      id: detect-files
-      uses: tj-actions/changed-files@d6babd6899969df1a11d14c368283ea4436bca78
-      with:
-        files_yaml: |
-          validator:
-            - components/central-application-connectivity-validator/**
-            - .github/workflows/validator.yaml
-          test:
-            - tests/**
-            - .github/workflows/validator.yaml
+      - name: checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Detect files
+        id: detect-files
+        uses: tj-actions/changed-files@d6babd6899969df1a11d14c368283ea4436bca78
+        with:
+          files_yaml: |
+            validator:
+              - components/central-application-connectivity-validator/**
+              - .github/workflows/validator.yaml
+            test:
+              - tests/**
+              - .github/workflows/validator.yaml
+      - name: Fallback values
+        id: fallback-values
+        if: steps.detect-files.outcome != 'success'
+        run: |
+          echo "validator_any_changed=true" >> $GITHUB_OUTPUT
+          echo "test_any_changed=true" >> $GITHUB_OUTPUT
 
   unit-tests:
     needs: setup
     if: needs.setup.outputs.validator == 'true'
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Set up go environment
-      uses: actions/setup-go@v5
-      with:
-        go-version-file: components/central-application-connectivity-validator/go.mod
-        cache-dependency-path: components/central-application-connectivity-validator/go.sum
-    - name: Run unit tests
-      working-directory: ./components/central-application-connectivity-validator
-      run: make test
-  
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Set up go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: components/central-application-connectivity-validator/go.mod
+          cache-dependency-path: components/central-application-connectivity-validator/go.sum
+      - name: Run unit tests
+        working-directory: ./components/central-application-connectivity-validator
+        run: make test | tee test.log
+      - name: Archive test results
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validator-unit-test.log
+          path: ./components/central-application-connectivity-validator/test.log
+      - name: Unit test summary
+        if: success() || failure()
+        run: |
+          {
+            echo '## Validator Unit Tests'
+            echo "<details>"
+            echo "<summary>click to expand logs</summary>"
+            printf '\n```\n'
+            cat ./components/central-application-connectivity-validator/test.log
+            printf '\n```\n'
+            echo "</details>"
+          } >> $GITHUB_STEP_SUMMARY
+
   integration-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: azure/setup-helm@v4.1.0
         id: install
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up go environment
         uses: actions/setup-go@v4
         with:
-          go-version: 1.22.4
+          go-version: 1.24.1
       - name: Install k3d
         env:
           K3D_URL: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh
           DEFAULT_K3D_VERSION: v5.6.0
         run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
-      - name: Insall yq
-        run: sudo add-apt-repository ppa:rmescandon/yq && sudo apt update && sudo apt install yq -y
+      - name: Install yq
+        run: sudo go install github.com/mikefarah/yq/v4@latest
       - name: Run unit tests
         run: make -C tests/hack/ci k3d-validator-tests
       - name: Archive test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: application-connectivity-validator-test-results
+          name: validator-integration-test.log
           path: application-connectivity-validator-test.log
+      - name: Integration test summary
+        if: success() || failure()
+        run: |
+          {
+            echo '## CRA Integration Tests'
+            echo "<details>"
+            echo "<summary>click to expand logs</summary>"
+            printf '\n```\n'
+            cat application-connectivity-validator-test.log
+            printf '\n```\n'
+            echo "</details>"
+          } >> $GITHUB_STEP_SUMMARY
 
   build-test-image:
     needs: setup
@@ -109,3 +153,27 @@ jobs:
       dockerfile: Dockerfile
       context: components/central-application-connectivity-validator
       export-tags: true
+
+  print-images:
+    runs-on: ubuntu-latest
+
+    # if any of the build jobs succeeded - run this job
+    needs: [build-image, build-test-image]
+    if: always() && contains(needs.*.result, 'success')
+
+    steps:
+      - name: "Generate summary"
+        run: |
+          {
+            echo '## Validator Images'
+            printf '\n```json\n'
+            if [ "${{ needs.build-image.result }}" == "success" ]; then
+              echo '${{ needs.build-image.outputs.images }}' | jq
+            fi
+
+            if [ "${{ needs.build-test-image.result }}" == "success" ]; then
+              echo '${{ needs.build-test-image.outputs.images }}' | jq
+            fi
+
+            printf '\n```\n'
+          } >> $GITHUB_STEP_SUMMARY

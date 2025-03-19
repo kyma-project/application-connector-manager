@@ -2,17 +2,16 @@ package kyma
 
 import (
 	"fmt"
-
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
-	log "github.com/sirupsen/logrus"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
+	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
 	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/apperrors"
 	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/applications"
 	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/model"
 	appsecrets "github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/secrets"
+	log "github.com/sirupsen/logrus"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type service struct {
@@ -20,11 +19,12 @@ type service struct {
 	converter                applications.Converter
 	credentialsService       appsecrets.CredentialsService
 	requestParametersService appsecrets.RequestParametersService
+	normalizer               applications.DefaultNormalizator
 }
 
 //go:generate mockery --name=Service
 type Service interface {
-	Apply(applications []model.Application) ([]Result, apperrors.AppError)
+	Apply(applications []model.Application, normalizeAppNames bool) ([]Result, apperrors.AppError)
 }
 
 type Operation int
@@ -48,10 +48,11 @@ func NewService(applicationRepository applications.Repository, converter applica
 		converter:                converter,
 		credentialsService:       credentialsService,
 		requestParametersService: requestParametersService,
+		normalizer:               applications.DefaultNormalizator{},
 	}
 }
 
-func (s *service) Apply(directorApplications []model.Application) ([]Result, apperrors.AppError) {
+func (s *service) Apply(directorApplications []model.Application, normalizeAppNames bool) ([]Result, apperrors.AppError) {
 	log.Infof("Applications passed to Sync service: %d", len(directorApplications))
 
 	currentApplications, err := s.getExistingRuntimeApplications()
@@ -61,6 +62,16 @@ func (s *service) Apply(directorApplications []model.Application) ([]Result, app
 	}
 
 	compassCurrentApplications := s.filterCompassApplications(currentApplications)
+
+	if normalizeAppNames {
+		directorApplications = s.normalizeDirectorApplications(directorApplications)
+	}
+
+	err = s.checkDuplicateDirectorApplications(directorApplications)
+	if err != nil {
+		log.Errorf("Failed to synchronize Compass applications: %s.", err)
+		return nil, err
+	}
 
 	return s.apply(compassCurrentApplications, directorApplications), nil
 }
@@ -113,6 +124,28 @@ func (s *service) filterCompassApplications(applications []v1alpha1.Application)
 		}
 	}
 	return compassApplications
+}
+
+func (s *service) normalizeDirectorApplications(directorApplications []model.Application) []model.Application {
+	for i, application := range directorApplications {
+		directorApplications[i].Name = s.normalizer.Normalize(application.Name)
+		log.Infof("Normalized application name from '%s' to '%s'", application.Name, directorApplications[i].Name)
+	}
+	return directorApplications
+}
+
+func (s *service) checkDuplicateDirectorApplications(directorApplications []model.Application) apperrors.AppError {
+	usedNames := map[string]bool{}
+
+	for _, application := range directorApplications {
+		if _, found := usedNames[application.Name]; found {
+			return apperrors.AlreadyExists("The compass application name is duplicated %s", application.Name)
+		} else {
+			usedNames[application.Name] = true
+		}
+	}
+
+	return nil
 }
 
 func (s *service) createApplications(directorApplications []model.Application, runtimeApplications []v1alpha1.Application) []Result {

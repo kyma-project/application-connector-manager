@@ -25,6 +25,7 @@ import (
 
 const (
 	DefaultCompassConnectionName = "compass-connection"
+	isNormalizedLabel            = "isNormalized"
 )
 
 //go:generate mockery --name=CRManager
@@ -160,8 +161,15 @@ func (s *crSupervisor) SynchronizeWithCompass(ctx context.Context, connection *v
 		return s.updateCompassConnection(connection)
 	}
 
+	normalizeAppNames := true
+	if val, exists := runtimeLabels[isNormalizedLabel]; exists {
+		if isNormalized, ok := val.(string); ok {
+			normalizeAppNames = isNormalized != "true"
+		}
+	}
+
 	s.log.Infof("Applying configuration to the cluster...")
-	results, err := s.syncService.Apply(applicationsConfig)
+	results, err := s.syncService.Apply(applicationsConfig, normalizeAppNames)
 	if err != nil {
 		syncAttemptTime := metav1.Now()
 		connection.Status.State = v1alpha1.ResourceApplicationFailed

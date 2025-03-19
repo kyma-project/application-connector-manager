@@ -1,25 +1,22 @@
-# Establish a Secure Connection with Compass
+# Establish a Secure Connection with UCL
 
-> [!WARNING]
-> Runtime Agent is currently not integrated into the Application Connector module. Proceed with caution and consult the respective documentation for the Application Connector module's current configuration and functionality.
-
-To establish a secure connection with Compass and generate the client certificate, follow this tutorial.
+To establish a secure connection with UCL and generate the client certificate, follow this tutorial.
 
 ## Prerequisites
 
 - [OpenSSL toolkit](https://openssl-library.org/source/index.html) to create a Certificate Signing Request (CSR), keys, and certificates which meet high security standards
-- [Compass](https://github.com/kyma-incubator/compass)
+- [UCL](https://github.com/kyma-incubator/compass) (previously called Compass)
 - Registered Application
-- Runtime connected to Compass
+- Kyma Runtime connected to UCL
 
 ## Steps
 
 1. Get the Connector URL and the one-time token.
 
-    To get the Connector URL and the one-time token which allow you to fetch the required configuration details, use the Compass Console.
+    To get the Connector URL and the one-time token which allow you to fetch the required configuration details, use the UCL Console.
 
     > [!NOTE]
-    > To access the Compass Console, go to the `https://compass.{CLUSTER_DOMAIN}` URL and enter your Kyma credentials.
+    > To access the UCL Console, go to the `https://compass.{CLUSTER_DOMAIN}` URL and enter your Kyma credentials.
 
     Alternatively, make a call to the Director including the `Tenant` header with Tenant ID and `authorization` header with the Bearer token issued by your custom OpenID Connect-compliant identity provider. Use the following mutation:
 
@@ -66,8 +63,8 @@ To establish a secure connection with Compass and generate the client certificat
 
     ```bash
     export KEY_LENGTH=4096
-    openssl genrsa -out compass-app.key $KEY_LENGTH
-    openssl req -new -sha256 -out compass-app.csr -key compass-app.key -subj "{SUBJECT}"
+    openssl genrsa -out ucl-app.key $KEY_LENGTH
+    openssl req -new -sha256 -out ucl-app.csr -key ucl-app.key -subj "{SUBJECT}"
     ```
 
    > [!NOTE]
@@ -78,7 +75,7 @@ To establish a secure connection with Compass and generate the client certificat
     Encode the obtained CSR with base64:
 
     ```bash
-    openssl base64 -in compass-app.csr
+    openssl base64 -in ucl-app.csr
     ```
 
     To get the CSR signed, use the encoded CSR in this GraphQL mutation:
@@ -106,4 +103,4 @@ To establish a secure connection with Compass and generate the client certificat
     ```
 
 > [!NOTE]
-> See how to [maintain a secure connection with Compass and renew a client certificate](01-70-maintain-secure-connection-with-compass.md).
+> See how to [maintain a secure connection with UCL and renew a client certificate](01-70-maintain-secure-connection-with-compass.md).

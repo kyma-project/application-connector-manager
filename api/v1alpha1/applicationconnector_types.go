@@ -107,6 +107,7 @@ type ApplicationConnectorSpec struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:categories={kyma-modules,kyma-application-connector}
 
 // ApplicationConnector is the Schema for the applicationconnectors API
 type ApplicationConnector struct {

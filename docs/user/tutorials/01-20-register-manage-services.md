@@ -32,7 +32,7 @@ This guide shows you how to register a service of your external solution in Kyma
    > [!NOTE]
    > Replace the example values above with your actual values.
 
-2. Enable [Istio sidecar injection](https://kyma-project.io/#/istio/user/00-30-overview-istio-sidecars) in the namespace:
+2. Enable [Istio sidecar injection](https://kyma-project.io/#/istio/user/tutorials/01-40-enable-sidecar-injection) in the namespace:
 
    ```bash
    kubectl label namespace $NAMESPACE istio-injection=enabled

@@ -1,3 +1,3 @@
 # Technical Reference
 
-In this section, you'll find the architecture documents, the configuration parameters, and other useful references.
+In this section, you'll find more information on Istio Gateway, Application Gateway, and Runtime Agent.

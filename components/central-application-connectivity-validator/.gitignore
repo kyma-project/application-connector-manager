@@ -1,3 +1,6 @@
+# Vendors directory
+vendor/*
+
 # Editors and IDEs
 /.idea
 *.iml

@@ -16,11 +16,15 @@ vendor/*
 application-gateway-test.log
 compass-runtime-agent-test.log
 
+# MacOS file
+.DS_Store
+
 # Kubernetes Generated files - skip generated files, except for vendored files
 
 !vendor/**/zz_generated.*
 
 # editor and IDE paraphernalia
+.vscode
 .idea
 *.swp
 *.swo

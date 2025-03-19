@@ -36,8 +36,8 @@ jobs:
       pull-requests: read
     runs-on: ubuntu-latest
     outputs:
-      cra: ${{ steps.detect-files.outputs.cra_any_changed }}
-      test: ${{ steps.detect-files.outputs.test_any_changed }}
+      cra: ${{ steps.detect-files.outputs.cra_any_changed || steps.fallback-values.outputs.cra_any_changed }}
+      test: ${{ steps.detect-files.outputs.test_any_changed || steps.fallback-values.outputs.test_any_changed }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,6 +45,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Detect files
+        continue-on-error: true
         id: detect-files
         uses: tj-actions/changed-files@d6babd6899969df1a11d14c368283ea4436bca78
         with:
@@ -55,6 +56,12 @@ jobs:
             test:
               - tests/**
               - .github/workflows/cra.yaml
+      - name: Fallback values
+        id: fallback-values
+        if: steps.detect-files.outcome != 'success'
+        run: |
+          echo "cra_any_changed=true" >> $GITHUB_OUTPUT
+          echo "test_any_changed=true" >> $GITHUB_OUTPUT
 
   unit-tests:
     permissions:
@@ -76,10 +83,26 @@ jobs:
       - name: Run unit tests
         working-directory: ./components/compass-runtime-agent
         run: |
-          echo '## Test Log' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          make test | tee $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          touch test.log
+          make test | tee -a test.log
+      - name: Archive test results
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cra-unit-test.log
+          path: ./components/compass-runtime-agent/test.log
+      - name: Unit test summary
+        if: success() || failure()
+        run: |
+          {
+            echo '## CRA Unit Tests'
+            echo "<details>"
+            echo "<summary>click to expand logs</summary>"
+            printf '\n```\n'
+            cat ./components/compass-runtime-agent/test.log
+            printf '\n```\n'
+            echo "</details>"
+          } >> $GITHUB_STEP_SUMMARY
 
   k3d-integration:
     # we're using reusable because we can't modify workflows as contributors
@@ -112,13 +135,24 @@ jobs:
 
   print-images:
     runs-on: ubuntu-latest
-    needs: [build-image]
+
+    # if any of the build jobs succeeded - run this job
+    needs: [build-image, build-test-image]
+    if: always() && contains(needs.*.result, 'success')
+
     steps:
       - name: "Generate summary"
         run: |
           {
-            echo '## Images'
-            echo '```json'
-            echo '${{ needs.build-image.outputs.images }}' | jq
-            echo '```'
+            echo '## CRA Images'
+            printf '\n```json\n'
+            if [ "${{ needs.build-image.result }}" == "success" ]; then
+              echo '${{ needs.build-image.outputs.images }}' | jq
+            fi
+
+            if [ "${{ needs.build-test-image.result }}" == "success" ]; then
+              echo '${{ needs.build-test-image.outputs.images }}' | jq
+            fi
+
+            printf '\n```\n'
           } >> $GITHUB_STEP_SUMMARY

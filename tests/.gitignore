@@ -1,1 +1,6 @@
 resources/charts/gateway-test/certs/
+resources/charts/gateway-test/charts/mock-app/certs/
+resources/charts/gateway-test/charts/test/certs/
+
+# Vendors directory
+vendor/*

@@ -53,28 +53,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
-          repository: ${{ github.repository}}
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Set up go environment
         uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
       - name: Run unit tests
         run: make test | tee test.log
-      - name: Upload test logs artifact
+      - name: Archive test results
         uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
-          name: test.log
+          name: acm-unit-test.log
           path: test.log
       - name: Generate summary
         if: success() || failure()
         run: |
           {
-            echo '## Test Log'
-            echo '```'
+            echo '## ACM Test Log'
+            echo "<details>"
+            echo "<summary>click to expand logs</summary>"
+            printf '\n```\n'
             cat test.log
-            echo '```'
+            printf '\n```\n'
+            echo "</details>"
           } >> $GITHUB_STEP_SUMMARY
 
   build-image:
@@ -93,8 +96,8 @@ jobs:
       - name: "Generate summary"
         run: |
           {
-            echo '## Images'
-            echo '```json'
+            echo '## ACM Images'
+            printf '\n```json\n'
             echo '${{ needs.build-image.outputs.images }}' | jq
-            echo '```'
+            printf '\n```\n'
           } >> $GITHUB_STEP_SUMMARY

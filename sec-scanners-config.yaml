@@ -1,11 +1,15 @@
 module-name: application-connector-manager
-protecode:
-  - europe-docker.pkg.dev/kyma-project/prod/application-connector-manager:1.1.6
-  - europe-docker.pkg.dev/kyma-project/prod/central-application-gateway:v20240613-2d81da38
-  - europe-docker.pkg.dev/kyma-project/prod/central-application-connectivity-validator:v20240613-2d81da38
-  - europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:v20240613-ede06287
-whitesource:
+kind: kyma
+bdba:
+  - europe-docker.pkg.dev/kyma-project/prod/application-connector-manager:1.1.8
+  - europe-docker.pkg.dev/kyma-project/prod/central-application-gateway:v20240920-8cc34ee6
+  - europe-docker.pkg.dev/kyma-project/prod/central-application-connectivity-validator:v20240920-8cc34ee6
+  - europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:v20240920-8cc34ee6
+mend:
   language: golang-mod
-  subprojects: false
   exclude:
     - "**/*_test.go"
+checkmarx-one:
+    preset: go-default
+    exclude:
+        - '**/*_test.go'

@@ -103,7 +103,21 @@ var (
 		ConsoleURL: "https://console.kyma.local",
 	}
 
-	runtimeLabels = graphql.Labels{
+	normRuntimeLabelsBefore = graphql.Labels{
+		isNormalizedLabel: "true",
+	}
+
+	notNormRuntimeLabelsBefore = graphql.Labels{
+		isNormalizedLabel: "false",
+	}
+
+	normRuntimeLabelsAfter = graphql.Labels{
+		"events":          runtimeURLsConfig.EventsURL,
+		"console":         runtimeURLsConfig.ConsoleURL,
+		isNormalizedLabel: "true",
+	}
+
+	notNormRuntimeLabelsAfter = graphql.Labels{
 		"events":  runtimeURLsConfig.EventsURL,
 		"console": runtimeURLsConfig.ConsoleURL,
 	}
@@ -145,13 +159,13 @@ func TestCompassConnectionController(t *testing.T) {
 	certsConnectorClientMock := connectorCertClientMock(requestIDCtxMatcher)
 	// Director config client
 	configurationClientMock := &directorMocks.DirectorClient{}
-	configurationClientMock.On("FetchConfiguration", requestIDCtxMatcher).Return(kymaModelApps, graphql.Labels{}, nil)
-	configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, graphql.Labels{}).Return(runtimeLabels, nil)
+	configurationClientMock.On("FetchConfiguration", requestIDCtxMatcher).Return(kymaModelApps, normRuntimeLabelsBefore, nil)
+	configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, normRuntimeLabelsBefore).Return(normRuntimeLabelsAfter, nil)
 	// Clients provider
 	clientsProviderMock := clientsProviderMock(configurationClientMock, tokensConnectorClientMock, certsConnectorClientMock)
 	// Sync service
 	synchronizationServiceMock := &kymaMocks.Service{}
-	synchronizationServiceMock.On("Apply", kymaModelApps).Return(operationResults, nil)
+	synchronizationServiceMock.On("Apply", kymaModelApps, false).Return(operationResults, nil)
 
 	connectionDataCache := cache.NewConnectionDataCache()
 	connectionDataCache.AddSubscriber(func(data cache.ConnectionData) error {
@@ -276,12 +290,12 @@ func TestCompassConnectionController(t *testing.T) {
 	t.Run("Compass Connection should be in MetadataUpdateFailed state if failed to set labels on Runtime", func(t *testing.T) {
 		// given
 		clearMockCalls(&configurationClientMock.Mock)
-		configurationClientMock.On("FetchConfiguration", requestIDCtxMatcher).Return(kymaModelApps, graphql.Labels{}, nil)
-		configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, graphql.Labels{}).Return(nil, apperrors.Internal("error"))
+		configurationClientMock.On("FetchConfiguration", requestIDCtxMatcher).Return(kymaModelApps, normRuntimeLabelsBefore, nil)
+		configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, normRuntimeLabelsBefore).Return(nil, apperrors.Internal("error"))
 
 		// when
 		err = waitFor(checkInterval, testTimeout, func() bool {
-			return mockFunctionCalled(&configurationClientMock.Mock, "SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, graphql.Labels{})
+			return mockFunctionCalled(&configurationClientMock.Mock, "SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, normRuntimeLabelsBefore)
 		})
 
 		// then
@@ -291,18 +305,18 @@ func TestCompassConnectionController(t *testing.T) {
 
 		clearMockCalls(&configurationClientMock.Mock)
 		// restore previous director mock configuration to not interfere with other tests
-		configurationClientMock.On("FetchConfiguration", requestIDCtxMatcher).Return(kymaModelApps, graphql.Labels{}, nil)
-		configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, graphql.Labels{}).Return(runtimeLabels, nil)
+		configurationClientMock.On("FetchConfiguration", requestIDCtxMatcher).Return(kymaModelApps, normRuntimeLabelsBefore, nil)
+		configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, normRuntimeLabelsBefore).Return(normRuntimeLabelsAfter, nil)
 	})
 
 	t.Run("Compass Connection should be in ResourceApplicationFailed state if failed to apply resources", func(t *testing.T) {
 		// given
 		clearMockCalls(&synchronizationServiceMock.Mock)
-		synchronizationServiceMock.On("Apply", kymaModelApps).Return(nil, apperrors.Internal("error"))
+		synchronizationServiceMock.On("Apply", kymaModelApps, false).Return(nil, apperrors.Internal("error"))
 
 		// when
 		err = waitFor(checkInterval, testTimeout, func() bool {
-			return mockFunctionCalled(&synchronizationServiceMock.Mock, "Apply", kymaModelApps)
+			return mockFunctionCalled(&synchronizationServiceMock.Mock, "Apply", kymaModelApps, false)
 		})
 
 		// then
@@ -313,7 +327,7 @@ func TestCompassConnectionController(t *testing.T) {
 
 		// restore previous sync service mock configuration to not interfere with other tests
 		clearMockCalls(&synchronizationServiceMock.Mock)
-		synchronizationServiceMock.On("Apply", kymaModelApps).Return(operationResults, nil)
+		synchronizationServiceMock.On("Apply", kymaModelApps, false).Return(operationResults, nil)
 	})
 
 	t.Run("Compass Connection should be in SynchronizationFailed state if failed to fetch configuration from Director", func(t *testing.T) {
@@ -334,8 +348,66 @@ func TestCompassConnectionController(t *testing.T) {
 
 		// restore previous director mock configuration to not interfere with other tests
 		clearMockCalls(&configurationClientMock.Mock)
+		configurationClientMock.On("FetchConfiguration", requestIDCtxMatcher).Return(kymaModelApps, normRuntimeLabelsBefore, nil)
+		configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, normRuntimeLabelsBefore).Return(normRuntimeLabelsAfter, nil)
+	})
+
+	t.Run("Compass Connection should normalize application name if the Runtime has no label >>isNormalizedLabel<< set ", func(t *testing.T) {
+		// given
+		clearMockCalls(&configurationClientMock.Mock)
 		configurationClientMock.On("FetchConfiguration", requestIDCtxMatcher).Return(kymaModelApps, graphql.Labels{}, nil)
-		configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, graphql.Labels{}).Return(runtimeLabels, nil)
+		configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, graphql.Labels{}).Return(notNormRuntimeLabelsAfter, nil)
+		clearMockCalls(&synchronizationServiceMock.Mock)
+		synchronizationServiceMock.On("Apply", kymaModelApps, true).Return(operationResults, nil)
+
+		// when
+		err = waitFor(checkInterval, testTimeout, func() bool {
+			return mockFunctionCalled(&synchronizationServiceMock.Mock, "Apply", kymaModelApps, true)
+		})
+
+		// then
+		require.NoError(t, err)
+		assertConnectionStatusSet(t)
+		require.NoError(t, waitForResourceUpdate(v1alpha1.Synchronized))
+		assertManagementInfoSetInCR(t)
+
+		clearMockCalls(&configurationClientMock.Mock)
+		// restore previous director mock configuration to not interfere with other tests
+		configurationClientMock.On("FetchConfiguration", requestIDCtxMatcher).Return(kymaModelApps, normRuntimeLabelsBefore, nil)
+		configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, normRuntimeLabelsBefore).Return(normRuntimeLabelsAfter, nil)
+
+		// restore previous sync service mock configuration to not interfere with other tests
+		clearMockCalls(&synchronizationServiceMock.Mock)
+		synchronizationServiceMock.On("Apply", kymaModelApps, false).Return(operationResults, nil)
+	})
+
+	t.Run("Compass Connection should normalize application name if the Runtime has label >>isNormalizedLabel<< set to false", func(t *testing.T) {
+		// given
+		clearMockCalls(&configurationClientMock.Mock)
+		configurationClientMock.On("FetchConfiguration", requestIDCtxMatcher).Return(kymaModelApps, notNormRuntimeLabelsBefore, nil)
+		configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, notNormRuntimeLabelsBefore).Return(notNormRuntimeLabelsAfter, nil)
+		clearMockCalls(&synchronizationServiceMock.Mock)
+		synchronizationServiceMock.On("Apply", kymaModelApps, true).Return(operationResults, nil)
+
+		// when
+		err = waitFor(checkInterval, testTimeout, func() bool {
+			return mockFunctionCalled(&synchronizationServiceMock.Mock, "Apply", kymaModelApps, true)
+		})
+
+		// then
+		require.NoError(t, err)
+		assertConnectionStatusSet(t)
+		require.NoError(t, waitForResourceUpdate(v1alpha1.Synchronized))
+		assertManagementInfoSetInCR(t)
+
+		clearMockCalls(&configurationClientMock.Mock)
+		// restore previous director mock configuration to not interfere with other tests
+		configurationClientMock.On("FetchConfiguration", requestIDCtxMatcher).Return(kymaModelApps, normRuntimeLabelsBefore, nil)
+		configurationClientMock.On("SetURLsLabels", requestIDCtxMatcher, runtimeURLsConfig, normRuntimeLabelsBefore).Return(normRuntimeLabelsAfter, nil)
+
+		// restore previous sync service mock configuration to not interfere with other tests
+		clearMockCalls(&synchronizationServiceMock.Mock)
+		synchronizationServiceMock.On("Apply", kymaModelApps, false).Return(operationResults, nil)
 	})
 
 	t.Run("Compass Connection should be in SynchronizationFailed state if failed create Director config client", func(t *testing.T) {
