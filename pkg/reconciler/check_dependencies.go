@@ -3,6 +3,7 @@ package reconciler
 import (
 	"context"
 	"errors"
+	"github.com/kyma-project/application-connector-manager/pkg/unstructured"
 	"time"
 
 	"github.com/kyma-project/application-connector-manager/api/v1alpha1"
@@ -99,7 +100,9 @@ func sFnRegisterDependencyWatch(_ context.Context, r *fsm, s *systemState) (stat
 			objPredicate = acm_predicate.NewGatewayPredicate(r.log)
 		}
 
-		err := r.Watch(source.Kind(r.Cache, &u), handler.EnqueueRequestsFromMapFunc(r.MapFunc), predicate.And(labelSelectorPredicate, objPredicate))
+		kind := source.Kind(r.Cache, &unstructured.Unstructured{}, &handler.TypedEnqueueRequestForObject[*unstructured.Unstructured]{}, predicate.And(labelSelectorPredicate, objPredicate))
+		//kind, handler.EnqueueRequestsFromMapFunc(r.MapFunc), predicate.And(labelSelectorPredicate, objPredicate)
+		err := r.Watch(kind)
 
 		if err != nil {
 			s.instance.UpdateStateFromErr(v1alpha1.ConditionTypeInstalled, v1alpha1.ConditionReasonApplyObjError, err)
