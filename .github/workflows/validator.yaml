@@ -22,6 +22,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.connectivity-validator"
+  workflow_dispatch:
 
 permissions:
   id-token: write # This is required for requesting the JWT token
@@ -76,7 +77,10 @@ jobs:
           cache-dependency-path: components/central-application-connectivity-validator/go.sum
       - name: Run unit tests
         working-directory: ./components/central-application-connectivity-validator
-        run: make test | tee test.log
+        run: |
+          set -o pipefail
+          echo 'TESTING'
+          make test | tee test.log
       - name: Archive test results
         if: success() || failure()
         uses: actions/upload-artifact@v4
@@ -115,7 +119,9 @@ jobs:
       - name: Install yq
         run: sudo go install github.com/mikefarah/yq/v4@latest
       - name: Run unit tests
-        run: make -C tests/hack/ci k3d-validator-tests
+        run: |
+          set -o pipefail
+          make -C tests/hack/ci k3d-validator-tests
       - name: Archive test results
         if: always()
         uses: actions/upload-artifact@v4

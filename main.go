@@ -126,7 +126,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	setupLog.Info(fmt.Sprintf("log level set to: %s", appConLogger.Level()))
+	setupLog.Info(fmt.Sprintf("Log level set to: %s", appConLogger.Level()))
 
 	appConReconciler := controllers.NewApplicationConnetorReconciler(
 		mgr.GetClient(),
