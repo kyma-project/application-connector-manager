@@ -8,15 +8,15 @@ require (
 	github.com/kofalt/go-memoize v0.0.0-20240506050413-9e5eb99a0f2a
 	github.com/kyma-incubator/compass/components/connector v0.0.0-20220104122431-99ed924ea212
 	github.com/kyma-incubator/compass/components/director v0.0.0-20220126084901-92232f5eced0
-	github.com/kyma-project/kyma/components/central-application-gateway v0.0.0-20230201152417-102edd243eab
+	github.com/kyma-project/kyma/components/central-application-gateway v0.0.0-20240626075036-d374ec55c335
 	github.com/machinebox/graphql v0.2.3-0.20181106130121-3a9253180225
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0
 	github.com/vrischmann/envconfig v1.3.0
-	k8s.io/api v0.26.7
+	k8s.io/api v0.27.4
 	k8s.io/apimachinery v0.27.4
-	k8s.io/client-go v0.26.7
+	k8s.io/client-go v0.27.4
 	k8s.io/metrics v0.26.7
 	sigs.k8s.io/controller-runtime v0.14.6
 )
@@ -60,7 +60,7 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
-	github.com/rogpeppe/go-internal v1.10.0 // indirect
+	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.16 // indirect
