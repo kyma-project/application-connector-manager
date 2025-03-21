@@ -76,7 +76,9 @@ jobs:
           cache-dependency-path: components/central-application-gateway/go.sum
       - name: Run unit tests
         working-directory: ./components/central-application-gateway
-        run: go test ./... | tee test.log
+        run: |
+          set -o pipefail
+          go test ./... | tee test.log
       - name: Archive test results
         if: success() || failure()
         uses: actions/upload-artifact@v4
@@ -116,7 +118,9 @@ jobs:
           DEFAULT_K3D_VERSION: v5.6.0
         run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
       - name: Run unit tests
-        run: make -C tests/hack/ci k3d-gateway-tests
+        run: |
+          set -o pipefail
+          make -C tests/hack/ci k3d-gateway-tests
       - name: Archive test results
         if: success() || failure()
         uses: actions/upload-artifact@v4

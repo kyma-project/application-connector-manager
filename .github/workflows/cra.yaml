@@ -83,6 +83,7 @@ jobs:
       - name: Run unit tests
         working-directory: ./components/compass-runtime-agent
         run: |
+          set -o pipefail
           touch test.log
           make test | tee -a test.log
       - name: Archive test results
