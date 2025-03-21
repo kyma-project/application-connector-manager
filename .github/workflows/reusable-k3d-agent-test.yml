@@ -17,7 +17,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: azure/setup-helm@v4.1.0
+      - uses: azure/setup-helm@v4.3.0
         id: install-helm
       - name: checkout
         uses: actions/checkout@v4
