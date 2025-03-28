@@ -4,21 +4,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
+	"github.com/kyma-project/kyma/common/logging/logger"
 	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/controller"
+	"github.com/patrickmn/go-cache"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/kyma-project/kyma/common/logging/logger"
-
-	"github.com/gorilla/mux"
-	"github.com/patrickmn/go-cache"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	appconnv1alpha1 "github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
 )
@@ -74,6 +71,48 @@ var (
 		},
 	}
 )
+
+func getProxyHandlerForTest(t *testing.T, idCache *cache.Cache, log *logger.Logger, eventTitle, applicationName string) ProxyHandler {
+	const mockIncomingRequestHost = "fake.istio.gateway"
+
+	eventPublisherProxyHandler := mux.NewRouter()
+	eventPublisherProxyServer := httptest.NewServer(eventPublisherProxyHandler)
+	eventPublisherProxyHost := strings.TrimPrefix(eventPublisherProxyServer.URL, "http://")
+
+	// publish handler which are overwritten in the tests
+	var publishHandler http.HandlerFunc
+	eventPublisherProxyHandler.Path(eventingPathPrefixEvents).HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		publishHandler.ServeHTTP(writer, request)
+	})
+
+	eventPublisherProxyHandler.PathPrefix(eventingDestinationPathPublish).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var receivedEvent event
+
+		err := json.NewDecoder(r.Body).Decode(&receivedEvent)
+		require.NoError(t, err)
+		assert.Equal(t, eventTitle, receivedEvent.Title)
+
+		assert.NotEqual(t, mockIncomingRequestHost, r.Host, "proxy should rewrite Host field")
+
+		w.WriteHeader(http.StatusOK)
+	})
+
+	eventPublisherProxyHandler.PathPrefix("/{application}/v1/events").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		appVars := mux.Vars(r)
+		appName := appVars["application"]
+		assert.Equal(t, applicationName, appName, `Error reading "application" route variable from request context`)
+
+		var receivedEvent event
+
+		err := json.NewDecoder(r.Body).Decode(&receivedEvent)
+		require.NoError(t, err)
+		assert.Equal(t, eventTitle, receivedEvent.Title)
+
+		w.WriteHeader(http.StatusOK)
+	})
+
+	return NewProxyHandler(eventPublisherProxyHost, eventingDestinationPathPublish, idCache, log)
+}
 
 func TestProxyHandler_ProxyAppConnectorRequests(t *testing.T) {
 
@@ -163,29 +202,8 @@ func TestProxyHandler_ProxyAppConnectorRequests(t *testing.T) {
 	testCases := append(positiveCases, negativeCases...)
 
 	t.Run("should proxy requests", func(t *testing.T) {
-		const mockIncomingRequestHost = "fake.istio.gateway"
 		const eventTitle = "my-event"
-		eventPublisherProxyHandler := mux.NewRouter()
-		eventPublisherProxyServer := httptest.NewServer(eventPublisherProxyHandler)
-		eventPublisherProxyHost := strings.TrimPrefix(eventPublisherProxyServer.URL, "http://")
-
-		// publish handler which are overwritten in the tests
-		var publishHandler http.HandlerFunc
-		eventPublisherProxyHandler.Path(eventingPathPrefixEvents).HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			publishHandler.ServeHTTP(writer, request)
-		})
-
-		eventPublisherProxyHandler.PathPrefix(eventingDestinationPathPublish).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			var receivedEvent event
-
-			err := json.NewDecoder(r.Body).Decode(&receivedEvent)
-			require.NoError(t, err)
-			assert.Equal(t, eventTitle, receivedEvent.Title)
-
-			assert.NotEqual(t, mockIncomingRequestHost, r.Host, "proxy should rewrite Host field")
-
-			w.WriteHeader(http.StatusOK)
-		})
+		const mockIncomingRequestHost = "fake.istio.gateway"
 
 		for _, testCase := range testCases {
 			// given
@@ -204,27 +222,8 @@ func TestProxyHandler_ProxyAppConnectorRequests(t *testing.T) {
 
 			idCache.Set(testCase.application.Name, appData, cache.NoExpiration)
 
-			proxyHandler := NewProxyHandler(
-				eventPublisherProxyHost,
-				eventingDestinationPathPublish,
-				idCache,
-				log)
-
 			t.Run("should proxy eventing V1 request when "+testCase.caseDescription, func(t *testing.T) {
-				eventTitle := "my-event-1"
-
-				eventPublisherProxyHandler.PathPrefix("/{application}/v1/events").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					appName := mux.Vars(r)["application"]
-					assert.Equal(t, testCase.application.Name, appName, `Error reading "application" route variable from request context`)
-
-					var receivedEvent event
-
-					err := json.NewDecoder(r.Body).Decode(&receivedEvent)
-					require.NoError(t, err)
-					assert.Equal(t, eventTitle, receivedEvent.Title)
-
-					w.WriteHeader(http.StatusOK)
-				})
+				proxyHandler := getProxyHandlerForTest(t, idCache, log, eventTitle, testCase.application.Name)
 
 				body, err := json.Marshal(event{Title: eventTitle})
 				require.NoError(t, err)
@@ -244,6 +243,8 @@ func TestProxyHandler_ProxyAppConnectorRequests(t *testing.T) {
 			})
 
 			t.Run("should proxy eventing V2 request when "+testCase.caseDescription, func(t *testing.T) {
+
+				proxyHandler := getProxyHandlerForTest(t, idCache, log, eventTitle, testCase.application.Name)
 				body, err := json.Marshal(event{Title: eventTitle})
 				require.NoError(t, err)
 
@@ -262,6 +263,7 @@ func TestProxyHandler_ProxyAppConnectorRequests(t *testing.T) {
 			})
 
 			t.Run("should proxy eventing request when "+testCase.caseDescription, func(t *testing.T) {
+				proxyHandler := getProxyHandlerForTest(t, idCache, log, eventTitle, testCase.application.Name)
 
 				body, err := json.Marshal(event{Title: eventTitle})
 				require.NoError(t, err)
@@ -451,10 +453,7 @@ func TestProxyHandler_ProxyAppConnectorRequests(t *testing.T) {
 	})
 
 	t.Run("should proxy requests to Event Publisher Proxy(EPP) when BEB is enabled", func(t *testing.T) {
-
-		eventPublisherProxyHandler := mux.NewRouter()
-		eventPublisherProxyServer := httptest.NewServer(eventPublisherProxyHandler)
-		eventingPublisherHost := strings.TrimPrefix(eventPublisherProxyServer.URL, "http://")
+		eventTitle := "my-event-1"
 
 		for _, testCase := range testCases {
 			// given
@@ -474,26 +473,7 @@ func TestProxyHandler_ProxyAppConnectorRequests(t *testing.T) {
 			idCache.Set(testCase.application.Name, appData, cache.NoExpiration)
 
 			t.Run("should proxy requests in V1 to V1 endpoint of EPP when "+testCase.caseDescription, func(t *testing.T) {
-
-				proxyHandlerBEB := NewProxyHandler(
-					eventingPublisherHost,
-					eventingDestinationPathPublish,
-					idCache,
-					log)
-				eventTitle := "my-event-1"
-
-				eventPublisherProxyHandler.PathPrefix("/{application}/v1/events").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					appName := mux.Vars(r)["application"]
-					assert.Equal(t, testCase.application.Name, appName, `Error reading "application" route variable from request context`)
-
-					var receivedEvent event
-
-					err := json.NewDecoder(r.Body).Decode(&receivedEvent)
-					require.NoError(t, err)
-					assert.Equal(t, eventTitle, receivedEvent.Title)
-
-					w.WriteHeader(http.StatusOK)
-				})
+				proxyHandlerBEB := getProxyHandlerForTest(t, idCache, log, eventTitle, testCase.application.Name)
 
 				body, err := json.Marshal(event{Title: eventTitle})
 				require.NoError(t, err)
@@ -513,27 +493,9 @@ func TestProxyHandler_ProxyAppConnectorRequests(t *testing.T) {
 			})
 
 			t.Run("should proxy requests in V2 to /publish endpoint of EPP when "+testCase.caseDescription, func(t *testing.T) {
-				eventTitle := "my-event-2"
-
-				eventPublisherProxyHandler := mux.NewRouter()
-				eventPublisherProxyServer := httptest.NewServer(eventPublisherProxyHandler)
-				eventPublisherProxyHost := strings.TrimPrefix(eventPublisherProxyServer.URL, "http://")
-
-				proxyHandlerBEB := NewProxyHandler(
-					eventPublisherProxyHost, // For a BEB enabled cluster requests to /v2 and /events should be forwarded to Event Publisher Proxy
-					eventingDestinationPathPublish,
-					idCache,
-					log)
-
-				eventPublisherProxyHandler.PathPrefix("/publish").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					var receivedEvent event
-
-					err := json.NewDecoder(r.Body).Decode(&receivedEvent)
-					require.NoError(t, err)
-					assert.Equal(t, eventTitle, receivedEvent.Title)
-
-					w.WriteHeader(http.StatusOK)
-				})
+				const eventTitle = "my-event-2"
+				const mockIncomingRequestHost = "fake.istio.gateway"
+				proxyHandlerBEB := getProxyHandlerForTest(t, idCache, log, eventTitle, testCase.application.Name)
 
 				body, err := json.Marshal(event{Title: eventTitle})
 				require.NoError(t, err)
@@ -542,6 +504,9 @@ func TestProxyHandler_ProxyAppConnectorRequests(t *testing.T) {
 				require.NoError(t, err)
 				req.Header.Set(CertificateInfoHeader, testCase.certInfoHeader)
 				req = mux.SetURLVars(req, map[string]string{"application": testCase.application.Name})
+
+				// mock request Host to assert it gets rewritten by the proxy
+				req.Host = mockIncomingRequestHost
 
 				recorder := httptest.NewRecorder()
 
@@ -555,27 +520,7 @@ func TestProxyHandler_ProxyAppConnectorRequests(t *testing.T) {
 			t.Run("should proxy requests in /events to /publish endpoint of EPP when "+testCase.caseDescription, func(t *testing.T) {
 				const eventTitle = "my-event"
 				const mockIncomingRequestHost = "fake.istio.gateway"
-
-				eventPublisherProxyHandler := mux.NewRouter()
-				eventPublisherProxyServer := httptest.NewServer(eventPublisherProxyHandler)
-				eventPublisherProxyHost := strings.TrimPrefix(eventPublisherProxyServer.URL, "http://")
-				proxyHandlerBEB := NewProxyHandler(
-					eventPublisherProxyHost, // For a BEB enabled cluster requests to /v2 and /events should be forwarded to Event Publisher Proxy
-					eventingDestinationPathPublish,
-					idCache,
-					log)
-
-				eventPublisherProxyHandler.Path("/publish").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					var receivedEvent event
-
-					err := json.NewDecoder(r.Body).Decode(&receivedEvent)
-					require.NoError(t, err)
-					assert.Equal(t, eventTitle, receivedEvent.Title)
-
-					assert.NotEqual(t, mockIncomingRequestHost, r.Host, "proxy should rewrite Host field")
-
-					w.WriteHeader(http.StatusOK)
-				})
+				proxyHandlerBEB := getProxyHandlerForTest(t, idCache, log, eventTitle, testCase.application.Name)
 
 				body, err := json.Marshal(event{Title: eventTitle})
 				require.NoError(t, err)

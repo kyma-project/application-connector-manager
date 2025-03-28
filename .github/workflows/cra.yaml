@@ -47,7 +47,7 @@ jobs:
       - name: Detect files
         continue-on-error: true
         id: detect-files
-        uses: tj-actions/changed-files@d6babd6899969df1a11d14c368283ea4436bca78
+        uses: step-security/changed-files@3dbe17c78367e7d60f00d78ae6781a35be47b4a1
         with:
           files_yaml: |
             cra:
@@ -83,6 +83,7 @@ jobs:
       - name: Run unit tests
         working-directory: ./components/compass-runtime-agent
         run: |
+          set -o pipefail
           touch test.log
           make test | tee -a test.log
       - name: Archive test results

@@ -73,7 +73,7 @@ func (r *repository) UpsertWithReplace(name types.NamespacedName, data map[strin
 			return r.replace(secretManager, secret)
 		}
 
-		return errors.Wrapf(err, fmt.Sprintf("Replacing %s secret failed", name))
+		return errors.Wrapf(err, "Replacing %s secret failed", name)
 	}
 
 	return err
@@ -137,7 +137,7 @@ func (r *repository) upsert(name types.NamespacedName, data map[string][]byte) e
 			_, err = secretManager.Create(context.Background(), secret, metav1.CreateOptions{})
 			return err
 		}
-		return errors.Wrapf(err, fmt.Sprintf("Updating %s secret failed while upserting", name))
+		return errors.Wrapf(err, "Updating %s secret failed while upserting", name)
 	}
 	return nil
 }

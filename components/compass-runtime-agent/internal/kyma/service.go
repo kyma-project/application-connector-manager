@@ -1,7 +1,6 @@
 package kyma
 
 import (
-	"fmt"
 	"k8s.io/apimachinery/pkg/types"
 
 	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
@@ -104,12 +103,10 @@ func (s *service) getApplicationUID(application string) (types.UID, apperrors.Ap
 	app, err := s.applicationRepository.Get(application, v1.GetOptions{})
 	if err != nil {
 		if k8serrors.IsNotFound(err) {
-			message := fmt.Sprintf("Application %s not found", application)
-			return "", apperrors.NotFound(message)
+			return "", apperrors.NotFound("Application %s not found", application)
 		}
 
-		message := fmt.Sprintf("Getting Application %s failed, %s", application, err.Error())
-		return "", apperrors.Internal(message)
+		return "", apperrors.Internal("Getting Application %s failed, %s", application, err.Error())
 	}
 
 	return app.UID, nil

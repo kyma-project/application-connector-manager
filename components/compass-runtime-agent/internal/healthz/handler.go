@@ -12,7 +12,7 @@ func newHTTPHandler(log *logrus.Logger) func(writer http.ResponseWriter, request
 		writer.WriteHeader(200)
 		_, err := writer.Write([]byte("ok"))
 		if err != nil {
-			log.Errorf(errors.Wrapf(err, "while writing to response body").Error())
+			log.Error(errors.Wrapf(err, "while writing to response body"))
 		}
 	}
 }
