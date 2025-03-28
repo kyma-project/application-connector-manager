@@ -55,7 +55,7 @@ func TestAuthWithCerStrategy(t *testing.T) {
 		oauthClientMock := &oauthMocks.Client{}
 
 		authWithCertStrategy := newOAuthWithCertStrategy(oauthClientMock, "clientId", "clientSecret", certificate, privateKey, "www.example.com/token", nil)
-		oauthClientMock.On("GetTokenMTLS", "clientId", "www.example.com/token", []byte(testconsts.Certificate), []byte(testconsts.PrivateKey), (*map[string][]string)(nil), (*map[string][]string)(nil), false).Return("", apperrors.Internal("failed")).Once()
+		oauthClientMock.On("GetTokenMTLS", "clientId", "www.example.com/token", []byte(testconsts.Certificate), []byte(testconsts.PrivateKey), (*map[string][]string)(nil), (*map[string][]string)(nil), false).Return("", apperrors.Internalf("failed")).Once()
 
 		request, err := http.NewRequest("GET", "www.example.com", nil)
 		require.NoError(t, err)

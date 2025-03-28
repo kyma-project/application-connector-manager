@@ -259,7 +259,7 @@ func TestOauthClient_GetTokenMTLS(t *testing.T) {
 		token, err := oauthClient.GetTokenMTLS("testID", "testURL", []byte("test"), []byte("test"), nil, nil, false)
 
 		// then
-		assert.Error(t, err, apperrors.Internal("Failed to prepare certificate, %s", err.Error()))
+		assert.Error(t, err, apperrors.Internalf("Failed to prepare certificate, %s", err.Error()))
 		assert.Equal(t, "", token)
 		tokenCache.AssertExpectations(t)
 	})

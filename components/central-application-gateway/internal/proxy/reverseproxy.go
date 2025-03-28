@@ -40,7 +40,7 @@ func newProxy(targetURL string, requestParameters *authorization.RequestParamete
 		zap.L().Error("failed to parse target URL",
 			zap.String("targetURL", targetURL),
 			zap.Error(err))
-		return nil, apperrors.Internal("failed to parse target url '%s': '%s'", targetURL, err.Error())
+		return nil, apperrors.Internalf("failed to parse target url '%s': '%s'", targetURL, err.Error())
 	}
 
 	targetQuery := target.RawQuery

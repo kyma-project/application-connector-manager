@@ -43,7 +43,7 @@ func (o oauthWithCertStrategy) AddAuthorization(r *http.Request, _ clientcert.Se
 	if err != nil {
 		zap.L().Error("failed to get token",
 			zap.Error(err))
-		return apperrors.Internal("Failed to get token: %s", err.Error())
+		return apperrors.Internalf("Failed to get token: %s", err.Error())
 	}
 
 	r.Header.Set(httpconsts.HeaderAuthorization, fmt.Sprintf("Bearer %s", token))

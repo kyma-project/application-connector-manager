@@ -247,7 +247,7 @@ func TestDefaultService_Read(t *testing.T) {
 
 		secretsRepository := new(secretsmocks.Repository)
 		secretsRepository.On("Get", "credentialsSecret-name").
-			Return(nil, apperrors.Internal("credentialsSecret error"))
+			Return(nil, apperrors.Internalf("credentialsSecret error"))
 
 		service := NewService(secretsRepository)
 
@@ -271,7 +271,7 @@ func TestDefaultService_Read(t *testing.T) {
 
 		secretsRepository := new(secretsmocks.Repository)
 		secretsRepository.On("Get", secretName).
-			Return(nil, apperrors.Internal("request params error"))
+			Return(nil, apperrors.Internalf("request params error"))
 
 		service := NewService(secretsRepository)
 

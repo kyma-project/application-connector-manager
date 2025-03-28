@@ -129,7 +129,7 @@ func getRequestParameters(secret map[string][]byte) (*authorization.RequestParam
 		var headers = &map[string][]string{}
 		err := json.Unmarshal(headersData, headers)
 		if err != nil {
-			return nil, apperrors.Internal("Failed to unmarshal headers, %s", err.Error())
+			return nil, apperrors.Internalf("Failed to unmarshal headers, %s", err.Error())
 		}
 
 		requestParameters.Headers = headers
@@ -140,7 +140,7 @@ func getRequestParameters(secret map[string][]byte) (*authorization.RequestParam
 		var queryParameters = &map[string][]string{}
 		err := json.Unmarshal(queryParamsData, queryParameters)
 		if err != nil {
-			return nil, apperrors.Internal("Failed to unmarshal query parameters, %s", err.Error())
+			return nil, apperrors.Internalf("Failed to unmarshal query parameters, %s", err.Error())
 		}
 
 		requestParameters.QueryParameters = queryParameters

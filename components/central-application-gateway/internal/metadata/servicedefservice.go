@@ -64,7 +64,7 @@ func (sds *serviceDefinitionService) GetAPIByEntryName(appName, serviceName, ent
 func (sds *serviceDefinitionService) getAPI(service applications.Service) (*model.API, apperrors.AppError) {
 
 	if service.API == nil {
-		return nil, apperrors.WrongInput("service '%s' has no API", service.Name)
+		return nil, apperrors.WrongInputf("service '%s' has no API", service.Name)
 	}
 
 	api, err := sds.serviceAPIService.Read(service.API)
@@ -72,7 +72,7 @@ func (sds *serviceDefinitionService) getAPI(service applications.Service) (*mode
 		zap.L().Error("failed to read api for serviceID",
 			zap.String("serviceID", service.Name),
 			zap.Error(err))
-		return nil, apperrors.Internal("failed to read API for %s service, %s", service.Name, err)
+		return nil, apperrors.Internalf("failed to read API for %s service, %s", service.Name, err)
 	}
 	return api, nil
 }

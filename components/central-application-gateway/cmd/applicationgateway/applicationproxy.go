@@ -206,7 +206,7 @@ func newServiceDefinitionService(k8sConfig *restclient.Config, coreClientset kub
 func newApplicationRepository(config *restclient.Config) (applications.ServiceRepository, apperrors.AppError) {
 	applicationClientset, err := versioned.NewForConfig(config)
 	if err != nil {
-		return nil, apperrors.Internal("failed to create k8s application client, %s", err)
+		return nil, apperrors.Internalf("failed to create k8s application client, %s", err)
 	}
 
 	rei := applicationClientset.ApplicationconnectorV1alpha1().Applications()

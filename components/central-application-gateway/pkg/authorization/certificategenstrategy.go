@@ -23,7 +23,7 @@ func newCertificateGenStrategy(certificate, privateKey []byte) certificateGenStr
 func (b certificateGenStrategy) AddAuthorization(r *http.Request, setter clientcert.SetClientCertificateFunc, _ bool) apperrors.AppError {
 	cert, err := b.prepareCertificate()
 	if err != nil {
-		return apperrors.Internal("Failed to prepare certificate, %s", err.Error())
+		return apperrors.Internalf("Failed to prepare certificate, %s", err.Error())
 	}
 	setter(&cert)
 	return nil

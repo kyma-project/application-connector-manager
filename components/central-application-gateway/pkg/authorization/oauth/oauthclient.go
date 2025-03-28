@@ -71,7 +71,7 @@ func (c *client) GetTokenMTLS(clientID, authURL string, certificate, privateKey 
 
 	cert, err := tls.X509KeyPair(certificate, privateKey)
 	if err != nil {
-		return "", apperrors.Internal("Failed to prepare certificate, %s", err.Error())
+		return "", apperrors.Internalf("Failed to prepare certificate, %s", err.Error())
 	}
 
 	tokenResponse, requestError := c.requestTokenMTLS(clientID, authURL, cert, headers, queryParameters, skipVerify)
@@ -80,7 +80,7 @@ func (c *client) GetTokenMTLS(clientID, authURL string, certificate, privateKey 
 	}
 
 	if tokenResponse == nil {
-		return "", apperrors.Internal("Failed to fetch token, possible certificate problem")
+		return "", apperrors.Internalf("Failed to fetch token, possible certificate problem")
 	}
 
 	c.tokenCache.Add(c.makeMTLSOAuthTokenCacheKey(clientID, authURL, certificate, privateKey), tokenResponse.AccessToken, tokenResponse.ExpiresIn)
@@ -123,7 +123,7 @@ func (c *client) requestToken(clientID, clientSecret, authURL string, headers, q
 
 	req, err := http.NewRequest(http.MethodPost, authURL, strings.NewReader(form.Encode()))
 	if err != nil {
-		return nil, apperrors.Internal("failed to create token request: %s", err.Error())
+		return nil, apperrors.Internalf("failed to create token request: %s", err.Error())
 	}
 
 	util.AddBasicAuthHeader(req, clientID, clientSecret)
@@ -177,7 +177,7 @@ func (c *client) requestTokenMTLS(clientID, authURL string, cert tls.Certificate
 	req, err := http.NewRequest(http.MethodPost, authURL, strings.NewReader(form.Encode()))
 
 	if err != nil {
-		return nil, apperrors.Internal("failed to create token request: %s", err.Error())
+		return nil, apperrors.Internalf("failed to create token request: %s", err.Error())
 	}
 
 	req.Header.Add(httpconsts.HeaderContentType, httpconsts.ContentTypeApplicationURLEncoded)

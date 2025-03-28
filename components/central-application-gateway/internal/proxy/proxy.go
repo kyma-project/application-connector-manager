@@ -82,7 +82,7 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (p *proxy) extractPath(u *url.URL) (model.APIIdentifier, *url.URL, *url.URL, apperrors.AppError) {
 	apiIdentifier, path, gwURL, err := p.extractPathFunc(u)
 	if err != nil {
-		return model.APIIdentifier{}, nil, nil, apperrors.WrongInput("failed to extract API Identifier from path")
+		return model.APIIdentifier{}, nil, nil, apperrors.WrongInputf("failed to extract API Identifier from path")
 	}
 
 	return apiIdentifier, path, gwURL, nil
@@ -155,7 +155,7 @@ func copyRequestBody(r *http.Request) (io.ReadCloser, apperrors.AppError) {
 
 	bodyCopy, secondRequestBody, err := drainBody(r.Body)
 	if err != nil {
-		return nil, apperrors.Internal("failed to drain request body, %s", err)
+		return nil, apperrors.Internalf("failed to drain request body, %s", err)
 	}
 	r.Body = bodyCopy
 

@@ -256,7 +256,7 @@ func TestProxyRequest(t *testing.T) {
 			handler := newProxyForTest(apiExtractorMock, authStrategyFactoryMock, csrfFactoryMock, func(u *url.URL) (metadatamodel.APIIdentifier, *url.URL, *url.URL, apperrors.AppError) {
 				gwURL, err := u.Parse("/")
 				if err != nil {
-					return model.APIIdentifier{}, nil, nil, apperrors.WrongInput("Couldn't parse URL")
+					return model.APIIdentifier{}, nil, nil, apperrors.WrongInputf("Couldn't parse URL")
 				}
 
 				return metadatamodel.APIIdentifier{
@@ -300,7 +300,7 @@ func TestProxy(t *testing.T) {
 	fakePathExtractor := func(u *url.URL) (metadatamodel.APIIdentifier, *url.URL, *url.URL, apperrors.AppError) {
 		gwURL, err := u.Parse("/")
 		if err != nil {
-			return model.APIIdentifier{}, nil, nil, apperrors.WrongInput("Couldn't parse URL")
+			return model.APIIdentifier{}, nil, nil, apperrors.WrongInputf("Couldn't parse URL")
 		}
 
 		apiIdentifier := metadatamodel.APIIdentifier{

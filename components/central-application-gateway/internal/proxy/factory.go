@@ -29,7 +29,7 @@ func New(
 		split := strings.Split(trimmed, "/")
 
 		if len(split) < 2 || split[0] == path {
-			return model.APIIdentifier{}, nil, nil, apperrors.WrongInput("path must contain Application and Service name")
+			return model.APIIdentifier{}, nil, nil, apperrors.WrongInputf("path must contain Application and Service name")
 		}
 
 		apiIdentifier := model.APIIdentifier{
@@ -45,7 +45,7 @@ func New(
 		targetURL, err := url.Parse(targetAPIPath)
 
 		if err != nil {
-			return model.APIIdentifier{}, nil, nil, apperrors.WrongInput("Path has to be a valid path")
+			return model.APIIdentifier{}, nil, nil, apperrors.WrongInputf("Path has to be a valid path")
 		}
 
 		return apiIdentifier, targetURL, &gwURL, nil
@@ -77,7 +77,7 @@ func NewForCompass(
 		split := strings.Split(trimmed, "/")
 
 		if len(split) < 3 || split[0] == path {
-			return model.APIIdentifier{}, nil, nil, apperrors.WrongInput("path must contain Application, Service and Entry name")
+			return model.APIIdentifier{}, nil, nil, apperrors.WrongInputf("path must contain Application, Service and Entry name")
 		}
 
 		apiIdentifier := model.APIIdentifier{
@@ -93,7 +93,7 @@ func NewForCompass(
 
 		targetURL, err := url.Parse(targetAPIPath)
 		if err != nil {
-			return model.APIIdentifier{}, nil, nil, apperrors.WrongInput("invalid target path")
+			return model.APIIdentifier{}, nil, nil, apperrors.WrongInputf("invalid target path")
 		}
 
 		return apiIdentifier, targetURL, &gwURL, nil

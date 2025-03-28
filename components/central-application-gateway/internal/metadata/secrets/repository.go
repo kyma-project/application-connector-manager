@@ -69,9 +69,9 @@ func (r *repository) Get(name string) (map[string][]byte, apperrors.AppError) {
 			zap.String("secretName", name),
 			zap.Error(err))
 		if k8serrors.IsNotFound(err) {
-			return nil, apperrors.NotFound("secret '%s' not found", name)
+			return nil, apperrors.NotFoundf("secret '%s' not found", name)
 		}
-		return nil, apperrors.Internal("failed to get '%s' secret, %s", name, err)
+		return nil, apperrors.Internalf("failed to get '%s' secret, %s", name, err)
 	}
 
 	if err := r.cache.Add(cacheKey, secret.Data, r.cacheRetention); err != nil {

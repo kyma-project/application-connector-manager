@@ -134,7 +134,7 @@ func TestStrategy_AddCSRFToken(t *testing.T) {
 
 			s := sf.Create(authStrategy, testCSRFTokenEndpointURL)
 
-			c.On("GetTokenEndpointResponse", testCSRFTokenEndpointURL, authStrategy, false).Return(nil, apperrors.NotFound("error"))
+			c.On("GetTokenEndpointResponse", testCSRFTokenEndpointURL, authStrategy, false).Return(nil, apperrors.NotFoundf("error"))
 
 			//when
 			err := s.AddCSRFToken(req, false)

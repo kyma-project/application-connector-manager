@@ -89,48 +89,48 @@ func TestServiceDefinitionService_GetAPI(t *testing.T) {
 			testFunc:    testGetByServiceNameFunc,
 			getRepositoryMockFunction: func() *applicationmocks.ServiceRepository {
 				serviceRepository := applicationmocks.ServiceRepository{}
-				serviceRepository.On("GetByServiceName", "app", "service").Return(applications.Service{}, apperrors.NotFound("missing"))
+				serviceRepository.On("GetByServiceName", "app", "service").Return(applications.Service{}, apperrors.NotFoundf("missing"))
 
 				return &serviceRepository
 			},
 			checkExpectedErrorMessage: false,
-			expectedError:             apperrors.NotFound("missing"),
+			expectedError:             apperrors.NotFoundf("missing"),
 		},
 		{
 			description: "should return not found error if service entry does not exist",
 			testFunc:    testGetByEntryNameFunc,
 			getRepositoryMockFunction: func() *applicationmocks.ServiceRepository {
 				serviceRepository := applicationmocks.ServiceRepository{}
-				serviceRepository.On("GetByEntryName", "app", "service", "entry").Return(applications.Service{}, apperrors.NotFound("missing"))
+				serviceRepository.On("GetByEntryName", "app", "service", "entry").Return(applications.Service{}, apperrors.NotFoundf("missing"))
 
 				return &serviceRepository
 			},
 			checkExpectedErrorMessage: false,
-			expectedError:             apperrors.NotFound("missing"),
+			expectedError:             apperrors.NotFoundf("missing"),
 		},
 		{
 			description: "should return internal error if failed to get service",
 			testFunc:    testGetByServiceNameFunc,
 			getRepositoryMockFunction: func() *applicationmocks.ServiceRepository {
 				serviceRepository := applicationmocks.ServiceRepository{}
-				serviceRepository.On("GetByServiceName", "app", "service").Return(applications.Service{}, apperrors.Internal("some error"))
+				serviceRepository.On("GetByServiceName", "app", "service").Return(applications.Service{}, apperrors.Internalf("some error"))
 
 				return &serviceRepository
 			},
 			checkExpectedErrorMessage: true,
-			expectedError:             apperrors.Internal("some error"),
+			expectedError:             apperrors.Internalf("some error"),
 		},
 		{
 			description: "should return internal error if failed to get service entry",
 			testFunc:    testGetByEntryNameFunc,
 			getRepositoryMockFunction: func() *applicationmocks.ServiceRepository {
 				serviceRepository := applicationmocks.ServiceRepository{}
-				serviceRepository.On("GetByEntryName", "app", "service", "entry").Return(applications.Service{}, apperrors.Internal("some error"))
+				serviceRepository.On("GetByEntryName", "app", "service", "entry").Return(applications.Service{}, apperrors.Internalf("some error"))
 
 				return &serviceRepository
 			},
 			checkExpectedErrorMessage: true,
-			expectedError:             apperrors.Internal("some error"),
+			expectedError:             apperrors.Internalf("some error"),
 		},
 		{
 			description: "should return bad request if service does not have API",
@@ -142,7 +142,7 @@ func TestServiceDefinitionService_GetAPI(t *testing.T) {
 				return &serviceRepository
 			},
 			checkExpectedErrorMessage: false,
-			expectedError:             apperrors.WrongInput("some error"),
+			expectedError:             apperrors.WrongInputf("some error"),
 		},
 		{
 			description: "should return bad request if service entry does not have API",
@@ -154,7 +154,7 @@ func TestServiceDefinitionService_GetAPI(t *testing.T) {
 				return &serviceRepository
 			},
 			checkExpectedErrorMessage: false,
-			expectedError:             apperrors.WrongInput("some error"),
+			expectedError:             apperrors.WrongInputf("some error"),
 		},
 	} {
 		t.Run(testCase.description, func(t *testing.T) {
@@ -206,7 +206,7 @@ func TestServiceDefinitionService_GetAPI(t *testing.T) {
 			applicationServiceAPI := &applications.ServiceAPI{}
 
 			serviceAPIService := new(serviceapimocks.Service)
-			serviceAPIService.On("Read", applicationServiceAPI).Return(nil, apperrors.Internal("some error"))
+			serviceAPIService.On("Read", applicationServiceAPI).Return(nil, apperrors.Internalf("some error"))
 
 			service := NewServiceDefinitionService(serviceAPIService, testCase.getRepositoryMockFunction())
 

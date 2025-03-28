@@ -24,20 +24,32 @@ func errorf(code int, format string, a ...interface{}) AppError {
 	return appError{code: code, message: fmt.Sprintf(format, a...)}
 }
 
-func Internal(format string, a ...interface{}) AppError {
+func Internalf(format string, a ...interface{}) AppError {
 	return errorf(CodeInternal, format, a...)
 }
 
-func NotFound(format string, a ...interface{}) AppError {
+func Internal(message string) AppError {
+	return appError{code: CodeInternal, message: message}
+}
+
+func NotFoundf(format string, a ...interface{}) AppError {
 	return errorf(CodeNotFound, format, a...)
+}
+
+func NotFound(message string) AppError {
+	return appError{code: CodeNotFound, message: message}
 }
 
 func AlreadyExists(format string, a ...interface{}) AppError {
 	return errorf(CodeAlreadyExists, format, a...)
 }
 
-func WrongInput(format string, a ...interface{}) AppError {
+func WrongInputf(format string, a ...interface{}) AppError {
 	return errorf(CodeWrongInput, format, a...)
+}
+
+func WrongInput(message string) AppError {
+	return appError{code: CodeWrongInput, message: message}
 }
 
 func UpstreamServerCallFailed(format string, a ...interface{}) AppError {

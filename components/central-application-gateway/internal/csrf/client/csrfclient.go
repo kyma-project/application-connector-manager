@@ -64,12 +64,12 @@ func (c *client) requestToken(csrfEndpointURL string, strategy authorization.Str
 
 	tokenRequest, err := http.NewRequest(http.MethodGet, csrfEndpointURL, strings.NewReader(""))
 	if err != nil {
-		return nil, apperrors.Internal("failed to create token request: %s", err.Error())
+		return nil, apperrors.Internalf("failed to create token request: %s", err.Error())
 	}
 
 	err = addAuthorization(tokenRequest, c.clientCertificate, strategy, skipTLSVerify)
 	if err != nil {
-		return nil, apperrors.Internal("failed to create token request: %s", err.Error())
+		return nil, apperrors.Internalf("failed to create token request: %s", err.Error())
 	}
 
 	setCSRFSpecificHeaders(tokenRequest)

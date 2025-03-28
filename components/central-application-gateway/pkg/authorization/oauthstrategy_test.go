@@ -49,7 +49,7 @@ func TestAuthStrategy(t *testing.T) {
 	t.Run("should not add Authorization header when getting token failed", func(t *testing.T) {
 		// given
 		oauthClientMock := &oauthMocks.Client{}
-		oauthClientMock.On("GetToken", "clientId", "clientSecret", "www.example.com/token", (*map[string][]string)(nil), (*map[string][]string)(nil), false).Return("", apperrors.Internal("failed")).Once()
+		oauthClientMock.On("GetToken", "clientId", "clientSecret", "www.example.com/token", (*map[string][]string)(nil), (*map[string][]string)(nil), false).Return("", apperrors.Internalf("failed")).Once()
 
 		oauthStrategy := newOAuthStrategy(oauthClientMock, "clientId", "clientSecret", "www.example.com/token", nil)
 

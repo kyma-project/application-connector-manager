@@ -135,9 +135,9 @@ func (r *repository) get(appName string, predicate func(service v1alpha1.Service
 	if len(services) == 1 {
 		return services[0], nil
 	} else if len(services) > 1 {
-		return Service{}, apperrors.WrongInput("multiple services found: %s", strings.Join(infos, " | "))
+		return Service{}, apperrors.WrongInputf("multiple services found: %s", strings.Join(infos, " | "))
 	} else {
-		return Service{}, apperrors.NotFound("service not found")
+		return Service{}, apperrors.NotFoundf("service not found")
 	}
 }
 
