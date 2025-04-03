@@ -29,7 +29,7 @@ type k8sResourceClientSets struct {
 func k8sResourceClients(k8sConfig *restclient.Config) (*k8sResourceClientSets, error) {
 	coreClientset, err := kubernetes.NewForConfig(k8sConfig)
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to create k8s core client")
+		return nil, errors.Wrap(err, "Failed to create k8s core client!!!!")
 	}
 
 	applicationClientset, err := appclient.NewForConfig(k8sConfig)
