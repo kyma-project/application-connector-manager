@@ -63,7 +63,7 @@ func main() {
 	err = apis.AddToScheme(mgr.GetScheme())
 	exitOnError(err, "Failed to add APIs to scheme")
 
-	log.Info("Registering Components.")
+	log.Info("Registering Components!")
 
 	certManager := certificates.NewCredentialsManager(clusterCertSecret, caCertSecret, secretsRepository)
 
