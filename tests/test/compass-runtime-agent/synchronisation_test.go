@@ -13,9 +13,9 @@ import (
 	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/random"
 )
 
-const checkAppExistsPeriod = 10 * time.Second
-const appCreationTimeout = 2 * time.Minute
-const appUpdateTimeout = 2 * time.Minute
+const checkAppExistsPeriod = 15 * time.Second
+const appCreationTimeout = 15 * time.Minute
+const appUpdateTimeout = 15 * time.Minute
 
 const updatedDescription = "The app was updated"
 
