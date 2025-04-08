@@ -46,6 +46,7 @@ install-istio: create-kyma-system-ns
 create-kyma-system-ns: ## Create kyma-system namespace.
 	@echo "::group::create-kyma-system-ns"
 	kubectl create ns kyma-system
+	kubectl -n kyma-system create secret generic compass-agent-configuration
 	kubectl label namespaces kyma-system istio-injection=enabled --overwrite=true
 	@echo "::endgroup::"
 
