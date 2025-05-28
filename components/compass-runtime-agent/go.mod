@@ -90,7 +90,7 @@ require (
 )
 
 replace (
-	github.com/containerd/containerd => github.com/containerd/containerd v1.7.27
+	github.com/containerd/containerd/v2 => github.com/containerd/containerd v2.1.1
 	github.com/docker/distribution => github.com/docker/distribution v0.0.0-20191216044856-a8371794149d
 	github.com/docker/docker => github.com/docker/docker v20.10.27+incompatible
 	golang.org/x/crypto => golang.org/x/crypto v0.37.0
