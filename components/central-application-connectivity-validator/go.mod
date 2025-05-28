@@ -82,7 +82,7 @@ require (
 )
 
 replace (
-	github.com/containerd/containerd => github.com/containerd/containerd v1.7.27
+	github.com/containerd/containerd/v2 => github.com/containerd/containerd v2.1.1
 	github.com/docker/docker => github.com/docker/docker v20.10.27+incompatible
 	github.com/opencontainers/runc => github.com/opencontainers/runc v1.2.6
 	golang.org/x/net => golang.org/x/net v0.39.0
