@@ -5,6 +5,9 @@ bdba:
   - europe-docker.pkg.dev/kyma-project/prod/central-application-connectivity-validator:latest
   - europe-docker.pkg.dev/kyma-project/prod/central-application-gateway:latest
   - europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:latest
+  - europe-docker.pkg.dev/kyma-project/prod/central-application-connectivity-validator:1.1.13
+  - europe-docker.pkg.dev/kyma-project/prod/central-application-gateway:1.1.13
+  - europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:1.1.13
 mend:
   language: golang-mod
   exclude:
