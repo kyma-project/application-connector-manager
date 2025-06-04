@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
-      latest: ${{ steps.latest.outputs.latest || '' }}
+      latest: ${{ steps.latest.outputs.latest }}
     steps:
       - id: tag
         if: github.event_name == 'push' && github.ref_type == 'tag'
@@ -163,15 +163,15 @@ jobs:
 
   build-image:
     needs: [setup, tags]
-    if: needs.setup.outputs.validator == 'true' || needs.tags.tag != null
+    if: needs.setup.outputs.validator == 'true' || needs.tags.outputs.tag != null || needs.tags.outputs.latest != null
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: central-application-connectivity-validator
       dockerfile: Dockerfile
       context: components/central-application-connectivity-validator
       tags: |
-        ${{ needs.tags.tag }}
-        ${{ needs.tags.latest }}
+        ${{ needs.tags.outputs.tag }}
+        ${{ needs.tags.outputs.latest }}
 
   print-images:
     runs-on: ubuntu-latest
