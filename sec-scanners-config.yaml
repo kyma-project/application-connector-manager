@@ -8,8 +8,8 @@ bdba:
 mend:
   language: golang-mod
   exclude:
-    - "**/*_test.go"
+    - '**/*_test.go'
 checkmarx-one:
   preset: go-default
   exclude:
-    - "**/*_test.go"
+    - '**/*_test.go'
