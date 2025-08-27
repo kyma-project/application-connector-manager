@@ -106,8 +106,8 @@ jobs:
               "test"
           )
 
-          input="./components/compass-runtime-agent/filtered.cov"
-          output="./components/compass-runtime-agent/filtered2.cov"
+          input="./components/compass-runtime-agent/cover.out"
+          output="./components/compass-runtime-agent/cover-filtered.out"
 
           cp "$input" "$output"
 
@@ -122,7 +122,7 @@ jobs:
         uses: coverallsapp/github-action@v2.3.6
         with:
           format: golang
-          file: ./components/compass-runtime-agent/filtered2.cov
+          file: ./components/compass-runtime-agent/cover-filtered.out
           fail-on-error: false
           base-path: /components/compass-runtime-agent
           flag-name: CRA
