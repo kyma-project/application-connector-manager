@@ -97,11 +97,32 @@ jobs:
           set -o pipefail
           touch test.log
           make test | tee -a test.log
+      - name: filter out coverage
+        run: |
+          #!/bin/bash
+
+          filters=(
+              "mock"
+              "test"
+          )
+
+          input="./components/compass-runtime-agent/filtered.cov"
+          output="./components/compass-runtime-agent/filtered2.cov"
+
+          cp "$input" "$output"
+
+          for i in "${filters[@]}"; do
+            echo "filtering $i"
+            cp "$output" "$output~"
+            grep --invert-match $i "$output~" > "$output"
+            wc -l $output
+          done
+          rm "$output~"
       - name: coveralls github action
         uses: coverallsapp/github-action@v2.3.6
         with:
           format: golang
-          file: ./components/compass-runtime-agent/filtered.cov
+          file: ./components/compass-runtime-agent/filtered2.cov
           fail-on-error: false
           base-path: /components/compass-runtime-agent
           flag-name: CRA
