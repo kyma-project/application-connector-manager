@@ -66,7 +66,7 @@ require (
 	golang.org/x/tools v0.35.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240610135401-a8a62080eff3 // indirect
-	google.golang.org/protobuf v1.36.5 // indirect
+	google.golang.org/protobuf v1.36.8 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -87,5 +87,5 @@ replace (
 	golang.org/x/text => golang.org/x/text v0.28.0
 	golang.org/x/time => golang.org/x/time v0.12.0
 	golang.org/x/tools => golang.org/x/tools v0.36.0
-	google.golang.org/protobuf => google.golang.org/protobuf v1.36.6
+	google.golang.org/protobuf => google.golang.org/protobuf v1.36.8
 )
