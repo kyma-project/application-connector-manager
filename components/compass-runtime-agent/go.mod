@@ -102,7 +102,7 @@ require (
 replace (
 	github.com/containerd/containerd => github.com/containerd/containerd v1.7.27
 	github.com/docker/distribution => github.com/docker/distribution v0.0.0-20191216044856-a8371794149d
-	github.com/docker/docker => github.com/docker/docker v28.2.2+incompatible
+	github.com/docker/docker => github.com/docker/docker v28.3.3+incompatible
 	golang.org/x/crypto => golang.org/x/crypto v0.37.0
 	golang.org/x/net => golang.org/x/net v0.43.0
 	golang.org/x/sys => golang.org/x/sys v0.35.0
