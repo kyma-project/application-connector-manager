@@ -5,7 +5,7 @@ go 1.25
 require (
 	github.com/gorilla/mux v1.8.1
 	github.com/kyma-project/kyma/common/logging v0.0.0-20250404123224-5afb7a10791b
-	github.com/kyma-project/kyma/components/central-application-gateway v0.0.0-20230130154909-4c81ab2cee61
+	github.com/kyma-project/kyma/components/central-application-gateway v0.0.0-20240626075036-d374ec55c335
 	github.com/oklog/run v1.1.0
 	github.com/onsi/ginkgo/v2 v2.25.1
 	github.com/onsi/gomega v1.38.2
@@ -14,7 +14,7 @@ require (
 	github.com/vrischmann/envconfig v1.4.1
 	go.uber.org/zap v1.27.0
 	k8s.io/apimachinery v0.27.4
-	k8s.io/client-go v0.26.7
+	k8s.io/client-go v0.27.4
 	k8s.io/utils v0.0.0-20250321185631-1f6e0b77f77e
 	sigs.k8s.io/controller-runtime v0.14.6
 )
@@ -83,7 +83,7 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/api v0.26.7 // indirect
+	k8s.io/api v0.27.4 // indirect
 	k8s.io/apiextensions-apiserver v0.26.1 // indirect
 	k8s.io/component-base v0.26.1 // indirect
 	k8s.io/klog/v2 v2.90.1 // indirect
