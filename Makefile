@@ -106,7 +106,7 @@ generate-manifest: manifests kustomize ## Deploy controller to the K8s cluster s
 	$(KUSTOMIZE) build config/default > manifest.yaml
 
 .PHONY: generate-release-manifests
-generate-manifests: manifests kustomize 
+generate-release-manifests: manifests kustomize 
 	echo "Generating application-connector.yaml manifest for image ${IMG}"
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default > application-connector.yaml
