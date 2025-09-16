@@ -56,7 +56,7 @@ require (
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/term v0.35.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
-	golang.org/x/time v0.12.0 // indirect
+	golang.org/x/time v0.13.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
@@ -75,6 +75,6 @@ replace (
 	golang.org/x/sys => golang.org/x/sys v0.35.0
 	golang.org/x/term => golang.org/x/term v0.34.0
 	golang.org/x/text => golang.org/x/text v0.28.0
-	golang.org/x/time => golang.org/x/time v0.12.0
+	golang.org/x/time => golang.org/x/time v0.13.0
 	golang.org/x/tools => golang.org/x/tools v0.36.0
 )
