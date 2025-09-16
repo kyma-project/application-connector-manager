@@ -80,9 +80,9 @@ require (
 	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect
-	golang.org/x/sys v0.35.0 // indirect
-	golang.org/x/term v0.34.0 // indirect
-	golang.org/x/text v0.28.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/term v0.35.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.2.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
@@ -103,7 +103,7 @@ replace (
 	github.com/containerd/containerd => github.com/containerd/containerd v1.7.27
 	github.com/docker/distribution => github.com/docker/distribution v0.0.0-20191216044856-a8371794149d
 	github.com/docker/docker => github.com/docker/docker v28.4.0+incompatible
-	golang.org/x/crypto => golang.org/x/crypto v0.37.0
+	golang.org/x/crypto => golang.org/x/crypto v0.42.0
 	golang.org/x/net => golang.org/x/net v0.43.0
 	golang.org/x/sys => golang.org/x/sys v0.35.0
 	golang.org/x/term => golang.org/x/term v0.34.0
