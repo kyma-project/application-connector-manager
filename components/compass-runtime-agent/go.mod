@@ -79,7 +79,7 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	golang.org/x/net v0.44.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
-	golang.org/x/sync v0.16.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/term v0.35.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
@@ -107,7 +107,7 @@ replace (
 	golang.org/x/net => golang.org/x/net v0.44.0
 	golang.org/x/sys => golang.org/x/sys v0.35.0
 	golang.org/x/term => golang.org/x/term v0.34.0
-	golang.org/x/text => golang.org/x/text v0.28.0
+	golang.org/x/text => golang.org/x/text v0.29.0
 	golang.org/x/time => golang.org/x/time v0.13.0
 	golang.org/x/tools => golang.org/x/tools v0.36.0
 )
