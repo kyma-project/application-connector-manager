@@ -99,7 +99,7 @@ replace (
 	github.com/opencontainers/runc => github.com/opencontainers/runc v1.2.6
 	golang.org/x/net => golang.org/x/net v0.44.0
 	golang.org/x/sys => golang.org/x/sys v0.35.0
-	golang.org/x/term => golang.org/x/term v0.34.0
+	golang.org/x/term => golang.org/x/term v0.35.0
 	golang.org/x/text => golang.org/x/text v0.29.0
 	golang.org/x/time => golang.org/x/time v0.13.0
 	golang.org/x/tools => golang.org/x/tools v0.36.0
