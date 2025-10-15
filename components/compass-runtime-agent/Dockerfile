@@ -9,7 +9,7 @@ COPY . $DOCK_PKG_DIR
 
 RUN echo "nobody:x:65534:5534:nobody:/:" > /etc_passwd
 
-RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -o compass-runtime-agent ./cmd
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 go build -a -installsuffix cgo -o compass-runtime-agent ./cmd
 
 
 FROM golang:1.25.1-alpine3.22 as certs
@@ -26,4 +26,5 @@ COPY --from=builder $DOCK_PKG_DIR/compass-runtime-agent .
 COPY --from=builder /etc_passwd /etc/passwd
 USER nobody
 
+ENV GODEBUG=fips140=only,tlsmlkem=0
 CMD ["/app/compass-runtime-agent"]
