@@ -31,7 +31,7 @@ func main() {
 
 	var options Config
 	err := envconfig.InitWithPrefix(&options, "APP")
-	exitOnError(err, "Failed to process environment variables")
+	exitOnError(err, "Failed to process environment variables.")
 
 	log.Infof("Env config: %s", options.String())
 
