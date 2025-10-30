@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.25.1-alpine3.22 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.25.3-alpine3.22 AS builder
 ARG TARGETOS
 ARG TARGETARCH
 ARG DOCK_PKG_DIR=/go/src/github.com/kyma-project/kyma/components/central-application-connectivity-validator
