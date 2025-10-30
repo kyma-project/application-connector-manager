@@ -9,11 +9,11 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 go test -v -c -o compass-test ./test/compass-runtime-agent/
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH}  go test -v -c -o compass-test ./test/compass-runtime-agent/
 
 FROM scratch
 
 COPY --from=builder /compass-test/compass-test /
-ENV GODEBUG=fips140=only,tlsmlkem=0
+
 ENTRYPOINT [ "/compass-test" ]
 CMD ["-test.v"]
