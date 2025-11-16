@@ -13,7 +13,7 @@ COPY . $DOCK_PKG_DIR
 
 RUN echo "nobody:x:65534:5534:nobody:/:" > /etc_passwd
 
-RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -o applicationgateway ./cmd/applicationgateway
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH}  go build -a -installsuffix cgo -o applicationgateway ./cmd/applicationgateway
 
 
 FROM golang:1.25.1-alpine3.22 as certs
@@ -29,5 +29,6 @@ COPY --from=builder /go/src/github.com/kyma-project/kyma/components/central-appl
 
 COPY --from=builder /etc_passwd /etc/passwd
 USER nobody
+
 
 CMD ["/app/applicationgateway"]
