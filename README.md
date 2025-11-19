@@ -1,13 +1,13 @@
 [![REUSE status](https://api.reuse.software/badge/github.com/kyma-project/application-connector-manager)](https://api.reuse.software/info/github.com/kyma-project/application-connector-manager)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kyma-project/application-connector-manager)](https://goreportcard.com/report/github.com/kyma-project/application-connector-manager)
-[![controller tests](https://badgen.net/github/checks/kyma-project/application-connector-manager/main/integration-tests)](https://github.com/kyma-project/application-connector-manager/actions/workflows/run-validation.yaml)
+[![controller tests](https://badgers.space/github/checks/kyma-project/application-connector-manager/main/integration-tests)](https://github.com/kyma-project/application-connector-manager/actions/workflows/run-validation.yaml)
 [![ACM unit tests](https://img.shields.io/github/actions/workflow/status/kyma-project/application-connector-manager/acm.yaml?branch=main&label=ACM)](https://github.com/kyma-project/application-connector-manager/actions/workflows/acm.yaml)
 [![CAG unit tests](https://img.shields.io/github/actions/workflow/status/kyma-project/application-connector-manager/gateway.yaml?branch=main&label=CAG)](https://github.com/kyma-project/application-connector-manager/actions/workflows/gateway.yaml)
 [![CRA unit tests](https://img.shields.io/github/actions/workflow/status/kyma-project/application-connector-manager/cra.yaml?branch=main&label=CRA)](https://github.com/kyma-project/application-connector-manager/actions/workflows/cra.yaml)
 [![CACV unit tests](https://img.shields.io/github/actions/workflow/status/kyma-project/application-connector-manager/validator.yaml?branch=main&label=CACV)](https://github.com/kyma-project/application-connector-manager/actions/workflows/validator.yaml)
 [![Coverage Status](https://coveralls.io/repos/github/kyma-project/application-connector-manager/badge.svg?branch=main)](https://coveralls.io/github/kyma-project/application-connector-manager?branch=main)
-[![golangci lint](https://badgen.net/github/checks/kyma-project/application-connector-manager/main/golangci-lint)](https://github.com/kyma-project/application-connector-manager/actions/workflows/golangci-lint.yaml)
-[![latest release](https://badgen.net/github/release/kyma-project/application-connector-manager)](https://github.com/kyma-project/application-connector-manager/releases/latest)
+[![golangci lint](https://badgers.space/github/checks/kyma-project/application-connector-manager/main/golangci-lint)](https://github.com/kyma-project/application-connector-manager/actions/workflows/golangci-lint.yaml)
+[![latest release](https://badgers.space/github/release/kyma-project/application-connector-manager)](https://github.com/kyma-project/application-connector-manager/releases/latest)
 # Application Connector Manager
 
 ## Status
@@ -36,8 +36,8 @@ apiVersion: operator.kyma-project.io/v1alpha1
 kind: ApplicationConnector
 metadata:
   labels:
-    app.kubernetes.io/name: applicationconnector
-    app.kubernetes.io/instance: applicationconnector-sample
+    app.kuberes.io/name: applicationconnector
+    app.kuberes.io/instance: applicationconnector-sample
   name: applicationconnector-sample
 spec: {}
 ```
