@@ -16,5 +16,5 @@ resolve-local:
 	GO111MODULE=on go mod vendor -v
 
 test-local:
-	GO111MODULE=on go test ./...
+	GO111MODULE=on  go test ./...
 
