@@ -13,7 +13,7 @@ require (
 	github.com/kyma-project/kyma/components/compass-runtime-agent v0.0.0-20220927112044-a548531152a1
 	github.com/matryer/is v1.4.0
 	github.com/pkg/errors v0.9.1
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.1
 	github.com/stretchr/testify v1.9.0
 	github.com/vrischmann/envconfig v1.3.0
 	k8s.io/api v0.32.3
