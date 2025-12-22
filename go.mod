@@ -7,7 +7,7 @@ require (
 	github.com/onsi/gomega v1.38.2
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/zap v1.27.0
-	golang.org/x/exp v0.0.0-20251002181428-27f1f14c8bb9
+	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93
 	istio.io/client-go v1.23.2
 	k8s.io/api v0.30.1
 	k8s.io/apiextensions-apiserver v0.29.5
