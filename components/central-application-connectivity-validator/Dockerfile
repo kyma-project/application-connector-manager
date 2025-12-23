@@ -9,7 +9,7 @@ COPY . $DOCK_PKG_DIR
 
 RUN echo "nobody:x:65534:65534:nobody:/:" > /etc_passwd
 
-RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -o centralapplicationconnectivityvalidator ./cmd/centralapplicationconnectivityvalidator
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 go build -a -installsuffix cgo -o centralapplicationconnectivityvalidator ./cmd/centralapplicationconnectivityvalidator
 
 
 FROM scratch
@@ -22,4 +22,5 @@ COPY --from=builder /go/src/github.com/kyma-project/kyma/components/central-appl
 COPY --from=builder /etc_passwd /etc/passwd
 USER nobody
 
+ENV GODEBUG=fips140=only,tlsmlkem=0
 CMD ["/app/centralapplicationconnectivityvalidator"]
