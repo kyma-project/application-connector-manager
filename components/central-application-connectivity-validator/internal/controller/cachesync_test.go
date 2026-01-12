@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyma-project/kyma/common/logging/logger"
+	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/logger"
 	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
 	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/client/clientset/versioned/fake"
 	applicationconnectorv1alpha1 "github.com/kyma-project/kyma/components/central-application-gateway/pkg/client/clientset/versioned/typed/applicationconnector/v1alpha1"

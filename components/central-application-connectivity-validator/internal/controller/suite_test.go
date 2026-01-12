@@ -14,9 +14,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/kyma-project/kyma/common/logging/logger"
-	"github.com/kyma-project/kyma/common/logging/tracing"
 	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/controller"
+	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/logger"
+	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/tracing"
 	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/validationproxy"
 	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
 	"github.com/patrickmn/go-cache"

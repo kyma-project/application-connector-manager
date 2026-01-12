@@ -2,7 +2,7 @@ package controller
 
 import (
 	"context"
-	"github.com/kyma-project/kyma/common/logging/logger"
+	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/logger"
 	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
 	gocache "github.com/patrickmn/go-cache"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"

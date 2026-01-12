@@ -5,6 +5,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/controller"
 	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/httptools"
+	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/logger"
+
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -13,7 +15,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kyma-project/kyma/common/logging/logger"
 	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/apperrors"
 )
 
