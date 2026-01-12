@@ -22,7 +22,7 @@ This function creates logger structure based on given format, atomicLevel and ad
 AtomicLevel structure allows to change level dynamically
 */
 func NewWithAtomicLevel(format Format, atomicLevel zap.AtomicLevel, additionalCores ...zapcore.Core) (*Logger, error) {
-	return new(format, atomicLevel, additionalCores...)
+	return newLogger(format, atomicLevel, additionalCores...)
 }
 
 /*
@@ -38,10 +38,10 @@ func New(format Format, level Level, additionalCores ...zapcore.Core) (*Logger, 
 		return incomingLevel >= filterLevel
 	})
 
-	return new(format, levelEnabler, additionalCores...)
+	return newLogger(format, levelEnabler, additionalCores...)
 }
 
-func new(format Format, levelEnabler zapcore.LevelEnabler, additionalCores ...zapcore.Core) (*Logger, error) {
+func newLogger(format Format, levelEnabler zapcore.LevelEnabler, additionalCores ...zapcore.Core) (*Logger, error) {
 	encoder, err := format.ToZapEncoder()
 	if err != nil {
 		return nil, errors.Wrapf(err, "while getting encoding configuration  for %s format", format)
