@@ -34,7 +34,7 @@ jobs:
       - name: Set up go environment
         uses: actions/setup-go@v5
         with:
-          go-version: 1.25
+          go-version: 1.25.5
       - name: install-k3d
         env:
           K3D_URL: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh

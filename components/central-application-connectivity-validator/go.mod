@@ -1,10 +1,10 @@
 module github.com/kyma-project/kyma/components/central-application-connectivity-validator
 
-go 1.25
+go 1.25.5
 
 require (
 	github.com/gorilla/mux v1.8.1
-	github.com/kyma-project/kyma/common/logging v0.0.0-20250825081818-b67459e41320
+	github.com/kyma-project/kyma/common/logging v0.0.0-20251208114948-ddce06ec431b
 	github.com/kyma-project/kyma/components/central-application-gateway v0.0.0-20230130154909-4c81ab2cee61
 	github.com/oklog/run v1.1.0
 	github.com/onsi/ginkgo/v2 v2.25.1
@@ -51,7 +51,7 @@ require (
 	github.com/google/gnostic v0.5.7-v3refs // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/gofuzz v1.1.0 // indirect
-	github.com/google/pprof v0.0.0-20251007162407-5df77e3f7d1d // indirect
+	github.com/google/pprof v0.0.0-20251213031049-b05bdaca462f // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
@@ -71,15 +71,15 @@ require (
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/net v0.44.0 // indirect
-	golang.org/x/oauth2 v0.30.0 // indirect
-	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/term v0.35.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
-	golang.org/x/time v0.13.0 // indirect
-	golang.org/x/tools v0.36.0 // indirect
+	golang.org/x/net v0.48.0 // indirect
+	golang.org/x/oauth2 v0.34.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/term v0.38.0 // indirect
+	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/time v0.14.0 // indirect
+	golang.org/x/tools v0.40.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.2.0 // indirect
-	google.golang.org/protobuf v1.36.7 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -97,10 +97,13 @@ replace (
 	github.com/containerd/containerd => github.com/containerd/containerd v1.7.27
 	github.com/docker/docker => github.com/docker/docker v28.4.0+incompatible
 	github.com/opencontainers/runc => github.com/opencontainers/runc v1.2.6
-	golang.org/x/net => golang.org/x/net v0.44.0
-	golang.org/x/sys => golang.org/x/sys v0.35.0
-	golang.org/x/term => golang.org/x/term v0.35.0
-	golang.org/x/text => golang.org/x/text v0.29.0
-	golang.org/x/time => golang.org/x/time v0.13.0
-	golang.org/x/tools => golang.org/x/tools v0.36.0
+	golang.org/x/crypto => golang.org/x/crypto v0.46.0
+	golang.org/x/net => golang.org/x/net v0.48.0
+	golang.org/x/oauth2 => golang.org/x/oauth2 v0.34.0
+	golang.org/x/sys => golang.org/x/sys v0.39.0
+	golang.org/x/term => golang.org/x/term v0.38.0
+	golang.org/x/text => golang.org/x/text v0.32.0
+	golang.org/x/time => golang.org/x/time v0.14.0
+	golang.org/x/tools => golang.org/x/tools v0.40.0
+	google.golang.org/protobuf => google.golang.org/protobuf v1.36.11
 )

@@ -20,7 +20,7 @@ jobs:
     - name: Set up go environment
       uses: actions/setup-go@v5
       with:
-        go-version: 1.25
+        go-version: 1.25.5
 
     - name: Run integration tests without lifecycle-manager
       run: make -C hack/ci run-without-lifecycle-manager

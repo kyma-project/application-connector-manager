@@ -626,7 +626,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: europe-docker.pkg.dev/kyma-project/prod/application-connector-manager:1.1.17-experimental
+        image: europe-docker.pkg.dev/kyma-project/prod/application-connector-manager:1.1.18-experimental
         livenessProbe:
           httpGet:
             path: /healthz

@@ -75,4 +75,4 @@ spec:
 ```
 
 > [!TIP]
-> You can use Kyma dashboard to create and manage your Application. To do so, go to **Integration > Applications** from the **Cluster Details** view.
+> You can use Kyma dashboard to create and manage your Application. To do so, go to **Integration > Applications** from the cluster overview.
