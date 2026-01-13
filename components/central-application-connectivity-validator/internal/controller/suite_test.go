@@ -6,6 +6,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	ctrlCache "sigs.k8s.io/controller-runtime/pkg/cache"
 
 	"context"
 	"io"
@@ -89,8 +90,10 @@ var _ = BeforeSuite(func() {
 	Expect(k8sClient).NotTo(BeNil())
 
 	k8sManager, err := ctrl.NewManager(config, ctrl.Options{
-		Scheme:     scheme.Scheme,
-		SyncPeriod: pointer.Duration(time.Second * 2),
+		Scheme: scheme.Scheme,
+		Cache: ctrlCache.Options{
+			SyncPeriod: pointer.Duration(time.Second * 2),
+		},
 	})
 	Expect(err).ToNot(HaveOccurred())
 

@@ -9,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strings"
+	"time"
 )
 
 type CacheSync interface {
@@ -17,6 +18,7 @@ type CacheSync interface {
 }
 
 type cacheSync struct {
+	SyncPeriod               time.Duration
 	client                   client.Reader
 	appCache                 *gocache.Cache
 	log                      *logger.Logger

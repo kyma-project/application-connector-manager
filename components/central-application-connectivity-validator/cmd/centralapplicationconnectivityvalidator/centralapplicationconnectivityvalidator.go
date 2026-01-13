@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
+	ctrlCache "sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/logger"
 	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/tracing"
@@ -116,13 +116,15 @@ func main() {
 	}
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme:             scheme,
-		MetricsBindAddress: "0",
-		SyncPeriod:         &options.syncPeriod,
-		ClientDisableCacheFor: []client.Object{
-			&v1alpha1.Application{},
+		Scheme: scheme,
+		Cache: ctrlCache.Options{
+			SyncPeriod: &options.syncPeriod, // This applies to all cached resources
+		},
+		Metrics: metricsserver.Options{
+			BindAddress: "0", // disable metrics
 		},
 	})
+
 	if err != nil {
 		log.WithContext().Error("Unable to start manager: %s", err.Error())
 		os.Exit(1)
