@@ -51,7 +51,7 @@ var (
 type testTransport struct {
 }
 
-func (t testTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (t testTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
 	responseBody := "eventing-event-publisher-proxy.kyma-system: [OK]"
 	respReader := io.NopCloser(strings.NewReader(responseBody))
 	resp := http.Response{
