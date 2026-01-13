@@ -1,6 +1,6 @@
 package model
 
-import "github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization"
+import "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization"
 
 // ServiceDefinition is an internal representation of a service.
 type ServiceDefinition struct {

@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/httperrors"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/httpconsts"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/httperrors"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/httpconsts"
 )
 
 type ErrorHandler struct {

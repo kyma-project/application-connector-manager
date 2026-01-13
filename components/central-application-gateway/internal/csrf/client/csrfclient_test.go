@@ -9,13 +9,13 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization/clientcert"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization/clientcert"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/csrf"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization"
-	authorizationMocks "github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization/mocks"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization/testconsts"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/httpconsts"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/csrf"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization"
+	authorizationMocks "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization/mocks"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization/testconsts"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/httpconsts"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

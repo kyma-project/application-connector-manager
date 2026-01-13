@@ -5,11 +5,11 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/csrf"
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata"
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/model"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apperrors"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/csrf"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/metadata"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/metadata/model"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/apperrors"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization"
 )
 
 type pathExtractorFunc func(*url.URL) (model.APIIdentifier, *url.URL, *url.URL, apperrors.AppError)

@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/csrf"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization/clientcert"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/csrf"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization/clientcert"
 )
 
 type RetryableRoundTripper struct {

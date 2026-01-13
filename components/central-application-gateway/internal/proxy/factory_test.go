@@ -9,13 +9,13 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/csrf"
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata"
-	metadatamocks "github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/mocks"
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/model"
-	metadatamodel "github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/model"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization"
-	authMock "github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization/mocks"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/csrf"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/metadata"
+	metadatamocks "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/metadata/mocks"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/metadata/model"
+	metadatamodel "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/metadata/model"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization"
+	authMock "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization/mocks"
 )
 
 type createHandlerFunc func(serviceDefService metadata.ServiceDefinitionService, authorizationStrategyFactory authorization.StrategyFactory, csrfTokenStrategyFactory csrf.TokenStrategyFactory, config Config) http.Handler

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/k8sconsts"
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/secrets/mocks"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apperrors"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/k8sconsts"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/metadata/secrets/mocks"
+	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/apperrors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	v1 "k8s.io/api/core/v1"

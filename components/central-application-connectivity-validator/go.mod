@@ -1,11 +1,12 @@
-module github.com/kyma-project/kyma/components/central-application-connectivity-validator
+module github.com/kyma-project/kyma/application-connector-manager/components/central-application-connectivity-validator
 
 go 1.25.5
 
 require (
 	github.com/go-logr/zapr v1.3.0
 	github.com/gorilla/mux v1.8.1
-	github.com/kyma-project/kyma/components/central-application-gateway v0.0.0-20240626075036-d374ec55c335
+	//github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway
+	//github.com/kyma-project/kyma/components/central-application-gateway v0.0.0-20240626075036-d374ec55c335
 	github.com/oklog/run v1.2.0
 	github.com/onsi/ginkgo/v2 v2.27.5
 	github.com/onsi/gomega v1.39.0
@@ -97,4 +98,5 @@ replace (
 	golang.org/x/text => golang.org/x/text v0.33.0
 	golang.org/x/time => golang.org/x/time v0.14.0
 	golang.org/x/tools => golang.org/x/tools v0.40.0
+	google.golang.org/protobuf => google.golang.org/protobuf v1.36.11
 )
