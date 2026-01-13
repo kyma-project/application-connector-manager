@@ -47,20 +47,20 @@ func main() {
 	options, err := parseOptions()
 	if err != nil {
 		if logErr := logger.LogFatalError("Failed to parse options: %s", err.Error()); logErr != nil {
-			fmt.Printf("Failed to initializie default fatal error logger: %s,Failed to parse options: %s", logErr, err)
+			fmt.Printf("Failed to initialize default fatal error logger: %s,Failed to parse options: %s", logErr, err)
 		}
 		os.Exit(1)
 	}
 	if err = options.validate(); err != nil {
 		if logErr := logger.LogFatalError("Failed to validate options: %s", err.Error()); logErr != nil {
-			fmt.Printf("Failed to initializie default fatal error logger: %s,Failed to validate options: %s", logErr, err)
+			fmt.Printf("Failed to initialize default fatal error logger: %s,Failed to validate options: %s", logErr, err)
 		}
 		os.Exit(1)
 	}
 	level, err := logger.MapLevel(options.LogLevel)
 	if err != nil {
 		if logErr := logger.LogFatalError("Failed to map log level from options: %s", err.Error()); logErr != nil {
-			fmt.Printf("Failed to initializie default fatal error logger: %s, Failed to map log level from options: %s", logErr, err)
+			fmt.Printf("Failed to initialize default fatal error logger: %s, Failed to map log level from options: %s", logErr, err)
 		}
 
 		os.Exit(2)
@@ -68,19 +68,19 @@ func main() {
 	format, err := logger.MapFormat(options.LogFormat)
 	if err != nil {
 		if logErr := logger.LogFatalError("Failed to map log format from options: %s", err.Error()); logErr != nil {
-			fmt.Printf("Failed to initializie default fatal error logger: %s, Failed to map log format from options: %s", logErr, err)
+			fmt.Printf("Failed to initialize default fatal error logger: %s, Failed to map log format from options: %s", logErr, err)
 		}
 		os.Exit(3)
 	}
 	log, err := logger.New(format, level)
 	if err != nil {
 		if logErr := logger.LogFatalError("Failed to initialize logger: %s", err.Error()); logErr != nil {
-			fmt.Printf("Failed to initializie default fatal error logger: %s, Failed to initialize logger: %s", logErr, err)
+			fmt.Printf("Failed to initialize default fatal error logger: %s, Failed to initialize logger: %s", logErr, err)
 		}
 		os.Exit(4)
 	}
 	if err := logger.InitKlog(log, level); err != nil {
-		log.WithContext().Error("While initializing klog logger: %s", err.Error())
+		log.WithContext().Error("While initialising klog logger: %s", err.Error())
 		os.Exit(5)
 	}
 
