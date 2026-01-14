@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization/oauth/mocks"
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/httpconsts"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/authorization/oauth/mocks"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/httpconsts"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

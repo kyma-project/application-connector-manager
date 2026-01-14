@@ -4,8 +4,8 @@ import (
 	"crypto/tls"
 	"net/http"
 
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/apperrors"
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization/clientcert"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apperrors"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/authorization/clientcert"
 )
 
 type certificateGenStrategy struct {

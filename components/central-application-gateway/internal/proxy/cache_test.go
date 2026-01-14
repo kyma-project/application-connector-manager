@@ -4,9 +4,9 @@ import (
 	"net/http/httputil"
 	"testing"
 
-	csrfmocks "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/csrf/mocks"
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization/clientcert"
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization/mocks"
+	csrfmocks "github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/csrf/mocks"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/authorization/clientcert"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/authorization/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/util/net"

@@ -3,7 +3,7 @@
 package v1alpha1
 
 import (
-	internalinterfaces "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/client/informers/externalversions/internalinterfaces"
+	internalinterfaces "github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/client/informers/externalversions/internalinterfaces"
 )
 
 // Interface provides access to all the informers in this group version.

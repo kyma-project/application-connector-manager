@@ -3,7 +3,7 @@
 package fake
 
 import (
-	applicationconnectorv1alpha1 "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
+	applicationconnectorv1alpha1 "github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

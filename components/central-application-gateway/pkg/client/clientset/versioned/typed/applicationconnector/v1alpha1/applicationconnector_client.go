@@ -3,8 +3,8 @@
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/client/clientset/versioned/scheme"
+	v1alpha1 "github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/client/clientset/versioned/scheme"
 	rest "k8s.io/client-go/rest"
 )
 

@@ -1,5 +1,4 @@
-//module github.com/kyma-project/kyma/components/central-application-gateway
-module github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway
+module github.com/kyma-project/application-connector-manager/components/central-application-gateway
 
 go 1.25.5
 

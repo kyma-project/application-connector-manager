@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/tracing"
+	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/logging/tracing"
 	"github.com/stretchr/testify/assert"
 )
 

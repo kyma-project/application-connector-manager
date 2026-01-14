@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/tracing"
+	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/logging/tracing"
 	"github.com/pkg/errors"
 
 	"github.com/go-logr/zapr"

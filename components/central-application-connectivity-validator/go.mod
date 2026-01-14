@@ -1,12 +1,11 @@
-module github.com/kyma-project/kyma/application-connector-manager/components/central-application-connectivity-validator
+module github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator
 
 go 1.25.5
 
 require (
 	github.com/go-logr/zapr v1.3.0
 	github.com/gorilla/mux v1.8.1
-	//github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway
-	//github.com/kyma-project/kyma/components/central-application-gateway v0.0.0-20240626075036-d374ec55c335
+	github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.1
 	github.com/oklog/run v1.2.0
 	github.com/onsi/ginkgo/v2 v2.27.5
 	github.com/onsi/gomega v1.39.0
@@ -26,7 +25,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/emicklei/go-restful/v3 v3.13.0 // indirect
 	github.com/evanphx/json-patch/v5 v5.9.11 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
@@ -56,7 +55,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.23.2 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.67.5 // indirect
@@ -90,6 +89,7 @@ require (
 )
 
 replace (
+	github.com/kyma-project/application-connector-manager/components/central-application-gateway => ../central-application-gateway
 	golang.org/x/crypto => golang.org/x/crypto v0.46.0
 	golang.org/x/net => golang.org/x/net v0.48.0
 	golang.org/x/oauth2 => golang.org/x/oauth2 v0.34.0

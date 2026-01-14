@@ -12,15 +12,15 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/csrf"
-	csrfMock "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/csrf/mocks"
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/metadata/model"
-	metadatamodel "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/metadata/model"
-	proxyMocks "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/internal/proxy/mocks"
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/apperrors"
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization"
-	authMock "github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/authorization/mocks"
-	"github.com/kyma-project/kyma/application-connector-manager/components/central-application-gateway/pkg/httpconsts"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/csrf"
+	csrfMock "github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/csrf/mocks"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/metadata/model"
+	metadatamodel "github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/metadata/model"
+	proxyMocks "github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/proxy/mocks"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apperrors"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/authorization"
+	authMock "github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/authorization/mocks"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/httpconsts"
 )
 
 func TestProxyRequest(t *testing.T) {
