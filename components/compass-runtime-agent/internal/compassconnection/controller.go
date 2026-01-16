@@ -44,11 +44,11 @@ type Reconciler struct {
 
 func InitCompassConnectionController(
 	mgr manager.Manager,
-	supervisior Supervisor,
+	supervisor Supervisor,
 	minimalConfigSyncTime time.Duration,
 	configProvider config.Provider) error {
 
-	reconciler := newReconciler(mgr.GetClient(), supervisior, minimalConfigSyncTime, configProvider)
+	reconciler := newReconciler(mgr.GetClient(), supervisor, minimalConfigSyncTime, configProvider)
 
 	return startController(mgr, reconciler)
 }
@@ -59,13 +59,13 @@ func startController(mgr manager.Manager, reconciler reconcile.Reconciler) error
 		return err
 	}
 
-	return c.Watch(&source.Kind{Type: &v1alpha1.CompassConnection{}}, &handler.EnqueueRequestForObject{})
+	return c.Watch(source.Kind(mgr.GetCache(), &v1alpha1.CompassConnection{}, &handler.TypedEnqueueRequestForObject[*v1alpha1.CompassConnection]{}))
 }
 
-func newReconciler(client Client, supervisior Supervisor, minimalConfigSyncTime time.Duration, configProvider config.Provider) reconcile.Reconciler {
+func newReconciler(client Client, supervisor Supervisor, minimalConfigSyncTime time.Duration, configProvider config.Provider) reconcile.Reconciler {
 	return &Reconciler{
 		client:                client,
-		supervisor:            supervisior,
+		supervisor:            supervisor,
 		minimalConfigSyncTime: minimalConfigSyncTime,
 		log:                   logrus.WithField("Controller", "CompassConnection"),
 		configProvider:        configProvider,
