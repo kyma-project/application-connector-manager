@@ -88,11 +88,32 @@ jobs:
         run: |
           set -o pipefail
           make test | tee test.log
+      - name: filter out coverage
+        run: |
+          #!/bin/bash
+
+          filters=(
+              "mock"
+              "test"
+          )
+
+          input="./components/central-application-connectivity-validator/cover.out"
+          output="./components/central-application-connectivity-validator/cover-filtered.out"
+
+          cp "$input" "$output"
+
+          for i in "${filters[@]}"; do
+            echo "filtering $i"
+            cp "$output" "$output~"
+            grep --invert-match $i "$output~" > "$output"
+            wc -l $output
+          done
+          rm "$output~"
       - name: coveralls github action
         uses: coverallsapp/github-action@v2.3.6
         with:
           format: golang
-          file: ./components/central-application-connectivity-validator/cover.out
+          file: ./components/central-application-connectivity-validator/cover-filtered.out
           fail-on-error: false
           base-path: /components/central-application-connectivity-validator
           flag-name: CACV
