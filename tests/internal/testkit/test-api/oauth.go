@@ -3,11 +3,12 @@ package test_api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/gorilla/mux"
 
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"

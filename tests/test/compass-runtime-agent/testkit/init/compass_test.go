@@ -1,8 +1,8 @@
 package init
 
 import (
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/init/types"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/init/types/mocks"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/init/types"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/init/types/mocks"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 	"testing"

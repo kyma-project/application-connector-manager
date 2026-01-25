@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	cli "github.com/kyma-project/kyma/components/central-application-gateway/pkg/client/clientset/versioned"
-	ccclientset "github.com/kyma-project/kyma/components/compass-runtime-agent/pkg/client/clientset/versioned"
+	cli "github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/client/clientset/versioned"
+	ccclientset "github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/pkg/client/clientset/versioned"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
 	"github.com/vrischmann/envconfig"
@@ -17,13 +17,13 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/applications"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/director"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/graphql"
-	initcra "github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/init"
-	compassruntimeagentinittypes "github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/init/types"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/oauth"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/random"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/applications"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/director"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/graphql"
+	initcra "github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/init"
+	compassruntimeagentinittypes "github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/init/types"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/oauth"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/random"
 )
 
 type CompassRuntimeAgentSuite struct {

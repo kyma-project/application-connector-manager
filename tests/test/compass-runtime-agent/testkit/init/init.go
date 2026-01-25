@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/init/types"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/init/types"
 	log "github.com/sirupsen/logrus"
 )
 

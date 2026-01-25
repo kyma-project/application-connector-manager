@@ -137,10 +137,10 @@ func main() {
 
 	setupLog.Info(fmt.Sprintf("log level set to: %s", appConLogger.Level()))
 
-	//nolint:staticcheck SA1019 ignore deprecation of EventRecorder for some time
+	//nolint:staticcheck // SA1019 ignore deprecation of EventRecorder for some time
 	appConReconciler := controllers.NewApplicationConnetorReconciler(
 		mgr.GetClient(),
-		mgr.GetEventRecorderFor("application-connector-manager"), //nolint:staticcheck SA1019 ignore deprecation of EventRecorder for some time
+		mgr.GetEventRecorderFor("application-connector-manager"),
 		appConLogger.Sugar(),
 		data,
 		data2,

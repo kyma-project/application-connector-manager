@@ -10,11 +10,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	gcli "github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/third_party/machinebox/graphql"
+	gcli "github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/third_party/machinebox/graphql"
 
-	gql "github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/graphql"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/oauth"
-	oauthmocks "github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/oauth/mocks"
+	gql "github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/graphql"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/oauth"
+	oauthmocks "github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/oauth/mocks"
 )
 
 const (

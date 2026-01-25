@@ -1,10 +1,11 @@
 package test_api
 
 import (
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"net/http"
 	"sync"
+
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
 
 const (

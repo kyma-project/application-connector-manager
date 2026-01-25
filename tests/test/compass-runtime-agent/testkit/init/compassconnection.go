@@ -2,9 +2,10 @@ package init
 
 import (
 	"context"
+
 	"github.com/avast/retry-go"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/pkg/apis/compass/v1alpha1"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/init/types"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/pkg/apis/compass/v1alpha1"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/init/types"
 	"github.com/pkg/errors"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"

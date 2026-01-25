@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/executor"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/random"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/executor"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/random"
 )
 
 const checkAppExistsPeriod = 10 * time.Second
