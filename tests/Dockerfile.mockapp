@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.25.0-alpine3.22 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.25.1-alpine3.22 AS builder
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -10,9 +10,10 @@ RUN go mod download && go mod verify
 COPY . .
 
 
-RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -v -o mock-app ./tools/external-api-mock-app
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 go build -v -o mock-app ./tools/external-api-mock-app
 
 FROM scratch
 COPY --from=builder /mock-app/mock-app .
+ENV GODEBUG=fips140=only,tlsmlkem=0
 ENTRYPOINT [ "/mock-app" ]
 CMD []

@@ -13,7 +13,7 @@ COPY . $DOCK_PKG_DIR
 
 RUN echo "nobody:x:65534:5534:nobody:/:" > /etc_passwd
 
-RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -o applicationgateway ./cmd/applicationgateway
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 go build -a -installsuffix cgo -o applicationgateway ./cmd/applicationgateway
 
 
 FROM --platform=$BUILDPLATFORM golang:1.25.6-alpine3.23 as certs
@@ -30,4 +30,5 @@ COPY --from=builder /go/src/github.com/kyma-project/application-connector-manage
 COPY --from=builder /etc_passwd /etc/passwd
 USER nobody
 
+ENV GODEBUG=fips140=only,tlsmlkem=0
 CMD ["/app/applicationgateway"]
