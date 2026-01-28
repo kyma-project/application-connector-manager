@@ -1,5 +1,4 @@
 resources:
   - allow-from-cluster-workload.yaml
-  - allow-from-healtz-check.yaml
+  - allow-from-health-check.yaml
   - allow-to-external-system.yaml
-  - allow-k8s-api.yaml

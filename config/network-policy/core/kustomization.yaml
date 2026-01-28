@@ -1,4 +1,5 @@
 resources:
+  - allow-k8s-api.yaml
   - allow-egress-dns.yaml
   - allow-istio-sidecar.yaml
   - allow-metrics-scrapping.yaml

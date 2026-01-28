@@ -1,3 +1,2 @@
 resources:
-  - allow-k8s-api.yaml
   - allow-from-istio-sidecar.yaml
