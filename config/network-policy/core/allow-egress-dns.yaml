@@ -1,0 +1,54 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kyma-project.io--acm-module-to-dns
+  namespace: system
+  labels:
+    app.kubernetes.io/name: acm-controller
+    app.kubernetes.io/managed-by: kustomize
+    purpose: dns
+spec:
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: node-local-dns
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+    - ports:
+        - port: 8053
+          protocol: UDP
+        - port: 8053
+          protocol: TCP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - application-connector-manager
+          - compass-runtime-agent
+          - central-application-gateway
+          - central-application-connectivity-validator
+  policyTypes:
+    - Egress
