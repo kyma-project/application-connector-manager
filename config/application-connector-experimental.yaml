@@ -679,7 +679,7 @@ metadata:
     app.kubernetes.io/name: acm-controller
     kyma-project.io/module: application-connector
     purpose: acm-sidecar
-  name: application-connector-kyma-project.io--acm-commpass-allow-from-sidecar
+  name: application-connector-kyma-project.io--acm-compass-allow-from-sidecar
   namespace: kyma-system
 spec:
   ingress:
