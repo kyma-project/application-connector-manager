@@ -1,0 +1,27 @@
+
+  apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: kyma-project.io--acm-commpass-allow-from-sidecar
+    namespace: system
+    labels:
+      app.kubernetes.io/name: acm-controller
+      app.kubernetes.io/managed-by: kustomize
+      purpose: acm-sidecar
+  spec:
+    podSelector:
+      matchLabels:
+        app: compass-runtime-agent
+    policyTypes:
+      - Ingress
+    ingress:
+      - from:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: istio-system
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/name: istiod
+        ports:
+          - protocol: TCP
+            port: 443

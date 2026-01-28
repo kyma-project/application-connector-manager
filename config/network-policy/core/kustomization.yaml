@@ -1,0 +1,4 @@
+resources:
+  - allow-egress-dns.yaml
+  - allow-istio-sidecar.yaml
+  - allow-metrics-scrapping.yaml

@@ -1,0 +1,4 @@
+resources:
+  - allow-k8s-api.yaml
+  - allow-from-ingress-gateway.yaml
+  - allow-to-eventing.yaml
