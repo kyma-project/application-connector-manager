@@ -5,7 +5,7 @@ import (
 	"encoding/pem"
 	"fmt"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/secrets"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/secrets"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
 )

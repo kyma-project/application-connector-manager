@@ -9,13 +9,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/apperrors"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/k8sconsts"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/secrets/strategy"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/secrets"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/apperrors"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/k8sconsts"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/secrets/strategy"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/secrets"
 )
 
 // Repository contains operations for managing client credentials
+//
 //go:generate mockery --name Repository
 type Repository interface {
 	Create(application string, appUID types.UID, name, bundleID string, data strategy.SecretData) apperrors.AppError

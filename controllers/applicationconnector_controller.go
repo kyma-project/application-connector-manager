@@ -70,7 +70,7 @@ type ApplicationConnetorReconciler interface {
 	SetupWithManager(mgr ctrl.Manager) error
 }
 
-type Watch = func(src source.Source, eventhandler handler.EventHandler, predicates ...predicate.Predicate) error
+type Watch = func(src source.Source) error
 
 type applicationConnectorReconciler struct {
 	log *zap.SugaredLogger
@@ -197,24 +197,25 @@ func (r *applicationConnectorReconciler) SetupWithManager(mgr ctrl.Manager) erro
 
 	// create functtion to register wached objects
 	watchFn := func(u unstructured.Unstructured) {
+		obj := u
+
 		var objPredicate predicate.Predicate = &predicate.ResourceVersionChangedPredicate{}
 
-		if u.GroupVersionKind() == hpaGroupVersionKind {
+		if obj.GroupVersionKind() == hpaGroupVersionKind {
 			objPredicate = hpaResourceVersionChangedPredicate{
 				log: r.log,
 			}
 		}
 
-		if u.GroupVersionKind() == deploymentVersionKind {
+		if obj.GroupVersionKind() == deploymentVersionKind {
 			objPredicate = acm_predicate.NewDeploymentPredicate(r.log)
 		}
 
 		r.log.With("gvk", u.GroupVersionKind().String()).Infoln("adding watcher")
 
 		b = b.WatchesRawSource(
-			source.Kind(mgr.GetCache(), &u),
-			handler.EnqueueRequestsFromMapFunc(r.mapFunction),
-			builder.WithPredicates(
+			source.Kind[client.Object](mgr.GetCache(), &obj,
+				handler.EnqueueRequestsFromMapFunc(r.mapFunction),
 				predicate.And(
 					labelSelectorPredicate,
 					objPredicate,

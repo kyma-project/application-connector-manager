@@ -3,9 +3,9 @@ package applications
 import (
 	"context"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
-	v1alpha12 "github.com/kyma-project/kyma/components/central-application-gateway/pkg/client/clientset/versioned/typed/applicationconnector/v1alpha1"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/apperrors"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
+	v1alpha12 "github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/client/clientset/versioned/typed/applicationconnector/v1alpha1"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/apperrors"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -14,8 +14,9 @@ type manager struct {
 	applicationsInterface v1alpha12.ApplicationInterface
 }
 
-//go:generate mockery --name=Repository
 // Repository contains operations for managing Application CRD
+//
+//go:generate mockery --name=Repository
 type Repository interface {
 	Create(*v1alpha1.Application) (*v1alpha1.Application, apperrors.AppError)
 	Update(*v1alpha1.Application) (*v1alpha1.Application, apperrors.AppError)

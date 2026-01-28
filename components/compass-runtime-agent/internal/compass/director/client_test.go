@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/config"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/graphql/mocks"
-	kymamodel "github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/model"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/config"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/graphql/mocks"
+	kymamodel "github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/model"
 )
 
 const (

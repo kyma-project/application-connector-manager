@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/apperrors"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/secrets/mocks"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/apperrors"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/secrets/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"

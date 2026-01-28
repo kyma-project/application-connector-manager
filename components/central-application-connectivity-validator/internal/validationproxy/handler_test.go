@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/controller"
-	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/logger"
+	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/controller"
+	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/logging/logger"
 	"github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -17,7 +17,7 @@ import (
 	"testing"
 	"time"
 
-	appconnv1alpha1 "github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
+	appconnv1alpha1 "github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
 )
 
 const (

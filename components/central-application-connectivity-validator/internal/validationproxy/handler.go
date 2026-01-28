@@ -3,8 +3,8 @@ package validationproxy
 import (
 	"crypto/x509/pkix"
 	"github.com/gorilla/mux"
-	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/controller"
-	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/httptools"
+	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/controller"
+	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/httptools"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/apperrors"
-	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/logger"
+	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/apperrors"
+	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/logging/logger"
 )
 
 const (

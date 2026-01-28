@@ -3,8 +3,8 @@ package appsecrets
 import (
 	"encoding/json"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/apperrors"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/model"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/apperrors"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/model"
 )
 
 const (

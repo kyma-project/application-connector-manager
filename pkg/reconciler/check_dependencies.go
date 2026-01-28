@@ -13,6 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/source"
@@ -87,19 +88,28 @@ func sFnRegisterDependencyWatch(_ context.Context, r *fsm, s *systemState) (stat
 	}
 
 	for _, u := range r.Deps {
+		obj := u
+
 		r.log.With("gvk", u.GroupVersionKind()).Info("adding watch")
 
 		var objPredicate predicate.Predicate = predicate.GenerationChangedPredicate{}
 
-		if u.GetObjectKind().GroupVersionKind() == types.VirtualService {
+		if obj.GetObjectKind().GroupVersionKind() == types.VirtualService {
 			objPredicate = acm_predicate.NewVirtualServicePredicate(r.log)
 		}
 
-		if u.GetObjectKind().GroupVersionKind() == types.Gateway {
+		if obj.GetObjectKind().GroupVersionKind() == types.Gateway {
 			objPredicate = acm_predicate.NewGatewayPredicate(r.log)
 		}
 
-		err := r.Watch(source.Kind(r.Cache, &u), handler.EnqueueRequestsFromMapFunc(r.MapFunc), predicate.And(labelSelectorPredicate, objPredicate))
+		src := source.Kind[client.Object](
+			r.Cache,
+			&obj,
+			handler.EnqueueRequestsFromMapFunc(r.MapFunc),
+			predicate.And[client.Object](labelSelectorPredicate, objPredicate),
+		)
+
+		err := r.Watch(src)
 
 		if err != nil {
 			s.instance.UpdateStateFromErr(v1alpha1.ConditionTypeInstalled, v1alpha1.ConditionReasonApplyObjError, err)

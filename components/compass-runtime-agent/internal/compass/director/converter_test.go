@@ -6,7 +6,7 @@ import (
 	"github.com/kyma-incubator/compass/components/director/pkg/graphql"
 	"github.com/stretchr/testify/assert"
 
-	kymaModel "github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/model"
+	kymaModel "github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/model"
 )
 
 const (

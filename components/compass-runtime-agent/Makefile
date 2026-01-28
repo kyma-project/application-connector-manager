@@ -10,7 +10,7 @@ test: envtest ## Run tests.
 	fi
 
 
-ENVTEST_K8S_VERSION = 1.26.0
+ENVTEST_K8S_VERSION = 1.35.0
 
 LOCALBIN ?= $(shell pwd)/bin
 $(LOCALBIN):

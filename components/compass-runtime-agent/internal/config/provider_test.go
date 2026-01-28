@@ -4,14 +4,14 @@ import (
 	"errors"
 	"testing"
 
-	mocks2 "github.com/kyma-project/kyma/components/compass-runtime-agent/internal/secrets/mocks"
+	mocks2 "github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/secrets/mocks"
 
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/secrets"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/secrets"
 	"k8s.io/client-go/kubernetes/fake"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/config"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/config"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

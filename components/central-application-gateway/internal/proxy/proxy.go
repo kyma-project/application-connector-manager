@@ -10,14 +10,14 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/csrf"
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/httperrors"
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/model"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apperrors"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization/clientcert"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/httpconsts"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/proxyconfig"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/csrf"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/httperrors"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/metadata/model"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apperrors"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/authorization"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/authorization/clientcert"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/httpconsts"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/proxyconfig"
 )
 
 type proxy struct {

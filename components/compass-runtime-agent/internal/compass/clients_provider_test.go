@@ -5,16 +5,16 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/compass/cache"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/compass/cache"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/config"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/config"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/graphql/mocks"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/graphql/mocks"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/graphql"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/graphql"
 )
 
 func newMockGQLConstructor(

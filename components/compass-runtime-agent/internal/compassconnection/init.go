@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/compass/cache"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/compass/cache"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/compass/director"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/compass/director"
 
 	"github.com/pkg/errors"
 
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/certificates"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/compass"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/config"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/pkg/client/clientset/versioned/typed/compass/v1alpha1"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/certificates"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/compass"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/config"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/pkg/client/clientset/versioned/typed/compass/v1alpha1"
 
 	"k8s.io/client-go/rest"
 )

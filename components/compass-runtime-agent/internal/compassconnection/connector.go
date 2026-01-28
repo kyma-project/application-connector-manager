@@ -8,9 +8,9 @@ import (
 	"github.com/kyma-incubator/compass/components/director/pkg/correlation"
 
 	gqlschema "github.com/kyma-incubator/compass/components/connector/pkg/graphql/externalschema"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/certificates"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/compass"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/pkg/apis/compass/v1alpha1"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/certificates"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/compass"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/pkg/apis/compass/v1alpha1"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )

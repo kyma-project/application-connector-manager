@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	gqlschema "github.com/kyma-incubator/compass/components/connector/pkg/graphql/externalschema"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/graphql/mocks"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/graphql/mocks"
 	gql "github.com/machinebox/graphql"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"

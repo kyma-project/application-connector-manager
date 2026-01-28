@@ -3,14 +3,14 @@ package serviceapi
 import (
 	"testing"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/authorization"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/model"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/metadata/model"
 
-	secretsmocks "github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/secrets/mocks"
+	secretsmocks "github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/metadata/secrets/mocks"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/applications"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apperrors"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/metadata/applications"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apperrors"
 	"github.com/stretchr/testify/assert"
 )
 

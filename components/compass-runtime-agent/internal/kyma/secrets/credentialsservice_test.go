@@ -8,13 +8,13 @@ import (
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/apperrors"
-	k8smocks "github.com/kyma-project/kyma/components/compass-runtime-agent/internal/k8sconsts/mocks"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/applications"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/model"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/secrets/mocks"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/secrets/strategy"
-	strategyMocks "github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/secrets/strategy/mocks"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/apperrors"
+	k8smocks "github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/k8sconsts/mocks"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/applications"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/model"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/secrets/mocks"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/secrets/strategy"
+	strategyMocks "github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/secrets/strategy/mocks"
 )
 
 const (

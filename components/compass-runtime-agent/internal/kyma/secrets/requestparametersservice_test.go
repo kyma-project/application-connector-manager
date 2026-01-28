@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/apperrors"
-	k8smocks "github.com/kyma-project/kyma/components/compass-runtime-agent/internal/k8sconsts/mocks"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/secrets/mocks"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/secrets/strategy"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/apperrors"
+	k8smocks "github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/k8sconsts/mocks"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/secrets/mocks"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/secrets/strategy"
 )
 
 var (

@@ -1,12 +1,12 @@
 package applications
 
 import (
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/normalization"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/normalization"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/k8sconsts"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/kyma/model"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/k8sconsts"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/kyma/model"
 )
 
 const defaultDescription = "Description not provided"

@@ -1,7 +1,7 @@
 FROM --platform=$BUILDPLATFORM golang:1.25.6-alpine3.23 AS builder
 ARG TARGETOS
 ARG TARGETARCH
-ARG DOCK_PKG_DIR=/go/src/github.com/kyma-project/kyma/components/central-application-gateway
+ARG DOCK_PKG_DIR=/go/src/github.com/kyma-project/application-connector-manager/components/central-application-gateway
 
 WORKDIR $DOCK_PKG_DIR
 
@@ -25,7 +25,7 @@ LABEL source=git@github.com:kyma-project/kyma.git
 WORKDIR /app
 
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /go/src/github.com/kyma-project/kyma/components/central-application-gateway/applicationgateway .
+COPY --from=builder /go/src/github.com/kyma-project/application-connector-manager/components/central-application-gateway/applicationgateway .
 
 COPY --from=builder /etc_passwd /etc/passwd
 USER nobody

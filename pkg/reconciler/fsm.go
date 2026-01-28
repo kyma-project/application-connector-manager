@@ -14,7 +14,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
@@ -28,7 +27,7 @@ func (f stateFn) name() string {
 	return runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
 }
 
-type Watch = func(src source.Source, eventhandler handler.EventHandler, predicates ...predicate.Predicate) error
+type Watch = func(src source.Source) error
 
 type K8s struct {
 	client.Client

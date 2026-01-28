@@ -3,7 +3,6 @@ package testing
 import (
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 
@@ -28,7 +27,7 @@ var (
 )
 
 func LoadTestData(st StateTest) (map[string][]unstructured.Unstructured, error) {
-	fullDirPath, err := filepath.Abs(path.Join("testdata", string(st)))
+	fullDirPath, err := filepath.Abs(filepath.Join("testdata", string(st)))
 	if err != nil {
 		return nil, fmt.Errorf("unable to determine absolute path: %w", err)
 	}
@@ -37,6 +36,8 @@ func LoadTestData(st StateTest) (map[string][]unstructured.Unstructured, error) 
 	if err != nil {
 		return nil, fmt.Errorf("unable to open test data directory: %w", err)
 	}
+	defer dirFile.Close()
+
 	// list test data files
 	dirEntries, err := dirFile.ReadDir(-1)
 	if err != nil {
@@ -44,28 +45,27 @@ func LoadTestData(st StateTest) (map[string][]unstructured.Unstructured, error) 
 	}
 	// filter out non yaml files
 	dirEntries = slices.DeleteFunc(dirEntries, func(e os.DirEntry) bool {
-		info, err := e.Info()
-		if err != nil {
-			return false
-		}
-
-		isYAML := strings.HasSuffix(info.Name(), ".yaml")
-		return info.IsDir() || !isYAML
+		isYAML := strings.HasSuffix(e.Name(), ".yaml")
+		return e.IsDir() || !isYAML
 	})
 	// prepare results
 	result := map[string][]unstructured.Unstructured{}
 	for _, e := range dirEntries {
-		fullElementPath := path.Join(fullDirPath, e.Name())
-		file, err := os.Open(fullElementPath)
+		fullElementPath := filepath.Join(fullDirPath, e.Name())
+		fileData, err := func() ([]unstructured.Unstructured, error) {
+			file, err := os.Open(fullElementPath)
+			if err != nil {
+				return nil, fmt.Errorf("unable to open test data file: %w", err)
+			}
+			defer file.Close()
+
+			return yaml.LoadData(file)
+		}()
+
 		if err != nil {
-			return nil, fmt.Errorf("unable to open test data file: %w", err)
+			return nil, fmt.Errorf("unable to extract content from test data file: %w", err)
 		}
-		// extract data from data file
-		data, err := yaml.LoadData(file)
-		if err != nil {
-			return nil, fmt.Errorf("unable to extrat content from test data file: %w", err)
-		}
-		result[e.Name()] = data
+		result[e.Name()] = fileData
 	}
 	return result, nil
 }

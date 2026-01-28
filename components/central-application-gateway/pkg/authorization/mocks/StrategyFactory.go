@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	authorization "github.com/kyma-project/kyma/components/central-application-gateway/pkg/authorization"
+	authorization "github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/authorization"
 	mock "github.com/stretchr/testify/mock"
 )
 

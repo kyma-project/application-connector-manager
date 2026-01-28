@@ -3,9 +3,9 @@
 package fake
 
 import (
-	clientset "github.com/kyma-project/kyma/components/compass-runtime-agent/pkg/client/clientset/versioned"
-	compassv1alpha1 "github.com/kyma-project/kyma/components/compass-runtime-agent/pkg/client/clientset/versioned/typed/compass/v1alpha1"
-	fakecompassv1alpha1 "github.com/kyma-project/kyma/components/compass-runtime-agent/pkg/client/clientset/versioned/typed/compass/v1alpha1/fake"
+	clientset "github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/pkg/client/clientset/versioned"
+	compassv1alpha1 "github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/pkg/client/clientset/versioned/typed/compass/v1alpha1"
+	fakecompassv1alpha1 "github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/pkg/client/clientset/versioned/typed/compass/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"

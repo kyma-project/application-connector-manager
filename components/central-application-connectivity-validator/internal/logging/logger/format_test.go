@@ -3,7 +3,7 @@ package logger_test
 import (
 	"testing"
 
-	"github.com/kyma-project/kyma/components/central-application-connectivity-validator/internal/logging/logger"
+	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/logging/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

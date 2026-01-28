@@ -5,7 +5,7 @@ package versioned
 import (
 	"fmt"
 
-	compassv1alpha1 "github.com/kyma-project/kyma/components/compass-runtime-agent/pkg/client/clientset/versioned/typed/compass/v1alpha1"
+	compassv1alpha1 "github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/pkg/client/clientset/versioned/typed/compass/v1alpha1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"

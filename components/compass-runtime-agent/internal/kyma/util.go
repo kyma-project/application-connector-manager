@@ -4,8 +4,8 @@ import (
 	memoize "github.com/kofalt/go-memoize"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/internal/apperrors"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apis/applicationconnector/v1alpha1"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/apperrors"
 )
 
 func newResult(application v1alpha1.Application, applicationID string, operation Operation, appError apperrors.AppError) Result {

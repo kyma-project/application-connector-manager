@@ -1,10 +1,10 @@
-module github.com/kyma-project/kyma/components/central-application-gateway
+module github.com/kyma-project/application-connector-manager/components/central-application-gateway
 
-go 1.25.5
+go 1.25.6
 
 require (
 	github.com/gorilla/mux v1.8.1
-	github.com/oklog/run v1.1.0
+	github.com/oklog/run v1.2.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/zap v1.27.1

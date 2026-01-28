@@ -6,10 +6,10 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/applications"
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/model"
-	"github.com/kyma-project/kyma/components/central-application-gateway/internal/metadata/serviceapi"
-	"github.com/kyma-project/kyma/components/central-application-gateway/pkg/apperrors"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/metadata/applications"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/metadata/model"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/internal/metadata/serviceapi"
+	"github.com/kyma-project/application-connector-manager/components/central-application-gateway/pkg/apperrors"
 )
 
 // ServiceDefinitionService is a service that manages ServiceDefinition objects.

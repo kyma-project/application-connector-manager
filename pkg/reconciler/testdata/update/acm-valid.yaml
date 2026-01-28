@@ -2,82 +2,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: central-application-gateway
-  namespace: kyma-system
-  labels:
-    app: central-application-gateway
-    release: application-connector
-    app.kubernetes.io/name: central-application-gateway
-    app.kubernetes.io/managed-by: application-connector-manager
-    app.kubernetes.io/instance: application-connector
-    app.kubernetes.io/part-of: application-connector-manager
-spec:
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-  selector:
-    matchLabels:
-      app: central-application-gateway
-      release: application-connector
-  template:
-    metadata:
-      annotations:
-        sidecar.istio.io/inject: "true"
-      labels:
-        app: central-application-gateway
-        app.kubernetes.io/part-of: application-connector-manager
-        release: application-connector
-    spec:
-      serviceAccountName: central-application-gateway
-      containers:
-      - name: central-application-gateway
-        image: europe-docker.pkg.dev/kyma-project/prod/central-application-gateway:v20230821-f9ec5ecd
-        imagePullPolicy: IfNotPresent
-        args:
-          - "/app/applicationgateway"
-          - "--proxyPort=8080"
-          - "--proxyPortCompass=8082"
-          - "--externalAPIPort=8081"
-          - "--applicationSecretsNamespace=kyma-system"
-          - "--requestTimeout=10"
-          - "--proxyTimeout=10"
-          - "--proxyCacheTTL=120"
-        readinessProbe:
-          httpGet:
-            path: /v1/health
-            port: 8081
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /v1/health
-            port: 8081
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        resources:
-          limits:
-            cpu: 500m
-            memory: 128Mi
-          requests:
-            cpu: 20m
-            memory: 64Mi
-        ports:
-          - containerPort: 8080
-            name: http-proxy
-          - containerPort: 8082
-            name: http-proxy-mps
-          - containerPort: 8081
-            name: http-api-port
-        securityContext:
-          runAsUser: 1000
-          privileged: false
-          allowPrivilegeEscalation: false
-      priorityClassName: central-application-gateway-priority-class
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: central-application-connectivity-validator
   namespace: kyma-system
   labels:
@@ -105,6 +29,13 @@ spec:
         app.kubernetes.io/part-of: application-connector-manager
         release: application-connector
     spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: "topology.kubernetes.io/zone"
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: central-application-connectivity-validator
       serviceAccountName: central-application-connectivity-validator
       containers:
         - name: central-application-connectivity-validator
@@ -116,7 +47,7 @@ spec:
             - "--externalAPIPort=8081"
             - "--eventingPathPrefixV1=/%%APP_NAME%%/v1/events"
             - "--eventingPathPrefixV2=/%%APP_NAME%%/v2/events"
-            - "--eventingPublisherHost=eventing-event-publisher-proxy.kyma-system"
+            - "--eventingPublisherHost=eventing-publisher-proxy.kyma-system"
             - "--eventingDestinationPath=/publish"
             - "--eventingPathPrefixEvents=/%%APP_NAME%%/events"
             - "--appNamePlaceholder=%%APP_NAME%%"
@@ -154,6 +85,90 @@ spec:
             privileged: false
             allowPrivilegeEscalation: false
       priorityClassName: central-application-connectivity-validator-priority-class
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: central-application-gateway
+  namespace: kyma-system
+  labels:
+    app: central-application-gateway
+    release: application-connector
+    app.kubernetes.io/name: central-application-gateway
+    app.kubernetes.io/managed-by: application-connector-manager
+    app.kubernetes.io/instance: application-connector
+    app.kubernetes.io/part-of: application-connector-manager
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: central-application-gateway
+      release: application-connector
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+      labels:
+        app: central-application-gateway
+        app.kubernetes.io/part-of: application-connector-manager
+        release: application-connector
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: "topology.kubernetes.io/zone"
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: central-application-gateway
+      serviceAccountName: central-application-gateway
+      containers:
+        - name: central-application-gateway
+          image: europe-docker.pkg.dev/kyma-project/prod/central-application-gateway:1.1.18
+          imagePullPolicy: IfNotPresent
+          args:
+            - "/app/applicationgateway"
+            - "--proxyPort=8080"
+            - "--proxyPortCompass=8082"
+            - "--externalAPIPort=8081"
+            - "--logLevel=info"
+            - "--applicationSecretsNamespace=kyma-system"
+            - "--requestTimeout=10"
+            - "--proxyTimeout=10"
+            - "--proxyCacheTTL=120"
+          readinessProbe:
+            httpGet:
+              path: /v1/health
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /v1/health
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 20m
+              memory: 64Mi
+          ports:
+            - containerPort: 8080
+              name: http-proxy
+            - containerPort: 8082
+              name: http-proxy-mps
+            - containerPort: 8081
+              name: http-api-port
+          securityContext:
+            runAsUser: 1000
+            privileged: false
+            allowPrivilegeEscalation: false
+      priorityClassName: central-application-gateway-priority-class
 ---
 # Source: compass-runtime-agent/templates/deployment.yaml
 apiVersion: apps/v1
@@ -197,13 +212,13 @@ spec:
             capabilities:
               drop:
                 - ALL
-            procMount: default
+            procMount: Default
             readOnlyRootFilesystem: true
           ports:
             - containerPort: 8090
               hostPort: 0
               name: http-health
-          image: europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:v20240402-b8ff9e34
+          image: europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:1.1.18
           imagePullPolicy: IfNotPresent
           args:
             - "/app/compass-runtime-agent"

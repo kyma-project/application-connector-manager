@@ -1,7 +1,7 @@
 FROM --platform=$BUILDPLATFORM golang:1.25.6-alpine3.23 AS builder
 ARG TARGETOS
 ARG TARGETARCH
-ARG DOCK_PKG_DIR=/go/src/github.com/kyma-project/kyma/components/central-application-connectivity-validator
+ARG DOCK_PKG_DIR=/go/src/github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator
 
 WORKDIR $DOCK_PKG_DIR
 
@@ -17,7 +17,7 @@ LABEL source=git@github.com:kyma-project/kyma.git
 
 WORKDIR /app
 
-COPY --from=builder /go/src/github.com/kyma-project/kyma/components/central-application-connectivity-validator/centralapplicationconnectivityvalidator .
+COPY --from=builder /go/src/github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/centralapplicationconnectivityvalidator .
 
 COPY --from=builder /etc_passwd /etc/passwd
 USER nobody
