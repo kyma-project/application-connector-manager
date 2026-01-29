@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: kyma-project.io--acm-module-allow-sidecar
+  name: kyma-project.io--acm-module-allow-to-sidecar
   namespace: system
 spec:
   podSelector:

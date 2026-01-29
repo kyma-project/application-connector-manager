@@ -1,6 +1,6 @@
 resources:
   - allow-k8s-api.yaml
-  - allow-egress-dns.yaml
-  - allow-istio-sidecar.yaml
+  - allow-to-dns.yaml
+  - allow-to-istio.yaml
   - allow-from-istio.yml
   - allow-metrics-scrapping.yaml
