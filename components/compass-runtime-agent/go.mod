@@ -11,7 +11,7 @@ require (
 	github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260121152147-3c2682d7e0e1
 	github.com/machinebox/graphql v0.2.3-0.20181106130121-3a9253180225
 	github.com/pkg/errors v0.9.1
-	github.com/sirupsen/logrus v1.9.3
+	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
 	github.com/vrischmann/envconfig v1.4.1
 	k8s.io/api v0.35.0
