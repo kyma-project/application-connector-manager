@@ -639,7 +639,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: replace.me:latest
+        image: europe-docker.pkg.dev/kyma-project/prod/application-connector-manager:1.1.18-experimental
         livenessProbe:
           httpGet:
             path: /healthz
