@@ -3,10 +3,6 @@ kind: NetworkPolicy
 metadata:
   name: kyma-project.io--acm-module-to-dns
   namespace: system
-  labels:
-    app.kubernetes.io/name: acm-controller
-    app.kubernetes.io/managed-by: kustomize
-    purpose: dns
 spec:
   egress:
     - ports:

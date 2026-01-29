@@ -1,8 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: kyma-project.io--acm-module-allow-sidecar
-  namespace: system
+  name: kyma-project.io--acm-module-allow-from-istiod
 spec:
   podSelector:
     matchExpressions:
@@ -14,15 +13,18 @@ spec:
           - central-application-gateway
           - central-application-connectivity-validator
   policyTypes:
-    - Egress
-  egress:
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: istio-system
-          podSelector:
-            matchLabels:
-              app.kubernetes.io/name: istiod
-      ports:
+    - Ingress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 15010
         - protocol: TCP
           port: 15012
+        - protocol: TCP
+          port: 15017
+        - protocol: TCP
+          port: 15014
+        - protocol: TCP
+          port: 15021
+        - protocol: TCP
+          port: 15090

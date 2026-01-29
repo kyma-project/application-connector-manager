@@ -3,10 +3,6 @@ kind: NetworkPolicy
 metadata:
   name: kyma-project.io--acm-compass-allow-from-sidecar
   namespace: system
-  labels:
-    app.kubernetes.io/name: acm-controller
-    app.kubernetes.io/managed-by: kustomize
-    purpose: acm-sidecar
 spec:
   podSelector:
     matchLabels:
