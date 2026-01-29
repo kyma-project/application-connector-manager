@@ -4,6 +4,7 @@ metadata:
   finalizers:
   - application-connector-manager.kyma-project.io/deletion-hook
   labels:
+    kyma-project.io/module: application-connector
     app.kubernetes.io/instance: application-connector
     app.kubernetes.io/managed-by: application-connector-manager
     app.kubernetes.io/name: application-connector
@@ -31,6 +32,7 @@ metadata:
   finalizers:
   - application-connector-manager.kyma-project.io/deletion-hook
   labels:
+    kyma-project.io/module: application-connector
     app: central-application-connectivity-validator
     app.kubernetes.io/instance: application-connector
     app.kubernetes.io/managed-by: application-connector-manager

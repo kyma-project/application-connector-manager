@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kyma-project.io--acm-module-allow-to-sidecar
+  namespace: system
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - application-connector-manager
+          - compass-runtime-agent
+          - central-application-gateway
+          - central-application-connectivity-validator
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: istio-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: istiod
+      ports:
+        - protocol: TCP
+          port: 15012

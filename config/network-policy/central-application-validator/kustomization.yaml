@@ -1,0 +1,3 @@
+resources:
+  - allow-from-ingress-gateway.yaml
+  - allow-to-eventing.yaml
