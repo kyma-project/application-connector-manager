@@ -2,8 +2,8 @@ package init
 
 import (
 	"context"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/pkg/apis/compass/v1alpha1"
-	"github.com/kyma-project/kyma/components/compass-runtime-agent/pkg/client/clientset/versioned/fake"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/pkg/apis/compass/v1alpha1"
+	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/pkg/client/clientset/versioned/fake"
 	"github.com/stretchr/testify/require"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"

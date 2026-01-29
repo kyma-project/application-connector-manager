@@ -2,12 +2,13 @@ package init
 
 import (
 	"context"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/init/types"
+	"testing"
+
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/init/types"
 	"github.com/stretchr/testify/require"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/fake"
-	"testing"
 )
 
 func TestConfigurationSecret(t *testing.T) {

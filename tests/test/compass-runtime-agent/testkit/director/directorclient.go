@@ -8,9 +8,9 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
-	gql "github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/graphql"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/oauth"
-	gcli "github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/third_party/machinebox/graphql"
+	gql "github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/graphql"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/oauth"
+	gcli "github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/third_party/machinebox/graphql"
 )
 
 const (

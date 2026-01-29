@@ -1,7 +1,7 @@
 package init
 
 import (
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/init/types"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/init/types"
 )
 
 type compassconfigurator struct {

@@ -3,7 +3,7 @@ package graphql
 import (
 	"context"
 	"crypto/tls"
-	"github.com/kyma-project/kyma/tests/components/application-connector/test/compass-runtime-agent/testkit/third_party/machinebox/graphql"
+	"github.com/kyma-project/application-connector-manager/tests/test/compass-runtime-agent/testkit/third_party/machinebox/graphql"
 	"net/http"
 	"time"
 

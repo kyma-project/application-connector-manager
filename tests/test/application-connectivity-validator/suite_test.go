@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/kyma-project/kyma/tests/components/application-connector/internal/testkit/httpd"
+	"github.com/kyma-project/application-connector-manager/tests/internal/testkit/httpd"
 )
 
 const v1EventsFormat = "http://central-application-connectivity-validator.kyma-system:8080/%s/v1/events"

@@ -8,7 +8,7 @@ import (
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/kyma-project/kyma/tests/components/application-connector/internal/testkit/httpd"
+	"github.com/kyma-project/application-connector-manager/tests/internal/testkit/httpd"
 )
 
 var applications = []string{"positive-authorisation", "negative-authorisation", "path-related-error-handling", "missing-resources-error-handling", "proxy-cases", "proxy-errors", "redirects", "code-rewriting"}
