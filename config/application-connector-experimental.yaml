@@ -755,7 +755,7 @@ kind: NetworkPolicy
 metadata:
   labels:
     kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-module-allow-from-istiod
+  name: application-connector-kyma-project.io--acm-module-allow-from-sidecar
   namespace: kyma-system
 spec:
   ingress:
@@ -814,7 +814,7 @@ kind: NetworkPolicy
 metadata:
   labels:
     kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-module-allow-sidecar
+  name: application-connector-kyma-project.io--acm-module-allow-to-sidecar
   namespace: kyma-system
 spec:
   egress:
@@ -845,7 +845,7 @@ kind: NetworkPolicy
 metadata:
   labels:
     kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-module-api-server
+  name: application-connector-kyma-project.io--acm-module-to-api-server
   namespace: kyma-system
 spec:
   egress:
