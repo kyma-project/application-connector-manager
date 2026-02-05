@@ -1,0 +1,4 @@
+resources:
+  - allow-from-cluster-workload.yaml
+  - allow-from-health-check.yaml
+  - allow-to-external-system.yaml

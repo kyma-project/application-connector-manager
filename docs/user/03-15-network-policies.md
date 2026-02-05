@@ -1,0 +1,54 @@
+# Network Policies
+
+Learn about the network policies for the Application Connector module and how to manage them.
+
+## Default Network Policies
+
+To increase security, the Application Connector module creates network policies that control traffic to and from its Pods. The policies are organized into the following categories:
+
+### Core Policies
+
+These policies apply to all Application Connector module components (Application Connector Manager, Compass Runtime Agent, Central Application Gateway, and Central Application Connectivity Validator):
+
+| Policy Name | Type | Description |
+|-------------|------|-------------|
+| `kyma-project.io--acm-module-to-api-server` | Egress | Allows egress from the Application Connector module Pods to any destination on TCP port 443 (for example, Kubernetes API server) |
+| `kyma-project.io--acm-module-to-dns` | Egress | Allows egress from the Application Connector module Pods to DNS services (UDP/TCP port 53, 8053) for cluster and external DNS resolution |
+| `kyma-project.io--acm-module-allow-to-sidecar` | Egress | Allows egress from the Application Connector module Pods to Istio's istiod on TCP port 15012 for sidecar configuration |
+| `kyma-project.io--acm-module-allow-from-sidecar` | Ingress | Allows ingress to the Application Connector module Pods from Istio sidecars on TCP ports 15010, 15012, 15017, 15014, 15021, and 15090 |
+| `kyma-project.io--acm-module-allow-metrics` | Ingress | Allows ingress to the Application Connector Manager Pods on TCP port 8080 from Pods labeled `networking.kyma-project.io/metrics-scraping: allowed` (metrics scraping) |
+
+### Central Application Gateway Policies
+
+These policies apply specifically to the Central Application Gateway component:
+
+| Policy Name | Type | Description |
+|-------------|------|-------------|
+| `kyma-project.io--acm-gateway-allow-from-cluster-workload` | Ingress | Allows ingress to the Central Application Gateway Pods on TCP ports 8080 and 8082 from any source within the cluster |
+| `kyma-project.io--acm-gateway-allow-from-health-check` | Ingress | Allows ingress to the Central Application Gateway Pods on TCP port 8081 for health checks |
+| `kyma-project.io--acm-gateway-allow-to-external-system` | Egress | Allows egress from the Central Application Gateway Pods to external systems on any port |
+
+### Central Application Connectivity Validator Policies
+
+These policies apply specifically to the Central Application Connectivity Validator component:
+
+| Policy Name | Type | Description |
+|-------------|------|-------------|
+| `kyma-project.io--acm-validator-allow-from-istio-ingressgateway` | Ingress | Allows ingress to the Validator Pods on TCP port 8080 from Istio Ingress Gateway in the `istio-system` namespace |
+| `kyma-project.io--acm-validator-allow-to-eventing` | Egress | Allows egress from the Validator Pods to the Eventing Publisher Proxy in the `kyma-system` namespace |
+
+### Compass Runtime Agent Policies
+
+These policies apply specifically to the Compass Runtime Agent component:
+
+| Policy Name | Type | Description |
+|-------------|------|-------------|
+| `kyma-project.io--acm-compass-allow-from-sidecar` | Ingress | Allows ingress to the Compass Runtime Agent Pods on TCP port 443 from Istio's istiod in the `istio-system` namespace |
+
+## Verify Status
+
+To check if the network policies are active, run:
+
+```bash
+kubectl get networkpolicies -n kyma-system -l kyma-project.io/module=application-connector
+```
