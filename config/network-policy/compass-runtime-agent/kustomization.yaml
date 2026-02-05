@@ -1,2 +1,2 @@
 resources:
-  - allow-from-istio-sidecar.yaml
+  - allow-from-healthcheck.yaml

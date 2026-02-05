@@ -1,16 +1,16 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: kyma-project.io--acm-gateway-allow-from-health-check
+  name: kyma-project.io--acm-compass-allow-from-health-check
   namespace: system
 spec:
   podSelector:
     matchLabels:
-      app: central-application-gateway
+      app: compass-runtime-agent
   policyTypes:
     - Ingress
   ingress:
     - ports:
-      - protocol: TCP
-        port: 8081
+        - protocol: TCP
+          port: 8090
       from: []

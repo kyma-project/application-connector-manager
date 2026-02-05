@@ -4,3 +4,5 @@ resources:
   - allow-to-istio.yaml
   - allow-from-istio.yml
   - allow-metrics-scrapping.yaml
+  - allow-to-external-systems.yaml
+

@@ -1,3 +1,4 @@
 resources:
-  - allow-from-ingress-gateway.yaml
+  - allow-from-healthcheck.yaml
   - allow-to-eventing.yaml
+  - allow-from-ingress-gateway.yaml

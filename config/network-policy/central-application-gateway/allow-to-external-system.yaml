@@ -10,4 +10,6 @@ spec:
   policyTypes:
     - Egress
   egress:
-    - ports: []
+    - ports:
+        - protocol: TCP
+          port: 443

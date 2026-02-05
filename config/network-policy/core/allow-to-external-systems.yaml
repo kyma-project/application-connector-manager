@@ -1,22 +1,24 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: kyma-project.io--acm-module-allow-from-sidecar
+  name: kyma-project.io--acm-module-allow-to-external-system
+  namespace: system
 spec:
   podSelector:
     matchExpressions:
       - key: app
         operator: In
         values:
-          - application-connector-manager
           - compass-runtime-agent
           - central-application-gateway
-          - central-application-connectivity-validator
   policyTypes:
-    - Ingress
-  ingress:
-    - ports:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 169.254.0.0/16
+      ports:
         - protocol: TCP
-          port: 15021
-        - protocol: TCP
-          port: 15090
+          port: 443

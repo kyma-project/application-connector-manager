@@ -17,3 +17,6 @@ spec:
         podSelector:
           matchLabels:
             app.kubernetes.io/name: eventing-publisher-proxy
+      ports:
+        - protocol: TCP
+          port: 80

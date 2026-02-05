@@ -1007,27 +1007,6 @@ roleRef:
   name: compass-runtime-agent-ca-cert-role
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: compass-runtime-agent/templates/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: compass-runtime-agent-service
-  namespace: kyma-system
-  labels:
-    kyma-project.io/module: application-connector
-    control-plane: compass-runtime-agent
-    controller-tools.k8s.io: "1.0"
-    app.kubernetes.io/name: compass-runtime-agent
-    app.kubernetes.io/managed-by: application-connector-manager
-    app.kubernetes.io/instance: application-connector
-    app.kubernetes.io/part-of: application-connector-manager
-spec:
-  selector:
-    control-plane: compass-runtime-agent
-    controller-tools.k8s.io: "1.0"
-  ports:
-    - port: 443
----
 # Source: compass-runtime-agent/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
