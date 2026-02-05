@@ -680,8 +680,7 @@ metadata:
   namespace: kyma-system
 spec:
   ingress:
-  - from: []
-    ports:
+  - ports:
     - port: 8090
       protocol: TCP
   podSelector:
@@ -719,8 +718,7 @@ metadata:
   namespace: kyma-system
 spec:
   ingress:
-  - from: []
-    ports:
+  - ports:
     - port: 8081
       protocol: TCP
   podSelector:
@@ -807,10 +805,7 @@ metadata:
   namespace: kyma-system
 spec:
   egress:
-  - ports:
-    - port: 443
-      protocol: TCP
-    to:
+  - to:
     - ipBlock:
         cidr: 0.0.0.0/0
         except:
@@ -938,6 +933,24 @@ kind: NetworkPolicy
 metadata:
   labels:
     kyma-project.io/module: application-connector
+  name: application-connector-kyma-project.io--acm-validator-allow-from-health-check
+  namespace: kyma-system
+spec:
+  ingress:
+  - ports:
+    - port: 8081
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app: central-application-connectivity-validator
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    kyma-project.io/module: application-connector
   name: application-connector-kyma-project.io--acm-validator-allow-from-istio-ingressgateway
   namespace: kyma-system
 spec:
@@ -982,22 +995,3 @@ spec:
       app: central-application-connectivity-validator
   policyTypes:
   - Egress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--validator-allow-from-health-check
-  namespace: kyma-system
-spec:
-  ingress:
-  - from: []
-    ports:
-    - port: 8081
-      protocol: TCP
-  podSelector:
-    matchLabels:
-      app: central-application-connectivity-validator
-  policyTypes:
-  - Ingress
