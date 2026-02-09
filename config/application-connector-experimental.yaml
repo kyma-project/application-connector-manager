@@ -981,13 +981,10 @@ metadata:
 spec:
   egress:
   - ports:
-    - port: 80
+    - port: 8080
       protocol: TCP
     to:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: kyma-system
-      podSelector:
+    - podSelector:
         matchLabels:
           app.kubernetes.io/name: eventing-publisher-proxy
   podSelector:
