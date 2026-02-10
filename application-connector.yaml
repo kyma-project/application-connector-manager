@@ -6,6 +6,7 @@ metadata:
   name: central-application-connectivity-validator
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: central-application-connectivity-validator
     release: application-connector
     app.kubernetes.io/name: central-application-connectivity-validator
@@ -20,6 +21,7 @@ metadata:
   name: central-application-gateway
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: central-application-gateway
     release: application-connector
     app.kubernetes.io/name: central-application-gateway
@@ -33,6 +35,7 @@ kind: ClusterRole
 metadata:
   name: central-application-connectivity-validator-role
   labels:
+    kyma-project.io/module: application-connector
     app: central-application-connectivity-validator
     release: application-connector
     app.kubernetes.io/name: central-application-connectivity-validator
@@ -50,6 +53,7 @@ kind: ClusterRole
 metadata:
   name: central-application-gateway-role
   labels:
+    kyma-project.io/module: application-connector
     app: central-application-gateway
     release: application-connector
     app.kubernetes.io/name: central-application-gateway
@@ -70,6 +74,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: application-connector-application-connector
   labels:
+    kyma-project.io/module: application-connector
     app: application-connector
     release: application-connector
     app.kubernetes.io/name: application-connector
@@ -87,6 +92,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: central-application-connectivity-validator-rolebinding
   labels:
+    kyma-project.io/module: application-connector
     app: central-application-connectivity-validator
     release: application-connector
     app.kubernetes.io/name: central-application-connectivity-validator
@@ -108,6 +114,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: central-application-gateway-rolebinding
   labels:
+    kyma-project.io/module: application-connector
     app: central-application-gateway
     release: application-connector
     app.kubernetes.io/name: central-application-gateway
@@ -129,6 +136,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: application-connector-application-connector
   labels:
+    kyma-project.io/module: application-connector
     app: application-connector
     release: application-connector
     app.kubernetes.io/name: application-connector
@@ -151,6 +159,7 @@ metadata:
   name: central-application-connectivity-validator
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     application: central-application-connectivity-validator
     app: central-application-connectivity-validator
     release: application-connector
@@ -178,6 +187,7 @@ metadata:
   name: central-application-gateway
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     application: central-application-gateway
     app: central-application-gateway
     release: application-connector
@@ -205,6 +215,8 @@ apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
   name: central-application-gateway-priority-class
+  labels:
+    kyma-project.io/module: application-connector
 value: 2000000
 globalDefault: false
 description: "Scheduling priority of central-application-gateway component. By default, central-application-gateway should not be blocked by unschedulable user workloads."
@@ -213,6 +225,8 @@ apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
   name: central-application-connectivity-validator-priority-class
+  labels:
+    kyma-project.io/module: application-connector
 value: 2000000
 globalDefault: false
 description: "Scheduling priority of central-application-connectivity-validator component. By default, central-application-connectivity-validator should not be blocked by unschedulable user workloads."
@@ -224,6 +238,7 @@ metadata:
   name: central-application-connectivity-validator
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: central-application-connectivity-validator
     release: application-connector
     app.kubernetes.io/name: central-application-connectivity-validator
@@ -244,6 +259,7 @@ spec:
       annotations:
         sidecar.istio.io/inject: "true"
       labels:
+        kyma-project.io/module: application-connector
         app: central-application-connectivity-validator
         app.kubernetes.io/part-of: application-connector-manager
         release: application-connector
@@ -312,6 +328,7 @@ metadata:
   name: central-application-gateway
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: central-application-gateway
     release: application-connector
     app.kubernetes.io/name: central-application-gateway
@@ -332,6 +349,7 @@ spec:
       annotations:
         sidecar.istio.io/inject: "true"
       labels:
+        kyma-project.io/module: application-connector
         app: central-application-gateway
         app.kubernetes.io/part-of: application-connector-manager
         release: application-connector
@@ -397,6 +415,7 @@ metadata:
   name: central-application-connectivity-validator
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: central-application-connectivity-validator
     release: application-connector
     app.kubernetes.io/name: central-application-connectivity-validator
@@ -425,6 +444,7 @@ metadata:
   name: central-application-gateway
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: central-application-gateway
     release: application-connector
     app.kubernetes.io/name: central-application-gateway
@@ -452,6 +472,8 @@ metadata:
   annotations:
     "helm.sh/resource-policy": keep
   name: applications.applicationconnector.kyma-project.io
+  labels:
+    kyma-project.io/module: application-connector
 spec:
   group: applicationconnector.kyma-project.io
   preserveUnknownFields: false
@@ -635,6 +657,8 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     "helm.sh/resource-policy": keep
+  labels:
+    kyma-project.io/module: application-connector
   name: compassconnections.compass.kyma-project.io
 spec:
   group: compass.kyma-project.io
@@ -774,6 +798,8 @@ apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
   name: compass-runtime-agent-priority-class
+  labels:
+    kyma-project.io/module: application-connector
 value: 2000000
 globalDefault: false
 description: "Scheduling priority of compass-runtime-agent component. By default, compass-runtime-agent should not be blocked by unschedulable user workloads."
@@ -785,6 +811,7 @@ metadata:
   name: compass-runtime-agent
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: compass-runtime-agent
     app.kubernetes.io/name: compass-runtime-agent
     app.kubernetes.io/managed-by: application-connector-manager
@@ -797,6 +824,8 @@ kind: ConfigMap
 metadata:
   name: skr-configmap
   namespace: kyma-system
+  labels:
+    kyma-project.io/module: application-connector
 data:
   is-managed-kyma-runtime: "true"
 ---
@@ -806,6 +835,7 @@ kind: ClusterRole
 metadata:
   name: compass-runtime-agent
   labels:
+    kyma-project.io/module: application-connector
     app: compass-runtime-agent
     release: application-connector
     app.kubernetes.io/name: compass-runtime-agent
@@ -832,6 +862,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: compass-runtime-agent
   labels:
+    kyma-project.io/module: application-connector
     app: compass-runtime-agent
     release: compass-runtime-agent
     app.kubernetes.io/name: compass-runtime-agent
@@ -854,6 +885,7 @@ metadata:
   name: compass-runtime-agent
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: compass-runtime-agent
     release: compass-runtime-agent
     app.kubernetes.io/name: compass-runtime-agent
@@ -875,6 +907,7 @@ metadata:
   name: compass-runtime-agent-client-cert-role
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: compass-runtime-agent
     release: compass-runtime-agent
     app.kubernetes.io/name: compass-runtime-agent
@@ -893,6 +926,7 @@ metadata:
   name: compass-runtime-agent-ca-cert-role
   namespace: istio-system
   labels:
+    kyma-project.io/module: application-connector
     app: compass-runtime-agent
     release: compass-runtime-agent
     app.kubernetes.io/name: compass-runtime-agent
@@ -911,6 +945,7 @@ metadata:
   name: compass-runtime-agent
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: compass-runtime-agent
     release: compass-runtime-agent
     app.kubernetes.io/name: compass-runtime-agent
@@ -933,6 +968,7 @@ metadata:
   name: compass-runtime-agent-client-cert-rolebinding
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: compass-runtime-agent
     release: application-connector
     app.kubernetes.io/name: compass-runtime-agent
@@ -955,6 +991,7 @@ metadata:
   name: compass-runtime-agent-ca-cert-rolebinding
   namespace: istio-system
   labels:
+    kyma-project.io/module: application-connector
     app: compass-runtime-agent
     release: compass-runtime-agent
     app.kubernetes.io/name: compass-runtime-agent
@@ -970,26 +1007,6 @@ roleRef:
   name: compass-runtime-agent-ca-cert-role
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: compass-runtime-agent/templates/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: compass-runtime-agent-service
-  namespace: kyma-system
-  labels:
-    control-plane: compass-runtime-agent
-    controller-tools.k8s.io: "1.0"
-    app.kubernetes.io/name: compass-runtime-agent
-    app.kubernetes.io/managed-by: application-connector-manager
-    app.kubernetes.io/instance: application-connector
-    app.kubernetes.io/part-of: application-connector-manager
-spec:
-  selector:
-    control-plane: compass-runtime-agent
-    controller-tools.k8s.io: "1.0"
-  ports:
-    - port: 443
----
 # Source: compass-runtime-agent/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -997,6 +1014,7 @@ metadata:
   name: compass-runtime-agent
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app: compass-runtime-agent
     release: application-connector
     app.kubernetes.io/name: compass-runtime-agent
@@ -1013,6 +1031,7 @@ spec:
       annotations:
         sidecar.istio.io/inject: "true"
       labels:
+        kyma-project.io/module: application-connector
         app: compass-runtime-agent
         release: compass-runtime-agent
     spec:
