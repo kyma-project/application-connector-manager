@@ -4,7 +4,7 @@ resolve-local:
 .PHONY: test
 test: envtest ## Run tests.
 	if [ -d "$(ARTIFACTS)" ]; then \
-		KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -v -coverprofile $(ARTIFACTS)/filtered.cov; \
+		KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -v -coverprofile $(ARTIFACTS)/cover.out; \
 	else \
 		KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -v; \
 	fi
