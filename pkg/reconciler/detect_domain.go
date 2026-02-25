@@ -27,7 +27,7 @@ func sFnDetectDomain(ctx context.Context, r *fsm, s *systemState) (stateFn, *ctr
 	// try to fetch domain name from config map
 	var cm v1.ConfigMap
 	if err := r.Get(ctx, gardenerCM, &cm); err != nil {
-		return stopWithErrorAndRequeue(fmt.Errorf("unable to detect domain"))
+		return stopWithErrorAndRequeue(fmt.Errorf("unable to detect domain: %w", err))
 	}
 
 	domainName, found := cm.Data["domain"]

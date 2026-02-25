@@ -1,6 +1,6 @@
 module github.com/kyma-project/application-connector-manager/tests
 
-go 1.25.6
+go 1.26.0
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
@@ -9,7 +9,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/kyma-incubator/compass/components/director v0.0.0-20220126084901-92232f5eced0
-	github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260122101734-6317fdbf1eda
+	github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260129085748-771e3115c77f
 	github.com/kyma-project/application-connector-manager/components/compass-runtime-agent v0.0.0-20260122101734-6317fdbf1eda
 	github.com/matryer/is v1.4.1
 	github.com/pkg/errors v0.9.1

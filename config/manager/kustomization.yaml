@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: europe-docker.pkg.dev/kyma-project/prod/application-connector-manager
-  newTag: 1.1.18-experimental
+  newTag: 1.2.0-experimental
