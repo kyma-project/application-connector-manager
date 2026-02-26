@@ -2,6 +2,16 @@ name: ACM Controller tests
 
 on:
   workflow_call:
+    outputs:
+      tag:
+        description: "Tag name if this is a tag push"
+        value: ${{ jobs.setup.outputs.tag }}
+      tag-experimental:
+        description: "Experimental tag name"
+        value: ${{ jobs.setup.outputs.tag-experimental }}
+      latest:
+        description: "Latest tag if this is a push to main"
+        value: ${{ jobs.setup.outputs.latest }}
   push:
     branches:
       - main

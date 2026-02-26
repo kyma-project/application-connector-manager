@@ -1,6 +1,13 @@
 name: Validator tests
 on:
   workflow_call:
+    outputs:
+      validator:
+        description: "Whether validator files changed"
+        value: ${{ jobs.setup.outputs.validator }}
+      test:
+        description: "Whether test files changed"
+        value: ${{ jobs.setup.outputs.test }}
   push:
     branches:
       - main
