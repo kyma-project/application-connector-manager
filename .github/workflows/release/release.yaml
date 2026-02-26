@@ -33,7 +33,12 @@ jobs:
 
   build-release-images:
     needs: [run-gateway-tests, run-validator-tests, run-cra-tests, run-controller-tests, run-integration-tests]
-    if: ${{ !cancelled() && !failure() }}
+    if: |
+      needs.run-gateway-tests.result == 'success' &&
+      needs.run-validator-tests.result == 'success' &&
+      needs.run-cra-tests.result == 'success' &&
+      needs.run-controller-tests.result == 'success' &&
+      needs.run-integration-tests.result == 'success'
     uses: ./.github/workflows/release/bump-images.yaml
 
   generate-release:
