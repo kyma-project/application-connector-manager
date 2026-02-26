@@ -11,7 +11,6 @@ The following tables list all network policies for the Application Connector mod
 
 **Core Policies**
 
-These policies apply to all Application Connector module components (Application Connector Manager, Compass Runtime Agent, Central Application Gateway, and Central Application Connectivity Validator):
 
 | Policy Name | Type | Description |
 |-------------|------|-------------|
