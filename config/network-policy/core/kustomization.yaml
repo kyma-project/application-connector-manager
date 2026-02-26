@@ -1,0 +1,8 @@
+resources:
+  - allow-k8s-api.yaml
+  - allow-to-dns.yaml
+  - allow-to-istio.yaml
+  - allow-from-istio.yml
+  - allow-metrics-scrapping.yaml
+  - allow-to-external-systems.yaml
+
