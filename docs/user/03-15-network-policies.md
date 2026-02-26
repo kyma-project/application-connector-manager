@@ -22,7 +22,6 @@ The following tables list all network policies for the Application Connector mod
 
 **Central Application Gateway Policies**
 
-These policies apply specifically to the Central Application Gateway component:
 
 | Policy Name | Type | Description |
 |-------------|------|-------------|
