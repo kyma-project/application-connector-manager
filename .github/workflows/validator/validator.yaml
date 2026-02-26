@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - "validator.yaml"
+      - ".github/workflows/validator/validator.yaml"
+      - ".github/workflows/validator/tests.yaml"
       - "components/central-application-connectivity-validator/**"
       - "!components/central-application-connectivity-validator/**.md"
       - "tests/**"
@@ -15,7 +16,8 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
-      - "validator.yaml"
+      - ".github/workflows/validator/validator.yaml"
+      - ".github/workflows/validator/tests.yaml"
       - "components/central-application-connectivity-validator/**"
       - "!components/central-application-connectivity-validator/**.md"
       - "tests/**"
