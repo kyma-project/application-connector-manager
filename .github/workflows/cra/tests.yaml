@@ -1,6 +1,13 @@
 name: CRA tests
 on:
   workflow_call:
+    outputs:
+      cra:
+        description: "Whether CRA files changed"
+        value: ${{ jobs.setup.outputs.cra }}
+      test:
+        description: "Whether test files changed"
+        value: ${{ jobs.setup.outputs.test }}
   push:
     branches:
       - main

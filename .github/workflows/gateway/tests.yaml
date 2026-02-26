@@ -1,6 +1,13 @@
 name: Gateway tests
 on:
   workflow_call:
+    outputs:
+      gateway:
+        description: "Whether gateway files changed"
+        value: ${{ jobs.setup.outputs.gateway }}
+      test:
+        description: "Whether test files changed"
+        value: ${{ jobs.setup.outputs.test }}
   push:
     branches:
       - main
