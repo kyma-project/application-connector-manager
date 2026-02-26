@@ -1,6 +1,7 @@
-name: tests
+name: Module integration tests
 
 on:
+  workflow_call:
   push:
     branches: [ "main" ]
 
@@ -23,4 +24,26 @@ jobs:
           go-version-file: 'go.mod'
 
     - name: Run integration tests without lifecycle-manager
-      run: make -C hack/ci run-without-lifecycle-manager
+      run: |
+        set -o pipefail
+        make -C hack/ci run-without-lifecycle-manager 2>&1 | tee module-integration-test.log
+
+    - name: Archive test results
+      if: success() || failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: module-integration-test
+        path: module-integration-test.log
+
+    - name: Integration test summary
+      if: success() || failure()
+      run: |
+        {
+          echo '## Module Integration Tests'
+          echo "<details>"
+          echo "<summary>click to expand logs</summary>"
+          printf '\n```\n'
+          cat module-integration-test.log
+          printf '\n```\n'
+          echo "</details>"
+        } >> $GITHUB_STEP_SUMMARY

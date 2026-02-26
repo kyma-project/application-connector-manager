@@ -42,7 +42,7 @@ jobs:
         run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
       - name: change CRA image
         if: ${{ inputs.cra-image != '' }}
-        uses: mikefarah/yq@master
+        uses: mikefarah/yq@5a7e72a743649b1b3a47d1a1d8214f3453173c51  # v4.52.4
         with:
           cmd: yq -i 'select(.kind == "Deployment" and .metadata.name == "compass-runtime-agent").spec.template.spec.containers[0].image = "${{ inputs.cra-image }}"' application-connector.yaml
       - name: run-tests

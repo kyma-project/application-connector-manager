@@ -1,12 +1,10 @@
-name: ACM
+name: ACM Controller tests
 
 on:
+  workflow_call:
   push:
     branches:
       - main
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+"
-      - "[0-9]+.[0-9]+.[0-9]+-*"
     paths:
       - .github/workflows/acm.yaml
       - main.go
@@ -32,10 +30,6 @@ on:
       - go.sum
       - go.mod
       - Dockerfile
-
-permissions:
-  id-token: write # This is required for requesting the JWT token
-  contents: read # This is required for actions/checkout
 
 jobs:
   setup:
@@ -105,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
-          name: acm-unit-test.log
+          name: controller-unit-test
           path: test.log
       - name: Generate summary
         if: success() || failure()
@@ -118,29 +112,4 @@ jobs:
             cat test.log
             printf '\n```\n'
             echo "</details>"
-          } >> $GITHUB_STEP_SUMMARY
-
-  build-image:
-    needs: setup
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: application-connector-manager
-      dockerfile: Dockerfile
-      context: .
-      tags: |
-        ${{ needs.setup.outputs.tag }}
-        ${{ needs.setup.outputs.tag-experimental }}
-        ${{ needs.setup.outputs.latest }}
-
-  print-images:
-    runs-on: ubuntu-latest
-    needs: [build-image]
-    steps:
-      - name: "Generate summary"
-        run: |
-          {
-            echo '## ACM Images'
-            printf '\n```json\n'
-            echo '${{ needs.build-image.outputs.images }}' | jq
-            printf '\n```\n'
           } >> $GITHUB_STEP_SUMMARY
