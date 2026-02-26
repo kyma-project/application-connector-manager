@@ -46,10 +46,12 @@ jobs:
           files_yaml: |
             validator:
               - components/central-application-connectivity-validator/**
-              - .github/workflows/validator.yaml
+              - ".github/workflows/validator/validator.yaml"
+              - ".github/workflows/validator/tests.yaml"
             test:
               - tests/**
-              - .github/workflows/validator.yaml
+              - ".github/workflows/validator/validator.yaml"
+              - ".github/workflows/validator/tests.yaml"
       - name: Fallback values
         id: fallback-values
         if: steps.detect-files.outcome != 'success' || github.event_name == 'workflow_call'
