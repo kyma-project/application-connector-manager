@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - "cra.yaml"
+      - ".github/workflows/cra/cra.yaml"
+      - ".github/workflows/cra/tests.yaml"
       - "components/compass-runtime-agent/**"
       - "!components/compass-runtime-agent/**.md"
       - "!components/compass-runtime-agent/hack/boilerplate.go.txt"
@@ -16,7 +17,8 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
-      - "cra.yaml"
+      - ".github/workflows/cra/cra.yaml"
+      - ".github/workflows/cra/tests.yaml"
       - "components/compass-runtime-agent/**"
       - "!components/compass-runtime-agent/**.md"
       - "!components/compass-runtime-agent/hack/boilerplate.go.txt"

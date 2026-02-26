@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - "gateway.yaml"
+      - ".github/workflows/gateway/gateway.yaml"
+      - ".github/workflows/gateway/tests.yaml"
       - "components/central-application-gateway/**"
       - "!components/central-application-gateway/**.md"
       - "tests/**"
@@ -15,7 +16,8 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
-      - "gateway.yaml"
+      - ".github/workflows/gateway/gateway.yaml"
+      - ".github/workflows/gateway/tests.yaml"
       - "components/central-application-gateway/**"
       - "!components/central-application-gateway/**.md"
       - "tests/**"
