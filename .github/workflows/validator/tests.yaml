@@ -1,11 +1,19 @@
-name: Validator
-
+name: Validator tests
 on:
+  workflow_call:
+    outputs:
+      validator:
+        description: "Whether validator files changed"
+        value: ${{ jobs.setup.outputs.validator }}
+      test:
+        description: "Whether test files changed"
+        value: ${{ jobs.setup.outputs.test }}
   push:
     branches:
       - main
     paths:
-      - ".github/workflows/validator.yaml"
+      - ".github/workflows/validator/validator.yaml"
+      - ".github/workflows/validator/tests.yaml"
       - "components/central-application-connectivity-validator/**"
       - "!components/central-application-connectivity-validator/**.md"
       - "tests/**"
@@ -13,19 +21,16 @@ on:
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.connectivity-validator"
   pull_request_target:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
     paths:
-      - ".github/workflows/validator.yaml"
+      - ".github/workflows/validator/validator.yaml"
+      - ".github/workflows/validator/tests.yaml"
       - "components/central-application-connectivity-validator/**"
       - "!components/central-application-connectivity-validator/**.md"
       - "tests/**"
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.connectivity-validator"
-
-permissions:
-  id-token: write # This is required for requesting the JWT token
-  contents: read # This is required for actions/checkout
 
 jobs:
   setup:
@@ -48,25 +53,18 @@ jobs:
           files_yaml: |
             validator:
               - components/central-application-connectivity-validator/**
-              - .github/workflows/validator.yaml
+              - ".github/workflows/validator/validator.yaml"
+              - ".github/workflows/validator/tests.yaml"
             test:
               - tests/**
-              - .github/workflows/validator.yaml
+              - ".github/workflows/validator/validator.yaml"
+              - ".github/workflows/validator/tests.yaml"
       - name: Fallback values
         id: fallback-values
-        if: steps.detect-files.outcome != 'success'
+        if: steps.detect-files.outcome != 'success' || github.event_name == 'workflow_call'
         run: |
           echo "validator_any_changed=true" >> $GITHUB_OUTPUT
           echo "test_any_changed=true" >> $GITHUB_OUTPUT
-
-  tags:
-    runs-on: ubuntu-latest
-    outputs:
-      latest: ${{ steps.latest.outputs.latest || '' }}
-    steps:
-      - id: latest
-        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && github.event_name == 'push'
-        run: echo "latest=latest" >> $GITHUB_OUTPUT
 
   unit-tests:
     needs: setup
@@ -102,7 +100,7 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
-          name: validator-unit-test.log
+          name: validator-unit-test
           path: ./components/central-application-connectivity-validator/test.log
       - name: Unit test summary
         if: success() || failure()
@@ -135,7 +133,7 @@ jobs:
         run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
       - name: Install yq
         run: sudo go install github.com/mikefarah/yq/v4@latest
-      - name: Run unit tests
+      - name: Run integration tests
         run: |
           set -o pipefail
           make -C tests/hack/ci k3d-validator-tests
@@ -143,61 +141,17 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: validator-integration-test.log
+          name: validator-integration-test
           path: application-connectivity-validator-test.log
       - name: Integration test summary
         if: success() || failure()
         run: |
           {
-            echo '## CRA Integration Tests'
+            echo '## Validator Integration Tests'
             echo "<details>"
             echo "<summary>click to expand logs</summary>"
             printf '\n```\n'
             cat application-connectivity-validator-test.log
             printf '\n```\n'
             echo "</details>"
-          } >> $GITHUB_STEP_SUMMARY
-
-  build-test-image:
-    needs: setup
-    if: needs.setup.outputs.test == 'true'
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: connectivity-validator-test
-      dockerfile: Dockerfile.connectivity-validator
-      context: tests
-
-  build-image:
-    needs: [setup, tags]
-    if: needs.setup.outputs.validator == 'true'
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: central-application-connectivity-validator
-      dockerfile: Dockerfile
-      context: components/central-application-connectivity-validator
-      tags: |
-        ${{ needs.tags.outputs.latest }}
-
-  print-images:
-    runs-on: ubuntu-latest
-
-    # if any of the build jobs succeeded - run this job
-    needs: [build-image, build-test-image]
-    if: always() && contains(needs.*.result, 'success')
-
-    steps:
-      - name: "Generate summary"
-        run: |
-          {
-            echo '## Validator Images'
-            printf '\n```json\n'
-            if [ "${{ needs.build-image.result }}" == "success" ]; then
-              echo '${{ needs.build-image.outputs.images }}' | jq
-            fi
-
-            if [ "${{ needs.build-test-image.result }}" == "success" ]; then
-              echo '${{ needs.build-test-image.outputs.images }}' | jq
-            fi
-
-            printf '\n```\n'
           } >> $GITHUB_STEP_SUMMARY

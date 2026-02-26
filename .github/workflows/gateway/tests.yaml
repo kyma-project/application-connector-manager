@@ -1,11 +1,19 @@
-name: App Gateway
-
+name: Gateway tests
 on:
+  workflow_call:
+    outputs:
+      gateway:
+        description: "Whether gateway files changed"
+        value: ${{ jobs.setup.outputs.gateway }}
+      test:
+        description: "Whether test files changed"
+        value: ${{ jobs.setup.outputs.test }}
   push:
     branches:
       - main
     paths:
-      - ".github/workflows/gateway.yaml"
+      - ".github/workflows/gateway/gateway.yaml"
+      - ".github/workflows/gateway/tests.yaml"
       - "components/central-application-gateway/**"
       - "!components/central-application-gateway/**.md"
       - "tests/**"
@@ -15,18 +23,14 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
-      - ".github/workflows/gateway.yaml"
+      - ".github/workflows/gateway/gateway.yaml"
+      - ".github/workflows/gateway/tests.yaml"
       - "components/central-application-gateway/**"
       - "!components/central-application-gateway/**.md"
       - "tests/**"
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.gateway"
-
-permissions:
-  id-token: write # This is required for requesting the JWT token
-  contents: read # This is required for actions/checkout
-
 jobs:
   setup:
     permissions:
@@ -48,25 +52,18 @@ jobs:
           files_yaml: |
             gateway:
               - components/central-application-gateway/**
-              - .github/workflows/gateway.yaml
+              - ".github/workflows/gateway/gateway.yaml"
+              - ".github/workflows/gateway/tests.yaml"
             test:
               - tests/**
-              - .github/workflows/gateway.yaml
+              - ".github/workflows/gateway/gateway.yaml"
+              - ".github/workflows/gateway/tests.yaml"
       - name: Fallback values
         id: fallback-values
-        if: steps.detect-files.outcome != 'success'
+        if: steps.detect-files.outcome != 'success' || github.event_name == 'workflow_call'
         run: |
           echo "gateway_any_changed=true" >> $GITHUB_OUTPUT
           echo "test_any_changed=true" >> $GITHUB_OUTPUT
-
-  tags:
-    runs-on: ubuntu-latest
-    outputs:
-      latest: ${{ steps.latest.outputs.latest || '' }}
-    steps:
-      - id: latest
-        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && github.event_name == 'push'
-        run: echo "latest=latest" >> $GITHUB_OUTPUT
 
   unit-tests:
     runs-on: ubuntu-latest
@@ -102,7 +99,7 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
-          name: gateway-unit-test.log
+          name: gateway-unit-test
           path: ./components/central-application-gateway/test.log
       - name: Unit test summary
         if: success() || failure()
@@ -136,7 +133,7 @@ jobs:
           K3D_URL: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh
           DEFAULT_K3D_VERSION: v5.8.3
         run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
-      - name: Run unit tests
+      - name: Run integration tests
         run: |
           set -o pipefail
           make -C tests/hack/ci k3d-gateway-tests
@@ -145,7 +142,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-gateway-test-results
-          path: application-gateway-test.log
+          path: k3d-application-gateway-test.log
       - name: Integration test summary
         if: success() || failure()
         run: |
@@ -154,64 +151,7 @@ jobs:
             echo "<details>"
             echo "<summary>click to expand logs</summary>"
             printf '\n```\n'
-            cat application-gateway-test.log
+            cat k3d-application-gateway-test.log
             printf '\n```\n'
             echo "</details>"
-          } >> $GITHUB_STEP_SUMMARY
-
-  build-test-image:
-    needs: setup
-    if: needs.setup.outputs.test == 'true'
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: gateway-test
-      dockerfile: Dockerfile.gateway
-      context: tests
-
-  build-mock-app-image:
-    needs: setup
-    if: needs.setup.outputs.test == 'true'
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: mock-app
-      dockerfile: Dockerfile.mockapp
-      context: tests
-
-  build-image:
-    needs: [setup, tags]
-    if: needs.setup.outputs.gateway == 'true'
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: central-application-gateway
-      dockerfile: Dockerfile
-      context: components/central-application-gateway
-      tags: |
-        ${{ needs.tags.outputs.latest }}
-
-  print-images:
-    runs-on: ubuntu-latest
-
-    # if any of the build jobs succeeded - run this job
-    needs: [build-image, build-test-image, build-mock-app-image]
-    if: always() && contains(needs.*.result, 'success')
-
-    steps:
-      - name: "Generate summary"
-        run: |
-          {
-            echo '## Gateway Images'
-            printf '\n```json\n'
-            if [ "${{ needs.build-image.result }}" == "success" ]; then
-              echo '${{ needs.build-image.outputs.images }}' | jq
-            fi
-
-            if [ "${{ needs.build-test-image.result }}" == "success" ]; then
-              echo '${{ needs.build-test-image.outputs.images }}' | jq
-            fi
-
-            if [ "${{ needs.build-mock-app-image.result }}" == "success" ]; then
-              echo '${{ needs.build-mock-app-image.outputs.images }}' | jq
-            fi
-
-            printf '\n```\n'
           } >> $GITHUB_STEP_SUMMARY

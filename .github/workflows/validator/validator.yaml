@@ -1,0 +1,87 @@
+name: Validator
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/validator/validator.yaml"
+      - ".github/workflows/validator/tests.yaml"
+      - "components/central-application-connectivity-validator/**"
+      - "!components/central-application-connectivity-validator/**.md"
+      - "tests/**"
+      - "!tests/**.md"
+      - "!tests/Dockerfile.*"
+      - "tests/Dockerfile.connectivity-validator"
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - ".github/workflows/validator/validator.yaml"
+      - ".github/workflows/validator/tests.yaml"
+      - "components/central-application-connectivity-validator/**"
+      - "!components/central-application-connectivity-validator/**.md"
+      - "tests/**"
+      - "!tests/**.md"
+      - "!tests/Dockerfile.*"
+      - "tests/Dockerfile.connectivity-validator"
+
+permissions:
+  id-token: write # This is required for requesting the JWT token
+  contents: read # This is required for actions/checkout
+
+jobs:
+  setup-and-test:
+    uses: ./.github/workflows/validator/tests.yaml
+
+  tags:
+    runs-on: ubuntu-latest
+    outputs:
+      latest: ${{ steps.latest.outputs.latest || '' }}
+    steps:
+      - id: latest
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && github.event_name == 'push'
+        run: echo "latest=latest" >> $GITHUB_OUTPUT
+
+  build-test-image:
+    needs: setup-and-test
+    if: needs.setup-and-test.outputs.test == 'true'
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: connectivity-validator-test
+      dockerfile: Dockerfile.connectivity-validator
+      context: tests
+
+  build-image:
+    needs: [setup-and-test, tags]
+    if: needs.setup-and-test.outputs.validator == 'true'
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: central-application-connectivity-validator
+      dockerfile: Dockerfile
+      context: components/central-application-connectivity-validator
+      tags: |
+        ${{ needs.tags.outputs.latest }}
+
+  print-images:
+    runs-on: ubuntu-latest
+
+    # if any of the build jobs succeeded - run this job
+    needs: [build-image, build-test-image]
+    if: always() && contains(needs.*.result, 'success')
+
+    steps:
+      - name: "Generate summary"
+        run: |
+          {
+            echo '## Validator Images'
+            printf '\n```json\n'
+            if [ "${{ needs.build-image.result }}" == "success" ]; then
+              echo '${{ needs.build-image.outputs.images }}' | jq
+            fi
+
+            if [ "${{ needs.build-test-image.result }}" == "success" ]; then
+              echo '${{ needs.build-test-image.outputs.images }}' | jq
+            fi
+
+            printf '\n```\n'
+          } >> $GITHUB_STEP_SUMMARY

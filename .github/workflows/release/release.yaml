@@ -1,0 +1,77 @@
+name: ACM Module release
+
+on:
+  push:
+    tags:
+      - '*'  # Trigger on tag pushes
+
+jobs:
+  run-gateway-tests:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/gateway/tests.yaml
+
+  run-validator-tests:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/validator/tests.yaml
+
+  run-cra-tests:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/cra/tests.yaml
+
+  run-controller-tests:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/controller/tests.yaml
+
+  run-integration-tests:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/run-validation.yaml
+
+  build-release-images:
+    needs: [run-gateway-tests, run-validator-tests, run-cra-tests, run-controller-tests, run-integration-tests]
+    if: |
+      needs.run-gateway-tests.result == 'success' &&
+      needs.run-validator-tests.result == 'success' &&
+      needs.run-cra-tests.result == 'success' &&
+      needs.run-controller-tests.result == 'success' &&
+      needs.run-integration-tests.result == 'success'
+    uses: ./.github/workflows/release/bump-images.yaml
+
+  generate-release:
+    needs: build-release-images
+    if: needs.build-release-images.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Needed for creating releases and uploading assets
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Create Release and Generate Notes
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  upload-release-report:
+    needs: generate-release
+    if: needs.generate-release.result == 'success'
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/release/upload-release-report.yaml
+    with:
+      release_version: ${{ github.ref_name }}
+    secrets:
+      RELEASE_LOG_UPLOADER_SA: ${{ secrets.RELEASE_LOG_UPLOADER_SA }}
+
