@@ -2,7 +2,6 @@
 
 Learn about the network policies for the Application Connector module.
 
-## Default Network Policies
 
 To increase security, the Application Connector module creates network policies that control traffic to and from its Pods. All the policies are enabled by default and cannot be disabled.
 
