@@ -47,8 +47,9 @@ jobs:
   k3d-PR-integration:
     # we're using reusable because we can't modify workflows as contributors
     # it could cause the secret leakeages
-    uses: "./.github/workflows/reusable-k3d-agent-test.yml"
+    uses: "./.github/workflows/reusable-k3d-agent-test.yaml"
     needs: build-image
+    if: needs.build-image.result == 'success'
     with:
       k3d-version: v5.8.3
       cra-image: ${{ fromJSON(needs.build-image.outputs.images)[0] }}

@@ -50,10 +50,12 @@ jobs:
           files_yaml: |
             cra:
               - components/compass-runtime-agent/**
-              - .github/workflows/cra.yaml
+              - ".github/workflows/cra/cra.yaml"
+              - ".github/workflows/cra/tests.yaml"
             test:
               - tests/**
-              - .github/workflows/cra.yaml
+              - ".github/workflows/cra/cra.yaml"
+              - ".github/workflows/cra/tests.yaml"
       - name: Fallback values
         id: fallback-values
         if: steps.detect-files.outcome != 'success' || github.event_name == 'workflow_call'
