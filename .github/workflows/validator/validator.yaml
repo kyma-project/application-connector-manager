@@ -6,22 +6,22 @@ on:
       - main
     paths:
       - "validator.yaml"
-      - "../../../components/central-application-connectivity-validator"
+      - "components/central-application-connectivity-validator"
       - "!components/central-application-connectivity-validator/**.md"
-      - "../../../tests"
+      - "tests"
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
-      - "../../../tests/Dockerfile.connectivity-validator"
+      - "tests/Dockerfile.connectivity-validator"
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
       - "validator.yaml"
-      - "../../../components/central-application-connectivity-validator"
+      - "components/central-application-connectivity-validator"
       - "!components/central-application-connectivity-validator/**.md"
-      - "../../../tests"
+      - "tests"
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
-      - "../../../tests/Dockerfile.connectivity-validator"
+      - "tests/Dockerfile.connectivity-validator"
 
 permissions:
   id-token: write # This is required for requesting the JWT token
