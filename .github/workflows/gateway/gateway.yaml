@@ -6,9 +6,9 @@ on:
       - main
     paths:
       - "gateway.yaml"
-      - "components/central-application-gateway"
+      - "components/central-application-gateway/**"
       - "!components/central-application-gateway/**.md"
-      - "tests"
+      - "tests/**"
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.gateway"
@@ -16,9 +16,9 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - "gateway.yaml"
-      - "components/central-application-gateway"
+      - "components/central-application-gateway/**"
       - "!components/central-application-gateway/**.md"
-      - "tests"
+      - "tests/**"
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.gateway"

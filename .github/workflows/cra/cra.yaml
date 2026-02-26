@@ -6,10 +6,10 @@ on:
       - main
     paths:
       - "cra.yaml"
-      - "components/compass-runtime-agent"
+      - "components/compass-runtime-agent/**"
       - "!components/compass-runtime-agent/**.md"
       - "!components/compass-runtime-agent/hack/boilerplate.go.txt"
-      - "tests"
+      - "tests/**"
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.compass-runtime-agent"
@@ -17,10 +17,10 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - "cra.yaml"
-      - "components/compass-runtime-agent"
+      - "components/compass-runtime-agent/**"
       - "!components/compass-runtime-agent/**.md"
       - "!components/compass-runtime-agent/hack/boilerplate.go.txt"
-      - "tests"
+      - "tests/**"
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.compass-runtime-agent"
