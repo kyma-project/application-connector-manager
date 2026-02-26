@@ -3,6 +3,7 @@ kind: ApplicationConnector
 metadata:
   namespace: kyma-system
   labels:
+    kyma-project.io/module: application-connector
     app.kubernetes.io/name: applicationconnector
     app.kubernetes.io/instance: applicationconnector-sample
     app.kubernetes.io/part-of: application-connector-manager

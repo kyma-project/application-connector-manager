@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kyma-project.io--acm-validator-allow-from-istio-ingressgateway
+  namespace: system
+spec:
+  podSelector:
+    matchLabels:
+      app: central-application-connectivity-validator
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: istio-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: istio-ingressgateway
+      ports:
+        - protocol: TCP
+          port: 8080
