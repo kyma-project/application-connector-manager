@@ -26,7 +26,7 @@ application-connector-deploy:
 	@echo "::endgroup::"
 
 .PHONY: install-application-connector
-install-application-connector: application-connector-module-image application-connector-deploy apply-appcon
+install-application-connector: application-connector-module-image application-connector-deploy patch-api-server-networkpolicy apply-appcon
 	@echo "::group::install-application-connector"
 	kubectl wait -n kyma-system \
 		applicationconnectors/applicationconnector-sample \
@@ -53,14 +53,26 @@ create-kyma-system-ns: ## Create kyma-system namespace.
 create-k3d: ## Create k3d with kyma CRDs.
 	@echo "::group::create-k3d"
 	k3d cluster create ${CLUSTER_NAME} \
-		--api-port 6550 \
-		--image docker.io/rancher/k3s:v1.31.7-k3s1 \
-		-p 8080:80@loadbalancer \
-		-p 8443:443@loadbalancer \
-		-p 9090-9099:9090-9099@loadbalancer \
-		--agents 2 \
+		--port 80:80@loadbalancer \
+		--port 443:443@loadbalancer \
+		--k3s-arg "--flannel-backend=none@all" \
+		--k3s-arg "--disable=traefik@server:0" \
+		--k3s-arg "--tls-san=host.docker.internal@server:*" \
+		--image rancher/k3s:v1.31.7-k3s1 \
 		--registry-create k3d-${REGISTRY_NAME}:${REGISTRY_PORT}
-	kubectl version
+	@echo "::endgroup::"
+
+.PHONY: install-calico
+install-calico: ## Install Calico CNI for proper NetworkPolicy support.
+	@echo "::group::install-calico"
+	@echo "Waiting for Kubernetes API server..."
+	@until kubectl get nodes >/dev/null 2>&1; do sleep 2; done
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/operator-crds.yaml
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/tigera-operator.yaml
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/custom-resources.yaml
+	kubectl rollout status -n kube-system deployment coredns --timeout=300s
+	kubectl patch installation default --type=merge \
+		-p '{"spec":{"cni":{"binDir":"/var/lib/rancher/k3s/data/cni","confDir":"/var/lib/rancher/k3s/agent/etc/cni/net.d"}}}'
 	@echo "::endgroup::"
 
 .PHONY: apply-appcon
@@ -81,6 +93,16 @@ apply-compass-connection-crd: ## Apply the compass-connection CRD
 	kubectl apply -f ${PROJECT_ROOT}/tests/hack/ci/deps/compass-connection.crd.yaml
 	@echo "::endgroup::"
 
+.PHONY: patch-api-server-networkpolicy
+patch-api-server-networkpolicy: ## Patch NetworkPolicy to use k3d API server port (6443 instead of 443)
+	@echo "::group::patch-api-server-networkpolicy"
+	@echo "Patching NetworkPolicy to use API server targetPort 6443 for k3d..."
+	kubectl patch networkpolicy -n kyma-system \
+		application-connector-kyma-project.io--acm-module-to-api-server \
+		--type='json' \
+		-p='[{"op": "replace", "path": "/spec/egress/0/ports/0/port", "value": 6443}]'
+	@echo "::endgroup::"
+
 .PHONY: gateway-tests
 gateway-tests: 
 	@echo "::group::gateway-tests"
@@ -89,6 +111,7 @@ gateway-tests:
 
 .PHONY: k3d-gateway-tests
 k3d-gateway-tests: create-k3d \
+	install-calico \
 	install-istio \
 	install-application-connector \
 	apply-appcon-crd \
@@ -115,6 +138,7 @@ validator-tests:
 .PHONY: k3d-validator-tests
 k3d-validator-tests: patch-validator \
 	create-k3d \
+	install-calico \
 	install-istio \
 	install-application-connector \
 	apply-appcon-crd \
@@ -122,6 +146,7 @@ k3d-validator-tests: patch-validator \
 
 .PHONY: k3d-agent-tests
 k3d-agent-tests: create-k3d \
+	install-calico \
 	install-istio \
 	patch-compass-runtime-agent \
 	install-application-connector \
