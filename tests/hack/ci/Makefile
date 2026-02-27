@@ -104,6 +104,16 @@ patch-api-server-networkpolicy: ## Patch NetworkPolicy to use k3d API server por
 		-p='[{"op": "replace", "path": "/spec/egress/0/ports/0/port", "value": 6443}]'
 	@echo "::endgroup::"
 
+.PHONY: patch-validator-networkpolicy
+patch-validator-networkpolicy: ## Patch NetworkPolicy to allow test namespace to access validator
+	@echo "::group::patch-validator-networkpolicy"
+	@echo "Patching NetworkPolicy to allow ingress from test namespace..."
+	kubectl patch networkpolicy -n kyma-system \
+		application-connector-kyma-project.io--acm-validator-allow-from-istio-ingressgateway \
+		--type='json' \
+		-p='[{"op": "add", "path": "/spec/ingress/0/from/-", "value": {"namespaceSelector": {"matchLabels": {"kubernetes.io/metadata.name": "test"}}}}]'
+	@echo "::endgroup::"
+
 .PHONY: gateway-tests
 gateway-tests: 
 	@echo "::group::gateway-tests"
@@ -142,6 +152,7 @@ k3d-validator-tests: patch-validator \
 	install-calico \
 	install-istio \
 	install-application-connector \
+	patch-validator-networkpolicy \
 	apply-appcon-crd \
 	validator-tests
 
