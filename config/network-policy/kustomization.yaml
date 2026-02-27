@@ -1,0 +1,5 @@
+resources:
+  - core
+  - central-application-validator
+  - compass-runtime-agent
+  - central-application-gateway
