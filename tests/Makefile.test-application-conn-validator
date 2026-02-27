@@ -11,7 +11,7 @@ test: test-validator
 
 .PHONY: patch-validator
 patch-validator:
-	yq e -i '. |= (select(.kind == "Deployment" and .metadata.name == "central-application-connectivity-validator") | .spec.template.spec.containers[0].args[5] = "--eventingPublisherHost=echoserver.test.svc.cluster.local" | .spec.template.spec.containers[0].args[6] = "--eventingDestinationPath=/anything/rewrite" | .spec.template.metadata.annotations.["traffic.sidecar.istio.io/excludeInboundPorts"] += "8080")' ${PWD}/application-connector.yaml
+	yq e -i '. |= (select(.kind == "Deployment" and .metadata.name == "central-application-connectivity-validator") | .spec.template.spec.containers[0].args[5] = "--eventingPublisherHost=echoserver.test.svc.cluster.local" | .spec.template.spec.containers[0].args[6] = "--eventingDestinationPath=/anything/rewrite" | .spec.template.metadata.annotations.["traffic.sidecar.istio.io/excludeInboundPorts"] = "8080")' ${PWD}/application-connector.yaml
 
 .PHONY: test-validator
 test-validator: patch-validator create-resources

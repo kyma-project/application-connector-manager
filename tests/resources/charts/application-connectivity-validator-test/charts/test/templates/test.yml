@@ -4,7 +4,7 @@ metadata:
   name: application-connectivity-validator-test
   namespace: {{ .Values.global.namespace }}
 spec:
-  backoffLimit: 0
+  backoffLimit: 3
   template:
     metadata:
       annotations:
@@ -14,4 +14,4 @@ spec:
         - name: application-connectivity-validator-test
           image: {{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.validatorTest) }}
           imagePullPolicy: Always
-      restartPolicy: Never
+      restartPolicy: OnFailure
