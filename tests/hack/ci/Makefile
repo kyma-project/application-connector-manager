@@ -55,7 +55,8 @@ create-k3d: ## Create k3d with kyma CRDs.
 	k3d cluster create ${CLUSTER_NAME} \
 		--port 80:80@loadbalancer \
 		--port 443:443@loadbalancer \
-		--k3s-arg "--flannel-backend=none@all" \
+		--agents 2 \
+		--k3s-arg "--flannel-backend=none@server:*" \
 		--k3s-arg "--disable=traefik@server:0" \
 		--k3s-arg "--tls-san=host.docker.internal@server:*" \
 		--image rancher/k3s:v1.31.7-k3s1 \
