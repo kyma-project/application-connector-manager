@@ -10,6 +10,6 @@ spec:
         - name: application-gateway-test
           image: {{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.gatewayTest) }}
           imagePullPolicy: Always
-      restartPolicy: Never
+      restartPolicy: OnFailure
       serviceAccountName: {{ .Values.global.serviceAccountName }}
-  backoffLimit: 0
+  backoffLimit: 3
