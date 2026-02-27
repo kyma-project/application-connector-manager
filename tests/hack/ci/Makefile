@@ -105,13 +105,18 @@ patch-api-server-networkpolicy: ## Patch NetworkPolicy to use k3d API server por
 	@echo "::endgroup::"
 
 .PHONY: patch-validator-networkpolicy
-patch-validator-networkpolicy: ## Patch NetworkPolicy to allow test namespace to access validator
+patch-validator-networkpolicy: ## Patch NetworkPolicy to allow test namespace to access validator and validator to reach echoserver
 	@echo "::group::patch-validator-networkpolicy"
 	@echo "Patching NetworkPolicy to allow ingress from test namespace..."
 	kubectl patch networkpolicy -n kyma-system \
 		application-connector-kyma-project.io--acm-validator-allow-from-istio-ingressgateway \
 		--type='json' \
 		-p='[{"op": "add", "path": "/spec/ingress/0/from/-", "value": {"namespaceSelector": {"matchLabels": {"kubernetes.io/metadata.name": "test"}}}}]'
+	@echo "Patching NetworkPolicy to allow egress to echoserver in test namespace..."
+	kubectl patch networkpolicy -n kyma-system \
+		application-connector-kyma-project.io--acm-validator-allow-to-eventing \
+		--type='json' \
+		-p='[{"op": "add", "path": "/spec/egress/-", "value": {"to": [{"namespaceSelector": {"matchLabels": {"kubernetes.io/metadata.name": "test"}}}], "ports": [{"protocol": "TCP", "port": 80}]}}]'
 	@echo "::endgroup::"
 
 .PHONY: gateway-tests
