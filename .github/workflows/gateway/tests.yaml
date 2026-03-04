@@ -84,7 +84,13 @@ jobs:
         working-directory: ./components/central-application-gateway
         run: |
           set -o pipefail
-          go test -coverprofile cover.out ./... | tee test.log
+          go test -coverprofile cover.out ./... | tee test-unit.txt
+      - name: Upload test output artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: central-application-gateway-test-unit
+          path: ./components/
       - name: coveralls github action
         uses: coverallsapp/github-action@v2.3.6
         with:
@@ -95,12 +101,6 @@ jobs:
           flag-name: CAG
           carryforward: ACM,CACV,CRA
           build-number: ${{ github.sha }}
-      - name: Archive test results
-        if: success() || failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: gateway-unit-test
-          path: ./components/central-application-gateway/test.log
       - name: Unit test summary
         if: success() || failure()
         run: |
@@ -109,7 +109,11 @@ jobs:
             echo "<details>"
             echo "<summary>click to expand logs</summary>"
             printf '\n```\n'
-            cat ./components/central-application-gateway/test.log
+            if [ -f ./components/central-application-gateway/test-unit.txt ]; then
+              cat ./components/central-application-gateway/test-unit.txt
+            else
+              echo "Test output file not found. Test may have failed before producing output."
+            fi
             printf '\n```\n'
             echo "</details>"
           } >> $GITHUB_STEP_SUMMARY
@@ -137,12 +141,13 @@ jobs:
         run: |
           set -o pipefail
           make -C tests/hack/ci k3d-gateway-tests
-      - name: Archive test results
-        if: success() || failure()
+          mv ./application-gateway-test.txt ./components/central-application-gateway/test-integration.txt
+      - name: Upload test output artifact
         uses: actions/upload-artifact@v4
+        if: success() || failure()
         with:
-          name: app-gateway-test-results
-          path: k3d-application-gateway-test.log
+          name: central-application-gateway-test-integration
+          path: ./components/
       - name: Integration test summary
         if: success() || failure()
         run: |
@@ -151,7 +156,11 @@ jobs:
             echo "<details>"
             echo "<summary>click to expand logs</summary>"
             printf '\n```\n'
-            cat k3d-application-gateway-test.log
+            if [ -f ./components/central-application-gateway/test-integration.txt ]; then
+              cat ./components/central-application-gateway/test-integration.txt
+            else
+              echo "Test output file not found. Test may have failed before producing output."
+            fi
             printf '\n```\n'
             echo "</details>"
           } >> $GITHUB_STEP_SUMMARY

@@ -40,7 +40,7 @@ jobs:
         with:
           pattern: "*-test*"
           path: ./artifacts
-          merge-multiple: false
+          merge-multiple: true
           run-id: ${{ env.RUN_ID }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 

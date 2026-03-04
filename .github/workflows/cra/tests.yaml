@@ -93,8 +93,13 @@ jobs:
           ARTIFACTS: "./"
         run: |
           set -o pipefail
-          touch test.log
-          make test | tee -a test.log
+          make test | tee test-unit.txt
+      - name: Upload test output artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: compass-runtime-agent-test-unit
+          path: ./components/
       - name: coveralls github action
         uses: coverallsapp/github-action@v2.3.6
         with:
@@ -105,12 +110,6 @@ jobs:
           flag-name: CRA
           carryforward: ACM,CACV,CAG
           build-number: ${{ github.sha }}
-      - name: Archive test results
-        if: success() || failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cra-unit-test
-          path: ./components/compass-runtime-agent/test.log
       - name: Unit test summary
         if: success() || failure()
         run: |
@@ -119,7 +118,11 @@ jobs:
             echo "<details>"
             echo "<summary>click to expand logs</summary>"
             printf '\n```\n'
-            cat ./components/compass-runtime-agent/test.log
+            if [ -f ./components/compass-runtime-agent/test-unit.txt ]; then
+              cat ./components/compass-runtime-agent/test-unit.txt
+            else
+              echo "Test output file not found. Test may have failed before producing output."
+            fi
             printf '\n```\n'
             echo "</details>"
           } >> $GITHUB_STEP_SUMMARY 

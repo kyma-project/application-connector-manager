@@ -85,7 +85,13 @@ jobs:
         working-directory: ./components/central-application-connectivity-validator
         run: |
           set -o pipefail
-          make test | tee test.log
+          make test | tee test-unit.txt
+      - name: Upload test output artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: central-application-connectivity-validator-test-unit
+          path: ./components/
       - name: coveralls github action
         uses: coverallsapp/github-action@v2.3.6
         with:
@@ -96,12 +102,6 @@ jobs:
           flag-name: CACV
           carryforward: ACM,CRA,CAG
           build-number: ${{ github.sha }}
-      - name: Archive test results
-        if: success() || failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: validator-unit-test
-          path: ./components/central-application-connectivity-validator/test.log
       - name: Unit test summary
         if: success() || failure()
         run: |
@@ -110,7 +110,11 @@ jobs:
             echo "<details>"
             echo "<summary>click to expand logs</summary>"
             printf '\n```\n'
-            cat ./components/central-application-connectivity-validator/test.log
+            if [ -f ./components/central-application-connectivity-validator/test-unit.txt ]; then
+              cat ./components/central-application-connectivity-validator/test-unit.txt
+            else
+              echo "Test output file not found. Test may have failed before producing output."
+            fi
             printf '\n```\n'
             echo "</details>"
           } >> $GITHUB_STEP_SUMMARY
@@ -140,12 +144,13 @@ jobs:
         run: |
           set -o pipefail
           make -C tests/hack/ci k3d-validator-tests
-      - name: Archive test results
-        if: always()
+          mv ./application-connectivity-validator-test.txt ./components/central-application-connectivity-validator/test-integration.txt
+      - name: Upload test output artifact
         uses: actions/upload-artifact@v4
+        if: success() || failure()
         with:
-          name: validator-integration-test
-          path: application-connectivity-validator-test.log
+          name: central-application-connectivity-validator-test-integration
+          path: ./components/
       - name: Integration test summary
         if: success() || failure()
         run: |
@@ -154,7 +159,11 @@ jobs:
             echo "<details>"
             echo "<summary>click to expand logs</summary>"
             printf '\n```\n'
-            cat application-connectivity-validator-test.log
+            if [ -f ./components/central-application-connectivity-validator/test-integration.txt ]; then
+              cat ./components/central-application-connectivity-validator/test-integration.txt
+            else
+              echo "Test output file not found. Test may have failed before producing output."
+            fi
             printf '\n```\n'
             echo "</details>"
           } >> $GITHUB_STEP_SUMMARY

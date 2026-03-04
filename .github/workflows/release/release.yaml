@@ -48,14 +48,6 @@ jobs:
     permissions:
       contents: write  # Needed for creating releases and uploading assets
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: 'go.mod'
-
       - name: Create Release and Generate Notes
         uses: softprops/action-gh-release@v2
         with:
