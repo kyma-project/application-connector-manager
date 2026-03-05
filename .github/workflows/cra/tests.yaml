@@ -99,7 +99,7 @@ jobs:
         if: success() || failure()
         with:
           name: compass-runtime-agent-test-unit
-          path: ./components/
+          path: ./components/compass-runtime-agent/test-unit.txt
       - name: coveralls github action
         uses: coverallsapp/github-action@v2.3.6
         with:

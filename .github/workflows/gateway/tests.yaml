@@ -90,7 +90,7 @@ jobs:
         if: success() || failure()
         with:
           name: central-application-gateway-test-unit
-          path: ./components/
+          path: ./components/central-application-gateway/test-unit.txt
       - name: coveralls github action
         uses: coverallsapp/github-action@v2.3.6
         with:
@@ -147,7 +147,7 @@ jobs:
         if: success() || failure()
         with:
           name: central-application-gateway-test-integration
-          path: ./components/
+          path: ./components/central-application-gateway/test-integration.txt
       - name: Integration test summary
         if: success() || failure()
         run: |

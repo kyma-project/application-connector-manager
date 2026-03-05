@@ -81,7 +81,7 @@ jobs:
         if: success() || failure()
         with:
           name: controller-test-unit
-          path: ./components/
+          path: ./components/controller/test-unit.txt
       - name: filter out coverage
         run: |
           #!/bin/bash
