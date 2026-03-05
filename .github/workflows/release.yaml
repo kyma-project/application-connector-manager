@@ -19,6 +19,7 @@ jobs:
   run-cra-tests:
     permissions:
       contents: read
+      pull-requests: read  # Required by cra-tests.yaml setup job for changed-files detection
     uses: ./.github/workflows/cra-tests.yaml
 
   run-controller-tests:
@@ -39,6 +40,9 @@ jobs:
       needs.run-cra-tests.result == 'success' &&
       needs.run-controller-tests.result == 'success' &&
       needs.run-integration-tests.result == 'success'
+    permissions:
+      id-token: write  # Required for OIDC keyless auth in image-builder
+      contents: read   # Required for checkout
     uses: ./.github/workflows/release-bump-images.yaml
 
   generate-release:
