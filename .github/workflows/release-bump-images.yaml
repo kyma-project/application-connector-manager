@@ -38,7 +38,7 @@ jobs:
       context: components/compass-runtime-agent
       tags: |
         ${{ needs.setup.outputs.tag }}
-        ${{ needs.setup.outputs.tag-experimental }}        
+        ${{ needs.setup.outputs.tag-experimental }}
 
   build-gateway:
     needs: setup

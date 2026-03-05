@@ -9,22 +9,22 @@ jobs:
   run-gateway-tests:
     permissions:
       contents: read
-    uses: ./.github/workflows/gateway/tests.yaml
+    uses: ./.github/workflows/gateway-tests.yaml
 
   run-validator-tests:
     permissions:
       contents: read
-    uses: ./.github/workflows/validator/tests.yaml
+    uses: ./.github/workflows/validator-tests.yaml
 
   run-cra-tests:
     permissions:
       contents: read
-    uses: ./.github/workflows/cra/tests.yaml
+    uses: ./.github/workflows/cra-tests.yaml
 
   run-controller-tests:
     permissions:
       contents: read
-    uses: ./.github/workflows/controller/tests.yaml
+    uses: ./.github/workflows/controller-tests.yaml
 
   run-integration-tests:
     permissions:
@@ -39,7 +39,7 @@ jobs:
       needs.run-cra-tests.result == 'success' &&
       needs.run-controller-tests.result == 'success' &&
       needs.run-integration-tests.result == 'success'
-    uses: ./.github/workflows/release/bump-images.yaml
+    uses: ./.github/workflows/release-bump-images.yaml
 
   generate-release:
     needs: build-release-images
@@ -61,9 +61,8 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: ./.github/workflows/release/upload-release-report.yaml
+    uses: ./.github/workflows/release-upload-release-report.yaml
     with:
       release_version: ${{ github.ref_name }}
     secrets:
       RELEASE_LOG_UPLOADER_SA: ${{ secrets.RELEASE_LOG_UPLOADER_SA }}
-

@@ -16,8 +16,8 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/controller/acm.yaml
-      - .github/workflows/controller/tests.yaml
+      - .github/workflows/controller.yaml
+      - .github/workflows/controller-tests.yaml
       - main.go
       - api/**
       - pkg/**
@@ -31,8 +31,8 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
-      - .github/workflows/controller/acm.yaml
-      - .github/workflows/controller/tests.yaml
+      - .github/workflows/controller.yaml
+      - .github/workflows/controller-tests.yaml
       - main.go
       - api/**
       - pkg/**

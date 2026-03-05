@@ -12,8 +12,8 @@ on:
     branches:
       - main
     paths:
-      - ".github/workflows/cra/cra.yaml"
-      - ".github/workflows/cra/tests.yaml"
+      - ".github/workflows/cra.yaml"
+      - ".github/workflows/cra-tests.yaml"
       - "components/compass-runtime-agent/**"
       - "!components/compass-runtime-agent/**.md"
       - "!components/compass-runtime-agent/hack/boilerplate.go.txt"
@@ -24,8 +24,8 @@ on:
   pull_request_target:
     types: [ opened, synchronize, reopened ]
     paths:
-      - ".github/workflows/cra/cra.yaml"
-      - ".github/workflows/cra/tests.yaml"
+      - ".github/workflows/cra.yaml"
+      - ".github/workflows/cra-tests.yaml"
       - "components/compass-runtime-agent/**"
       - "!components/compass-runtime-agent/**.md"
       - "!components/compass-runtime-agent/hack/boilerplate.go.txt"
@@ -57,12 +57,12 @@ jobs:
           files_yaml: |
             cra:
               - components/compass-runtime-agent/**
-              - ".github/workflows/cra/cra.yaml"
-              - ".github/workflows/cra/tests.yaml"
+              - ".github/workflows/cra.yaml"
+              - ".github/workflows/cra-tests.yaml"
             test:
               - tests/**
-              - ".github/workflows/cra/cra.yaml"
-              - ".github/workflows/cra/tests.yaml"
+              - ".github/workflows/cra.yaml"
+              - ".github/workflows/cra-tests.yaml"
       - name: Fallback values
         id: fallback-values
         if: steps.detect-files.outcome != 'success' || github.event_name == 'workflow_call'
@@ -125,7 +125,7 @@ jobs:
             fi
             printf '\n```\n'
             echo "</details>"
-          } >> $GITHUB_STEP_SUMMARY 
+          } >> $GITHUB_STEP_SUMMARY
 
   k3d-integration:
     # we're using reusable because we can't modify workflows as contributors
