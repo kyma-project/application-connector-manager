@@ -84,9 +84,10 @@ func NewApplicationConnetorReconciler(c client.Client, r record.EventRecorder, l
 	return &applicationConnectorReconciler{
 		log: log,
 		Cfg: reconciler.Cfg{
-			Finalizer: v1alpha1.Finalizer,
-			Objs:      o1,
-			Deps:      o2,
+			Finalizer:    v1alpha1.Finalizer,
+			Objs:         o1,
+			Deps:         o2,
+			OptionalObjs: optional,
 		},
 		K8s: reconciler.K8s{
 			Client:        c,
