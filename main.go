@@ -118,6 +118,11 @@ func main() {
 	data2, err := yaml.LoadData(file2)
 	_ = file2.Close()
 
+	if err != nil {
+		setupLog.Error(err, "unable to parse application-connector-dependencies.yaml")
+		os.Exit(1)
+	}
+
 	optionalManifestsFile, err := os.Open("application-connector-optional.yaml")
 	if err != nil {
 		setupLog.Error(err, "unable to open application-connector-optional.yaml")
@@ -129,7 +134,7 @@ func main() {
 		setupLog.Error(err, "unable to parse application-connector-optional.yaml")
 		os.Exit(1)
 	}
-	_ = file2.Close()
+	_ = optionalManifestsFile.Close()
 
 	//FIXME: change to production
 	config := zap.NewDevelopmentConfig()
