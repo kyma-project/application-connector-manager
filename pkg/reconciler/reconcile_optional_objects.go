@@ -3,6 +3,7 @@ package reconciler
 import (
 	"context"
 	"github.com/kyma-project/application-connector-manager/api/v1alpha1"
+	"k8s.io/utils/ptr"
 
 	networkingv1 "k8s.io/api/networking/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -16,15 +17,28 @@ const (
 )
 
 func sFnReconcileOptionalObjects(ctx context.Context, r *fsm, s *systemState) (stateFn, *ctrl.Result, error) {
-	if !s.instance.Spec.NetworkPoliciesEnabled {
+	if s.instance.Spec.NetworkPoliciesEnabled {
+		for _, obj := range r.OptionalObjs {
+			if err := r.Patch(ctx, &obj, client.Apply, &client.PatchOptions{
+				Force:        ptr.To[bool](true),
+				FieldManager: "application-connector-manager",
+			}); err != nil {
+				s.instance.UpdateStateFromErr(
+					v1alpha1.ConditionTypeInstalled,
+					v1alpha1.ConditionReasonApplyObjError,
+					ErrInstallationFailed,
+				)
+				return stopWithErrorAndRequeue(ErrInstallationFailed)
+			}
+		}
+	} else {
 		if err := removeNetworkPolicies(ctx, r.Client); err != nil {
 			s.instance.UpdateStateFromErr(
 				v1alpha1.ConditionTypeInstalled,
 				v1alpha1.ConditionReasonApplyObjError,
 				ErrInstallationFailed,
 			)
-
-			return stopWithErrorAndRequeue(ErrInstallationFailed) // exponential backoff
+			return stopWithErrorAndRequeue(ErrInstallationFailed)
 		}
 	}
 	return switchState(sFnVerify)
