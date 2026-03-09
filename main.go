@@ -105,7 +105,7 @@ func main() {
 	_ = file.Close()
 
 	if err != nil {
-		setupLog.Error(err, "unable to load k8s data from application-connector.yaml")
+		setupLog.Error(err, "unable to parse application-connector.yaml")
 		os.Exit(1)
 	}
 
