@@ -93,6 +93,10 @@ spec:
                 type: object
               domainName:
                 type: string
+              networkPoliciesEnabled:
+                type: boolean
+            required:
+            - networkPoliciesEnabled
             type: object
           status:
             properties:

@@ -101,8 +101,9 @@ type ApplicationConnectorSpec struct {
 	ApplicationGatewaySpec AppGatewaySpec `json:"appGateway"`
 	// +optional
 	// +kubebuilder:default:={ logLevel: "info", logFormat: "json" }
-	AppConValidatorSpec AppConnValidatorSpec `json:"appConnValidator"`
-	DomainName          string               `json:"domainName,omitempty"`
+	AppConValidatorSpec    AppConnValidatorSpec `json:"appConnValidator"`
+	DomainName             string               `json:"domainName,omitempty"`
+	NetworkPoliciesEnabled bool                 `json:"networkPoliciesEnabled"`
 }
 
 //+kubebuilder:object:root=true
