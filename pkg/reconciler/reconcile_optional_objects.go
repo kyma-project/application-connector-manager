@@ -25,7 +25,7 @@ func sFnReconcileOptionalObjects(ctx context.Context, r *fsm, s *systemState) (s
 			}); err != nil {
 				s.instance.UpdateStateFromErr(
 					v1alpha1.ConditionTypeInstalled,
-					v1alpha1.ConditionReasonApplyObjError,
+					v1alpha1.ConditionReasonOptionalManifestsReconciliationErr,
 					ErrInstallationFailed,
 				)
 				return stopWithErrorAndRequeue(ErrInstallationFailed)
@@ -35,7 +35,7 @@ func sFnReconcileOptionalObjects(ctx context.Context, r *fsm, s *systemState) (s
 		if err := removeNetworkPolicies(ctx, r.Client); err != nil {
 			s.instance.UpdateStateFromErr(
 				v1alpha1.ConditionTypeInstalled,
-				v1alpha1.ConditionReasonApplyObjError,
+				v1alpha1.ConditionReasonOptionalManifestsReconciliationErr,
 				ErrInstallationFailed,
 			)
 			return stopWithErrorAndRequeue(ErrInstallationFailed)
