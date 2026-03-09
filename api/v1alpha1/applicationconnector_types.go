@@ -34,14 +34,15 @@ const (
 	ServedTrue  = "True"
 	ServedFalse = "False"
 
-	ConditionReasonVerificationErr = ConditionReason("VerificationErr")
-	ConditionReasonVerified        = ConditionReason("Verified")
-	ConditionReasonApplyObjError   = ConditionReason("ApplyObjError")
-	ConditionReasonVerification    = ConditionReason("Verification")
-	ConditionReasonInitialized     = ConditionReason("Initialized")
-	ConditionReasonDeletion        = ConditionReason("Deletion")
-	ConditionReasonDeletionErr     = ConditionReason("DeletionErr")
-	ConditionReasonDeleted         = ConditionReason("Deleted")
+	ConditionReasonVerificationErr                  = ConditionReason("VerificationErr")
+	ConditionReasonVerified                         = ConditionReason("Verified")
+	ConditionReasonApplyObjError                    = ConditionReason("ApplyObjError")
+	ConditionReasonVerification                     = ConditionReason("Verification")
+	ConditionReasonInitialized                      = ConditionReason("Initialized")
+	ConditionReasonDeletion                         = ConditionReason("Deletion")
+	ConditionReasonDeletionErr                      = ConditionReason("DeletionErr")
+	ConditionReasonNetworkPoliciesReconciled        = ConditionReason("ConditionReasonNetworkPoliciesReconciled")
+	ConditionReasonNetworkPoliciesReconciliationErr = ConditionReason("ConditionReasonNetworkPoliciesReconciliationErr")
 
 	ConditionTypeInstalled = ConditionType("Installed")
 	ConditionTypeDeleted   = ConditionType("Deleted")

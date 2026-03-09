@@ -11,6 +11,12 @@ type Cfg struct {
 	Finalizer string
 	// the objects are module component parts; objects are applied
 	// on the cluster one by one with given order
+	Objs         []unstructured.Unstructured `json:"objs"`
+	Deps         []unstructured.Unstructured
+	OptionalObjs []unstructured.Unstructured
+}
+
+type ObjectsToApply struct {
 	Objs []unstructured.Unstructured `json:"objs"`
 	Deps []unstructured.Unstructured
 }

@@ -118,10 +118,18 @@ func main() {
 	data2, err := yaml.LoadData(file2)
 	_ = file2.Close()
 
+	optionalManifestsFile, err := os.Open("application-connector-optional.yaml")
 	if err != nil {
-		setupLog.Error(err, "unable to load k8s data from application-connector-dependencies.yaml")
+		setupLog.Error(err, "unable to open application-connector-optional.yaml")
 		os.Exit(1)
 	}
+
+	optionalManifests, err := yaml.LoadData(optionalManifestsFile)
+	if err != nil {
+		setupLog.Error(err, "unable to parse application-connector-optional.yaml")
+		os.Exit(1)
+	}
+	_ = file2.Close()
 
 	//FIXME: change to production
 	config := zap.NewDevelopmentConfig()
@@ -144,6 +152,7 @@ func main() {
 		appConLogger.Sugar(),
 		data,
 		data2,
+		optionalManifests,
 	)
 	if err = appConReconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "AppliactionConnector")

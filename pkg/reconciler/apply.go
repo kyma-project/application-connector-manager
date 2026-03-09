@@ -37,7 +37,7 @@ func sFnApply(ctx context.Context, r *fsm, s *systemState) (stateFn, *ctrl.Resul
 	}
 
 	if !isError {
-		return switchState(sFnVerify)
+		return switchState(sFnReconcileOptionalObjects)
 	}
 
 	s.instance.UpdateStateFromErr(
