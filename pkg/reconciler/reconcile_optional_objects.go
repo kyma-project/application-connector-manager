@@ -3,6 +3,8 @@ package reconciler
 import (
 	"context"
 	"github.com/kyma-project/application-connector-manager/api/v1alpha1"
+	"github.com/kyma-project/application-connector-manager/pkg/unstructured"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/utils/ptr"
 
 	networkingv1 "k8s.io/api/networking/v1"
@@ -19,10 +21,7 @@ const (
 func sFnReconcileOptionalObjects(ctx context.Context, r *fsm, s *systemState) (stateFn, *ctrl.Result, error) {
 	if s.instance.Spec.NetworkPoliciesEnabled {
 		for _, obj := range r.OptionalObjs {
-			if err := r.Patch(ctx, &obj, client.Apply, &client.PatchOptions{
-				Force:        ptr.To[bool](true),
-				FieldManager: "application-connector-manager",
-			}); err != nil {
+			if err := patchObject(ctx, r, obj); err != nil {
 				s.instance.UpdateStateFromErr(
 					v1alpha1.ConditionTypeInstalled,
 					v1alpha1.ConditionReasonOptionalManifestsReconciliationErr,
@@ -42,6 +41,18 @@ func sFnReconcileOptionalObjects(ctx context.Context, r *fsm, s *systemState) (s
 		}
 	}
 	return switchState(sFnVerify)
+}
+
+func patchObject(ctx context.Context, c client.Client, obj unstructured.Unstructured) error {
+	bytes, err := obj.MarshalJSON()
+	if err != nil {
+		return err
+	}
+
+	return c.Patch(ctx, &obj, client.RawPatch(types.ApplyPatchType, bytes), &client.PatchOptions{
+		Force:        ptr.To[bool](true),
+		FieldManager: "application-connector-manager",
+	})
 }
 
 func removeNetworkPolicies(ctx context.Context, c client.Client) error {
