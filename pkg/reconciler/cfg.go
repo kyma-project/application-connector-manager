@@ -15,8 +15,3 @@ type Cfg struct {
 	Deps         []unstructured.Unstructured
 	OptionalObjs []unstructured.Unstructured
 }
-
-type ObjectsToApply struct {
-	Objs []unstructured.Unstructured `json:"objs"`
-	Deps []unstructured.Unstructured
-}
