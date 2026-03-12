@@ -80,7 +80,7 @@ type applicationConnectorReconciler struct {
 	DepsACK bool
 }
 
-func NewApplicationConnetorReconciler(c client.Client, r record.EventRecorder, log *zap.SugaredLogger, o1 []unstructured.Unstructured, o2 []unstructured.Unstructured, optional []unstructured.Unstructured) ApplicationConnetorReconciler {
+func NewApplicationConnectorReconciler(c client.Client, r record.EventRecorder, log *zap.SugaredLogger, o1 []unstructured.Unstructured, o2 []unstructured.Unstructured, optional []unstructured.Unstructured) ApplicationConnetorReconciler {
 	return &applicationConnectorReconciler{
 		log: log,
 		Cfg: reconciler.Cfg{

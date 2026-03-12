@@ -41,7 +41,7 @@ const (
 	ConditionReasonInitialized                        = ConditionReason("Initialized")
 	ConditionReasonDeletion                           = ConditionReason("Deletion")
 	ConditionReasonDeletionErr                        = ConditionReason("DeletionErr")
-	ConditionReasonOptionalManifestsReconciliationErr = ConditionReason("ConditionReasonOptionalManifestsReconciliationErr")
+	ConditionReasonOptionalManifestsReconciliationErr = ConditionReason("OptionalManifestsReconciliationErr")
 
 	ConditionTypeInstalled = ConditionType("Installed")
 	ConditionTypeDeleted   = ConditionType("Deleted")

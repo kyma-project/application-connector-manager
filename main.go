@@ -111,7 +111,7 @@ func main() {
 
 	file2, err := os.Open("application-connector-dependencies.yaml")
 	if err != nil {
-		setupLog.Error(err, "unable to open k8s data")
+		setupLog.Error(err, "unable to open application-connector-dependencies.yaml")
 		os.Exit(1)
 	}
 
@@ -130,11 +130,12 @@ func main() {
 	}
 
 	optionalManifests, err := yaml.LoadData(optionalManifestsFile)
+	_ = optionalManifestsFile.Close()
+
 	if err != nil {
 		setupLog.Error(err, "unable to parse application-connector-optional.yaml")
 		os.Exit(1)
 	}
-	_ = optionalManifestsFile.Close()
 
 	//FIXME: change to production
 	config := zap.NewDevelopmentConfig()
@@ -151,7 +152,7 @@ func main() {
 	setupLog.Info(fmt.Sprintf("log level set to: %s", appConLogger.Level()))
 
 	//nolint:staticcheck // SA1019 ignore deprecation of EventRecorder for some time
-	appConReconciler := controllers.NewApplicationConnetorReconciler(
+	appConReconciler := controllers.NewApplicationConnectorReconciler(
 		mgr.GetClient(),
 		mgr.GetEventRecorderFor("application-connector-manager"),
 		appConLogger.Sugar(),
