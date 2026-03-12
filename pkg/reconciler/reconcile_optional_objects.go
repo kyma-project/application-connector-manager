@@ -16,6 +16,8 @@ import (
 const (
 	managedByLabelKey   = "app.kubernetes.io/managed-by"
 	managedByLabelValue = "application-connector-manager"
+	moduleLabelKey      = "kyma-project.io/module"
+	moduleLabelValue    = "application-connector"
 )
 
 func sFnReconcileOptionalObjects(ctx context.Context, r *fsm, s *systemState) (stateFn, *ctrl.Result, error) {
@@ -59,6 +61,7 @@ func removeNetworkPolicies(ctx context.Context, c client.Client) error {
 	var networkPolicyList networkingv1.NetworkPolicyList
 	if err := c.List(ctx, &networkPolicyList, client.MatchingLabels{
 		managedByLabelKey: managedByLabelValue,
+		moduleLabelKey:    moduleLabelValue,
 	}); err != nil {
 		return err
 	}
