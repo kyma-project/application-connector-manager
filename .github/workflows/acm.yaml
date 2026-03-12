@@ -15,7 +15,6 @@ on:
       - controllers/**
       - application-connector.yaml
       - application-connector-dependencies.yaml
-      - application-connector-optional.yaml
       - go.sum
       - go.mod
       - Dockerfile
@@ -30,7 +29,6 @@ on:
       - controllers/**
       - application-connector.yaml
       - application-connector-dependencies.yaml
-      - application-connector-optional.yaml
       - go.sum
       - go.mod
       - Dockerfile
