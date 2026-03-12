@@ -1,0 +1,169 @@
+name: Validator tests
+on:
+  workflow_call:
+    outputs:
+      validator:
+        description: "Whether validator files changed"
+        value: ${{ jobs.setup.outputs.validator }}
+      test:
+        description: "Whether test files changed"
+        value: ${{ jobs.setup.outputs.test }}
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/validator.yaml"
+      - ".github/workflows/validator-tests.yaml"
+      - "components/central-application-connectivity-validator/**"
+      - "!components/central-application-connectivity-validator/**.md"
+      - "tests/**"
+      - "!tests/**.md"
+      - "!tests/Dockerfile.*"
+      - "tests/Dockerfile.connectivity-validator"
+  pull_request_target:
+    types: [ opened, synchronize, reopened ]
+    paths:
+      - ".github/workflows/validator.yaml"
+      - ".github/workflows/validator-tests.yaml"
+      - "components/central-application-connectivity-validator/**"
+      - "!components/central-application-connectivity-validator/**.md"
+      - "tests/**"
+      - "!tests/**.md"
+      - "!tests/Dockerfile.*"
+      - "tests/Dockerfile.connectivity-validator"
+
+jobs:
+  setup:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      validator: ${{ steps.detect-files.outputs.validator_any_changed || steps.fallback-values.outputs.validator_any_changed }}
+      test: ${{ steps.detect-files.outputs.test_any_changed || steps.fallback-values.outputs.test_any_changed }}
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Detect files
+        id: detect-files
+        uses: step-security/changed-files@89030a259c7f36d294c5ad1184fd3ca4a76942de
+        with:
+          files_yaml: |
+            validator:
+              - components/central-application-connectivity-validator/**
+              - ".github/workflows/validator.yaml"
+              - ".github/workflows/validator-tests.yaml"
+            test:
+              - tests/**
+              - ".github/workflows/validator.yaml"
+              - ".github/workflows/validator-tests.yaml"
+      - name: Fallback values
+        id: fallback-values
+        if: steps.detect-files.outcome != 'success' || github.event_name == 'workflow_call'
+        run: |
+          echo "validator_any_changed=true" >> $GITHUB_OUTPUT
+          echo "test_any_changed=true" >> $GITHUB_OUTPUT
+
+  unit-tests:
+    needs: setup
+    if: needs.setup.outputs.validator == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Set up go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: components/central-application-connectivity-validator/go.mod
+          cache-dependency-path: components/central-application-connectivity-validator/go.sum
+      - name: Run unit tests
+        working-directory: ./components/central-application-connectivity-validator
+        run: |
+          set -o pipefail
+          make test | tee test-unit.txt
+      - name: Upload test output artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: central-application-connectivity-validator-test-unit
+          path: ./components/central-application-connectivity-validator/test-unit.txt
+      - name: coveralls github action
+        uses: coverallsapp/github-action@v2.3.6
+        with:
+          format: golang
+          file: ./components/central-application-connectivity-validator/cover.out
+          fail-on-error: false
+          base-path: /components/central-application-connectivity-validator
+          flag-name: CACV
+          carryforward: ACM,CRA,CAG
+          build-number: ${{ github.sha }}
+      - name: Unit test summary
+        if: success() || failure()
+        run: |
+          {
+            echo '## Validator Unit Tests'
+            echo "<details>"
+            echo "<summary>click to expand logs</summary>"
+            printf '\n```\n'
+            if [ -f ./components/central-application-connectivity-validator/test-unit.txt ]; then
+              cat ./components/central-application-connectivity-validator/test-unit.txt
+            else
+              echo "Test output file not found. Test may have failed before producing output."
+            fi
+            printf '\n```\n'
+            echo "</details>"
+          } >> $GITHUB_STEP_SUMMARY
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/setup-helm@v4.3.0
+        id: install
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Set up go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - name: Install k3d
+        env:
+          K3D_URL: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh
+          DEFAULT_K3D_VERSION: v5.8.3
+        run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
+      - name: Install yq
+        run: sudo go install github.com/mikefarah/yq/v4@latest
+      - name: Run integration tests
+        run: |
+          set -o pipefail
+          make -C tests/hack/ci k3d-validator-tests
+          mv ./application-connectivity-validator-test.txt ./components/central-application-connectivity-validator/test-integration.txt
+      - name: Upload test output artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: central-application-connectivity-validator-test-integration
+          path: ./components/central-application-connectivity-validator/test-integration.txt
+      - name: Integration test summary
+        if: success() || failure()
+        run: |
+          {
+            echo '## Validator Integration Tests'
+            echo "<details>"
+            echo "<summary>click to expand logs</summary>"
+            printf '\n```\n'
+            if [ -f ./components/central-application-connectivity-validator/test-integration.txt ]; then
+              cat ./components/central-application-connectivity-validator/test-integration.txt
+            else
+              echo "Test output file not found. Test may have failed before producing output."
+            fi
+            printf '\n```\n'
+            echo "</details>"
+          } >> $GITHUB_STEP_SUMMARY

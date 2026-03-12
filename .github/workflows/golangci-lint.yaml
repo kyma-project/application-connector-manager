@@ -2,9 +2,7 @@ name: utils
 on:
   push:
     branches:
-      - master
       - main
-      - fresh
   pull_request:
 
 permissions:
