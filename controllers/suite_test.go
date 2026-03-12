@@ -115,6 +115,12 @@ var _ = BeforeSuite(func() {
 	depsData, err := yaml.LoadData(depsFile)
 	Expect(err).ShouldNot(HaveOccurred())
 
+	optionalFile, err := os.Open("../application-connector-optional.yaml")
+	Expect(err).ShouldNot(HaveOccurred())
+
+	optionalData, err := yaml.LoadData(optionalFile)
+	Expect(err).ShouldNot(HaveOccurred())
+
 	err = (&applicationConnectorReconciler{
 		log: mgrLogger.Sugar(),
 		K8s: reconciler.K8s{
@@ -122,9 +128,10 @@ var _ = BeforeSuite(func() {
 			EventRecorder: record.NewFakeRecorder(100),
 		},
 		Cfg: reconciler.Cfg{
-			Finalizer: "application-connector-manager.kyma-project.io/deletion-hook",
-			Objs:      objsData,
-			Deps:      depsData,
+			Finalizer:    "application-connector-manager.kyma-project.io/deletion-hook",
+			Objs:         objsData,
+			Deps:         depsData,
+			OptionalObjs: optionalData,
 		},
 	}).SetupWithManager(k8sManager)
 	Expect(err).ToNot(HaveOccurred())
