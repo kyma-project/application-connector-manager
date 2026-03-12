@@ -95,8 +95,6 @@ spec:
                 type: string
               networkPoliciesEnabled:
                 type: boolean
-            required:
-            - networkPoliciesEnabled
             type: object
           status:
             properties:
