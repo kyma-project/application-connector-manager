@@ -43,8 +43,7 @@ run-without-lifecycle-manager: \
 	module-image \
 	deploy \
 	apply-appcon \
-	verify-appcon \
-	get-logs
+	verify-appcon
 
 ##@ K3D
 .PHONY: create-k3d
@@ -157,7 +156,3 @@ install-calico: ## Install Calico CNI for proper NetworkPolicy support.
 	kubectl patch installation default --type=merge \
 		-p '{"spec":{"cni":{"binDir":"/var/lib/rancher/k3s/data/cni","confDir":"/var/lib/rancher/k3s/agent/etc/cni/net.d"}}}'
 	@echo "::endgroup::"
-
-.PHONY: get-logs
-get-logs:
-	kubectl logs deploy/application-connector-controller-manager -n kyma-system
