@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/kyma-project/application-connector-manager/api/v1alpha1"
+	"github.com/stretchr/testify/assert"
 	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -13,6 +14,76 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
+
+func TestFnReconcileOptionalObjects_NetworkPoliciesEnabled_Applies(t *testing.T) {
+	scheme := buildScheme()
+	np := managedNetworkPolicy("test-np", "default")
+
+	fakeClient := buildFakeClient(scheme)
+	optionalObj := networkPolicyToUnstructured(np)
+
+	r := buildFsm(fakeClient, []unstructured.Unstructured{optionalObj})
+
+	s := &systemState{
+		instance: v1alpha1.ApplicationConnector{
+			Spec: v1alpha1.ApplicationConnectorSpec{
+				NetworkPoliciesEnabled: true,
+			},
+		},
+	}
+
+	_, _, err := sFnReconcileOptionalObjects(context.Background(), r, s)
+	assert.NoError(t, err)
+
+	var result networkingv1.NetworkPolicyList
+	err = fakeClient.List(context.Background(), &result, client.InNamespace("default"))
+	assert.NoError(t, err)
+	assert.Len(t, result.Items, 1)
+}
+
+func TestFnReconcileOptionalObjects_NetworkPoliciesDisabled_Removes(t *testing.T) {
+	scheme := buildScheme()
+
+	np1 := managedNetworkPolicy("np-1", "default")
+	np2 := managedNetworkPolicy("np-2", "kyma-system")
+	unmanagedNp := &networkingv1.NetworkPolicy{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "unmanaged-np",
+			Namespace: "default",
+			Labels: map[string]string{
+				"some-other-label": "value",
+			},
+		},
+	}
+
+	fakeClient := buildFakeClient(scheme, np1, np2, unmanagedNp)
+
+	r := buildFsm(fakeClient, []unstructured.Unstructured{})
+
+	s := &systemState{
+		instance: v1alpha1.ApplicationConnector{
+			Spec: v1alpha1.ApplicationConnectorSpec{
+				NetworkPoliciesEnabled: false,
+			},
+		},
+	}
+
+	_, _, err := sFnReconcileOptionalObjects(context.Background(), r, s)
+	assert.NoError(t, err)
+
+	var result networkingv1.NetworkPolicyList
+	err = fakeClient.List(context.Background(), &result)
+	assert.NoError(t, err)
+
+	for _, item := range result.Items {
+		assert.NotEqual(t, managedByLabelValue, item.Labels[managedByLabelKey],
+			"expected managed NetworkPolicy %q to be deleted, but it still exists", item.Name)
+	}
+
+	var unmanagedResult networkingv1.NetworkPolicy
+	err = fakeClient.Get(context.Background(), client.ObjectKey{Name: "unmanaged-np", Namespace: "default"}, &unmanagedResult)
+	assert.NoError(t, err, "expected unmanaged NetworkPolicy to still exist")
+}
 
 func networkPolicyToUnstructured(np *networkingv1.NetworkPolicy) unstructured.Unstructured {
 	obj := unstructured.Unstructured{}
@@ -63,86 +134,5 @@ func buildFsm(fakeClient client.Client, optionalObjs []unstructured.Unstructured
 		Cfg: Cfg{
 			OptionalObjs: optionalObjs,
 		},
-	}
-}
-
-func TestsFnReconcileOptionalObjects_NetworkPoliciesEnabled_Applies(t *testing.T) {
-	scheme := buildScheme()
-	np := managedNetworkPolicy("test-np", "default")
-
-	fakeClient := buildFakeClient(scheme)
-	optionalObj := networkPolicyToUnstructured(np)
-
-	r := buildFsm(fakeClient, []unstructured.Unstructured{optionalObj})
-
-	s := &systemState{
-		instance: v1alpha1.ApplicationConnector{
-			Spec: v1alpha1.ApplicationConnectorSpec{
-				NetworkPoliciesEnabled: true,
-			},
-		},
-	}
-
-	_, _, err := sFnReconcileOptionalObjects(context.Background(), r, s)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	var result networkingv1.NetworkPolicyList
-	if listErr := fakeClient.List(context.Background(), &result, client.InNamespace("default")); listErr != nil {
-		t.Fatalf("failed to list NetworkPolicies: %v", listErr)
-	}
-
-	if len(result.Items) != 1 {
-		t.Errorf("expected 1 NetworkPolicy, got %d", len(result.Items))
-	}
-}
-
-func TestsFnReconcileOptionalObjects_NetworkPoliciesDisabled_Removes(t *testing.T) {
-	scheme := buildScheme()
-
-	np1 := managedNetworkPolicy("np-1", "default")
-	np2 := managedNetworkPolicy("np-2", "kyma-system")
-	unmanagedNp := &networkingv1.NetworkPolicy{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "unmanaged-np",
-			Namespace: "default",
-			Labels: map[string]string{
-				"some-other-label": "value",
-			},
-		},
-	}
-
-	fakeClient := buildFakeClient(scheme, np1, np2, unmanagedNp)
-
-	r := buildFsm(fakeClient, []unstructured.Unstructured{})
-
-	s := &systemState{
-		instance: v1alpha1.ApplicationConnector{
-			Spec: v1alpha1.ApplicationConnectorSpec{
-				NetworkPoliciesEnabled: false,
-			},
-		},
-	}
-
-	_, _, err := sFnReconcileOptionalObjects(context.Background(), r, s)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	var result networkingv1.NetworkPolicyList
-	if listErr := fakeClient.List(context.Background(), &result); listErr != nil {
-		t.Fatalf("failed to list NetworkPolicies: %v", listErr)
-	}
-
-	for _, item := range result.Items {
-		if item.Labels[managedByLabelKey] == managedByLabelValue {
-			t.Errorf("expected managed NetworkPolicy %q to be deleted, but it still exists", item.Name)
-		}
-	}
-
-	var unmanagedResult networkingv1.NetworkPolicy
-	if getErr := fakeClient.Get(context.Background(), client.ObjectKey{Name: "unmanaged-np", Namespace: "default"}, &unmanagedResult); getErr != nil {
-		t.Errorf("expected unmanaged NetworkPolicy to still exist, but got error: %v", getErr)
 	}
 }

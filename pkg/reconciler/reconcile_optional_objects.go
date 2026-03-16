@@ -51,7 +51,7 @@ func patchObject(ctx context.Context, c client.Client, obj unstructured.Unstruct
 		return err
 	}
 
-	return c.Patch(ctx, &obj, client.RawPatch(types.ApplyPatchType, bytes), &client.PatchOptions{
+	return c.Patch(ctx, &obj, client.RawPatch(types.JSONPatchType, bytes), &client.PatchOptions{
 		Force:        ptr.To[bool](true),
 		FieldManager: "application-connector-manager",
 	})
