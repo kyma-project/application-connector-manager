@@ -46,6 +46,19 @@ install-k3d:
 	curl --silent --fail ${K3D_URL} | TAG=${DEFAULT_K3D_VERSION} bash
 
 .PHONY: run-without-lifecycle-manager
-run-without-lifecycle-manager: install-k3d
+run-without-lifecycle-manager: install-calico install-k3d
 	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
+
+.PHONY: install-calico
+install-calico: ## Install Calico CNI for proper NetworkPolicy support.
+	@echo "::group::install-calico"
+	@echo "Waiting for Kubernetes API server..."
+	@until kubectl get nodes >/dev/null 2>&1; do sleep 2; done
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/operator-crds.yaml
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/tigera-operator.yaml
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/custom-resources.yaml
+	kubectl rollout status -n kube-system deployment coredns --timeout=300s
+	kubectl patch installation default --type=merge \
+		-p '{"spec":{"cni":{"binDir":"/var/lib/rancher/k3s/data/cni","confDir":"/var/lib/rancher/k3s/agent/etc/cni/net.d"}}}'
+	@echo "::endgroup::"
 
