@@ -36,6 +36,7 @@ create-cra-config:
 run-without-lifecycle-manager: ## Create k3d cluster and deploy module without the lifecycle-manager.
 run-without-lifecycle-manager: \
 	create-k3d \
+	install-calico \
 	create-kyma-system-ns \
 	install-istio \
 	create-cra-config \
@@ -143,3 +144,16 @@ deploy:
 .PHONY: yq-install
 yq-install:
 	@make -C ${PROJECT_ROOT} yq
+
+.PHONY: install-calico
+install-calico: ## Install Calico CNI for proper NetworkPolicy support.
+	@echo "::group::install-calico"
+	@echo "Waiting for Kubernetes API server..."
+	@until kubectl get nodes >/dev/null 2>&1; do sleep 2; done
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/operator-crds.yaml
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/tigera-operator.yaml
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/custom-resources.yaml
+	kubectl rollout status -n kube-system deployment coredns --timeout=300s
+	kubectl patch installation default --type=merge \
+		-p '{"spec":{"cni":{"binDir":"/var/lib/rancher/k3s/data/cni","confDir":"/var/lib/rancher/k3s/agent/etc/cni/net.d"}}}'
+	@echo "::endgroup::"
