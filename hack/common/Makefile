@@ -46,19 +46,18 @@ run-without-lifecycle-manager: \
 	verify-appcon
 
 ##@ K3D
-
 .PHONY: create-k3d
 create-k3d: ## Create k3d with kyma CRDs.
 	@echo "::group::create-k3d"
 	k3d cluster create ${CLUSTER_NAME} \
-		--image docker.io/rancher/k3s:v1.35.0-k3s1 \
-		--api-port 6550 \
-		-p 8080:80@loadbalancer \
-		-p 8443:443@loadbalancer \
-		-p 9090-9099:9090-9099@loadbalancer \
+		--port 80:80@loadbalancer \
+		--port 443:443@loadbalancer \
 		--agents 2 \
+		--k3s-arg "--flannel-backend=none@server:*" \
+		--k3s-arg "--disable=traefik@server:0" \
+		--k3s-arg "--tls-san=host.docker.internal@server:*" \
+		--image rancher/k3s:v1.31.7-k3s1 \
 		--registry-create k3d-${REGISTRY_NAME}:${REGISTRY_PORT}
-	kubectl version
 	@echo "::endgroup::"
 
 .PHONY: delete-k3d
