@@ -13,7 +13,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
@@ -29,6 +28,8 @@ func TestFnReconcileOptionalObjects_NetworkPoliciesEnabled_Applies(t *testing.T)
 	require.NoError(t, err)
 
 	data, err := yaml.LoadData(file)
+	require.NoError(t, err)
+
 	err = file.Close()
 	require.NoError(t, err)
 
@@ -95,20 +96,6 @@ func TestFnReconcileOptionalObjects_NetworkPoliciesDisabled_Removes(t *testing.T
 	var unmanagedResult networkingv1.NetworkPolicy
 	err = fakeClient.Get(context.Background(), client.ObjectKey{Name: "unmanaged-np", Namespace: "default"}, &unmanagedResult)
 	assert.NoError(t, err, "expected unmanaged NetworkPolicy to still exist")
-}
-
-func networkPolicyToUnstructured(np *networkingv1.NetworkPolicy) unstructured.Unstructured {
-	obj := unstructured.Unstructured{}
-	obj.SetGroupVersionKind(schema.GroupVersionKind{
-		Group:   "networking.k8s.io",
-		Version: "v1",
-		Kind:    "NetworkPolicy",
-	})
-	obj.SetName(np.Name)
-	obj.SetNamespace(np.Namespace)
-	obj.SetLabels(np.Labels)
-
-	return obj
 }
 
 func buildFakeClient(scheme *runtime.Scheme, objs ...client.Object) client.Client {
