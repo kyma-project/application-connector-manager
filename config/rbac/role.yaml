@@ -62,11 +62,6 @@ rules:
   - ""
   resources:
   - serviceaccounts
-  verbs:
-  - '*'
-- apiGroups:
-  - ""
-  resources:
   - services
   verbs:
   - create
@@ -74,17 +69,6 @@ rules:
   - get
   - list
   - patch
-  - update
-  - watch
-- apiGroups:
-  - '*'
-  resources:
-  - secrets
-  verbs:
-  - create
-  - delete
-  - get
-  - list
   - update
   - watch
 - apiGroups:
