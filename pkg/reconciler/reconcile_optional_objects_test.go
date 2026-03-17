@@ -2,6 +2,9 @@ package reconciler
 
 import (
 	"context"
+	"github.com/kyma-project/application-connector-manager/pkg/yaml"
+	"github.com/stretchr/testify/require"
+	"os"
 	"testing"
 
 	"github.com/kyma-project/application-connector-manager/api/v1alpha1"
@@ -16,13 +19,22 @@ import (
 )
 
 func TestFnReconcileOptionalObjects_NetworkPoliciesEnabled_Applies(t *testing.T) {
+	patchObject = func(ctx context.Context, c client.Client, obj unstructured.Unstructured) error {
+		return c.Create(ctx, &obj)
+	}
+
 	scheme := buildScheme()
-	np := managedNetworkPolicy("test-np", "default")
+
+	file, err := os.Open("./testdata/application-connector-optional.yaml")
+	require.NoError(t, err)
+
+	data, err := yaml.LoadData(file)
+	err = file.Close()
+	require.NoError(t, err)
 
 	fakeClient := buildFakeClient(scheme)
-	optionalObj := networkPolicyToUnstructured(np)
 
-	r := buildFsm(fakeClient, []unstructured.Unstructured{optionalObj})
+	r := buildFsm(fakeClient, data)
 
 	s := &systemState{
 		instance: v1alpha1.ApplicationConnector{
@@ -32,11 +44,11 @@ func TestFnReconcileOptionalObjects_NetworkPoliciesEnabled_Applies(t *testing.T)
 		},
 	}
 
-	_, _, err := sFnReconcileOptionalObjects(context.Background(), r, s)
+	_, _, err = sFnReconcileOptionalObjects(context.Background(), r, s)
 	assert.NoError(t, err)
 
 	var result networkingv1.NetworkPolicyList
-	err = fakeClient.List(context.Background(), &result, client.InNamespace("default"))
+	err = fakeClient.List(context.Background(), &result, client.InNamespace("kyma-system"))
 	assert.NoError(t, err)
 	assert.Len(t, result.Items, 1)
 }

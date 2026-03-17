@@ -45,7 +45,7 @@ func sFnReconcileOptionalObjects(ctx context.Context, r *fsm, s *systemState) (s
 	return switchState(sFnVerify)
 }
 
-func patchObject(ctx context.Context, c client.Client, obj unstructured.Unstructured) error {
+var patchObject = func(ctx context.Context, c client.Client, obj unstructured.Unstructured) error {
 	bytes, err := obj.MarshalJSON()
 	if err != nil {
 		return err
