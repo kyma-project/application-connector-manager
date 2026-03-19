@@ -18,6 +18,9 @@ package controllers
 
 import (
 	"context"
+	"fmt"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"os"
 	"path/filepath"
 	"testing"
@@ -136,6 +139,34 @@ var _ = BeforeSuite(func() {
 	}).SetupWithManager(k8sManager)
 	Expect(err).ToNot(HaveOccurred())
 
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+	defer cancel()
+
+	By(fmt.Sprintf("create namespace: %s", "kyma-system"))
+	ns := namespace("kyma-system")
+	Expect(k8sClient.Create(ctx, &ns)).To(Succeed())
+
+	By(fmt.Sprintf("create namespace: %s", istioNamespace))
+	iNs := namespace(istioNamespace)
+	Expect(k8sClient.Create(ctx, &iNs)).To(Succeed())
+
+	testDomainName := "testme"
+
+	By("create gardener config")
+	gardenerCM := corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "shoot-info",
+			Namespace: "kube-system",
+		},
+		Data: map[string]string{
+			"domain": testDomainName,
+		},
+	}
+	Expect(k8sClient.Create(ctx, &gardenerCM)).Should(BeNil())
+
+	By(fmt.Sprintf("create compass-runtime-agent configuration: %s/compass-agent-configuration", "kyma-system"))
+	compassRtAgentSecret := secret("kyma-system")
+	Expect(k8sClient.Create(ctx, &compassRtAgentSecret)).To(Succeed())
 	go func() {
 		defer GinkgoRecover()
 

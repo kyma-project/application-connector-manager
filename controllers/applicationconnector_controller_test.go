@@ -26,11 +26,11 @@ const (
 	appConValidatorDeploymentName = "central-application-connectivity-validator"
 	compassRtAgentDeploymentName  = "compass-runtime-agent"
 	istioNamespace                = "istio-system"
+	defaultTestTimeout            = 60 * time.Second
 )
 
 var _ = Describe("ApplicationConnector controller", func() {
 
-	defaultTestTimeout := 60 * time.Second
 	appConWithNetworkPolicies := applicationConnector("appConWithNetworkPolicies", "kyma-system", v1alpha1.ApplicationConnectorSpec{
 		ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
 			LogLevel: v1alpha1.LogLevel("info"),
@@ -51,37 +51,6 @@ var _ = Describe("ApplicationConnector controller", func() {
 			LogFormat: v1alpha1.LogFormat("json"),
 		},
 		NetworkPoliciesEnabled: true,
-	})
-
-	Context("Setup environment", func() {
-		testDomainName := "testme"
-
-		ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
-		defer cancel()
-
-		By(fmt.Sprintf("create namespace: %s", "kyma-system"))
-		ns := namespace("kyma-system")
-		Expect(k8sClient.Create(ctx, &ns)).To(Succeed())
-
-		By(fmt.Sprintf("create namespace: %s", istioNamespace))
-		iNs := namespace(istioNamespace)
-		Expect(k8sClient.Create(ctx, &iNs)).To(Succeed())
-
-		By("create gardener config")
-		gardenerCM := corev1.ConfigMap{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "shoot-info",
-				Namespace: "kube-system",
-			},
-			Data: map[string]string{
-				"domain": testDomainName,
-			},
-		}
-		Expect(k8sClient.Create(ctx, &gardenerCM)).Should(BeNil())
-
-		By(fmt.Sprintf("create compass-runtime-agent configuration: %s/compass-agent-configuration", "kyma-system"))
-		compassRtAgentSecret := secret("kyma-system")
-		Expect(k8sClient.Create(ctx, &compassRtAgentSecret)).To(Succeed())
 	})
 
 	Context("When creating fresh instance", func() {
