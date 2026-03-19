@@ -29,6 +29,7 @@ func sFnReconcileOptionalObjects(ctx context.Context, r *fsm, s *systemState) (s
 					v1alpha1.ConditionReasonOptionalManifestsReconciliationErr,
 					ErrInstallationFailed,
 				)
+				r.log.Error("Error during applying optional manifests!")
 				return stopWithErrorAndRequeue(ErrInstallationFailed)
 			}
 		}
