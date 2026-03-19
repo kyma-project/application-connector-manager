@@ -51,7 +51,7 @@ var _ = Describe("ApplicationConnector controller", func() {
 			LogLevel:  v1alpha1.LogLevel("info"),
 			LogFormat: v1alpha1.LogFormat("json"),
 		},
-		NetworkPoliciesEnabled: true,
+		NetworkPoliciesEnabled: false,
 	})
 
 	Context("When creating fresh instance", func() {
