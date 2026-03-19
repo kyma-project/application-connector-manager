@@ -110,10 +110,13 @@ func testInstanceUpdate(t time.Duration, ac v1alpha1.ApplicationConnector, updat
 	By(fmt.Sprintf("create application-connector instance: %s/%s", ac.Namespace, ac.Name))
 	Expect(k8sClient.Create(ctx, &ac)).To(Succeed())
 
-	ac.Status.State = ""
-
 	testReconcile(ac, ctx, t)
-	updateFunc(&ac)
+
+	var updatedAC v1alpha1.ApplicationConnector
+	Expect(k8sClient.Get(ctx, types.NamespacedName{Name: ac.Name, Namespace: ac.Namespace}, &updatedAC)).To(Succeed())
+
+	updateFunc(&updatedAC)
+
 	testReconcile(ac, ctx, t)
 }
 
