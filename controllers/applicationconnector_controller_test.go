@@ -81,7 +81,7 @@ func validateAppConState(ctx context.Context, expected State, key types.Namespac
 	return nil
 }
 
-func testInstanceCreate(t time.Duration, ac v1alpha1.ApplicationConnector) {
+func testInstanceCreate(_ string, t time.Duration, ac v1alpha1.ApplicationConnector) {
 	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 	defer cancel()
 
@@ -89,6 +89,12 @@ func testInstanceCreate(t time.Duration, ac v1alpha1.ApplicationConnector) {
 	Expect(k8sClient.Create(ctx, &ac)).To(Succeed())
 
 	testReconcile(ac, ctx, t)
+}
+
+func testInstanceDisableNetworkPolicy(_ string, t time.Duration, ac v1alpha1.ApplicationConnector) {
+	testInstanceUpdate(t, ac, func(ac *v1alpha1.ApplicationConnector) {
+		ac.Spec.NetworkPoliciesEnabled = false
+	})
 }
 
 func testInstanceUpdate(t time.Duration, ac v1alpha1.ApplicationConnector, updateFunc func(*v1alpha1.ApplicationConnector)) {
@@ -99,9 +105,8 @@ func testInstanceUpdate(t time.Duration, ac v1alpha1.ApplicationConnector, updat
 	Expect(k8sClient.Create(ctx, &ac)).To(Succeed())
 
 	testReconcile(ac, ctx, t)
-
 	updateFunc(&ac)
-
+	testReconcile(ac, ctx, t)
 }
 
 func testReconcile(ac v1alpha1.ApplicationConnector, ctx context.Context, t time.Duration) {
