@@ -67,12 +67,6 @@ var _ = Describe("ApplicationConnector controller", func() {
 			testInstance,
 			Entry("with default arguments", testDomainName, defaultTestTimeout, appConWithoutNetworkPolicies),
 		)
-		DescribeTable(
-			"Network policies are successfully disabled",
-			// the table function that will be executed for each entry
-			testInstance,
-			Entry("with default arguments", testDomainName, defaultTestTimeout, appConWithoutNetworkPolicies),
-		)
 	})
 })
 
