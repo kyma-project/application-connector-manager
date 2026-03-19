@@ -58,14 +58,14 @@ var _ = Describe("ApplicationConnector controller", func() {
 		DescribeTable(
 			"The application-connector is created properly with given specification (network policies enabled)",
 			// the table function that will be executed for each entry
-			testInstance,
-			Entry("with default arguments", testDomainName, defaultTestTimeout, appConWithNetworkPolicies),
+			testInstanceCreate,
+			Entry(defaultTestTimeout, appConWithNetworkPolicies),
 		)
 		DescribeTable(
 			"The application-connector is created properly with given specification (network policies disabled)",
 			// the table function that will be executed for each entry
-			testInstance,
-			Entry("with default arguments", testDomainName, defaultTestTimeout, appConWithoutNetworkPolicies),
+			testInstanceCreate,
+			Entry(defaultTestTimeout, appConWithoutNetworkPolicies),
 		)
 	})
 })
@@ -81,13 +81,30 @@ func validateAppConState(ctx context.Context, expected State, key types.Namespac
 	return nil
 }
 
-func testInstance(testDomainName string, t time.Duration, ac v1alpha1.ApplicationConnector) {
+func testInstanceCreate(t time.Duration, ac v1alpha1.ApplicationConnector) {
 	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 	defer cancel()
 
 	By(fmt.Sprintf("create application-connector instance: %s/%s", ac.Namespace, ac.Name))
 	Expect(k8sClient.Create(ctx, &ac)).To(Succeed())
 
+	testReconcile(ac, ctx, t)
+}
+
+func testInstanceUpdate(t time.Duration, ac v1alpha1.ApplicationConnector, updateFunc func(*v1alpha1.ApplicationConnector)) {
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+	defer cancel()
+
+	By(fmt.Sprintf("create application-connector instance: %s/%s", ac.Namespace, ac.Name))
+	Expect(k8sClient.Create(ctx, &ac)).To(Succeed())
+
+	testReconcile(ac, ctx, t)
+
+	updateFunc(&ac)
+
+}
+
+func testReconcile(ac v1alpha1.ApplicationConnector, ctx context.Context, t time.Duration) {
 	instanceNsName := types.NamespacedName{Name: ac.Name, Namespace: ac.Namespace}
 	// both deployments should not be ready, the CR status should be in
 	// processing state
