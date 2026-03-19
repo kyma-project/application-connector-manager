@@ -150,8 +150,6 @@ var _ = BeforeSuite(func() {
 	iNs := namespace(istioNamespace)
 	Expect(k8sClient.Create(ctx, &iNs)).To(Succeed())
 
-	testDomainName := "testme"
-
 	By("create gardener config")
 	gardenerCM := corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{

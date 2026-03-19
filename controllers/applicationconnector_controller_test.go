@@ -27,6 +27,7 @@ const (
 	compassRtAgentDeploymentName  = "compass-runtime-agent"
 	istioNamespace                = "istio-system"
 	defaultTestTimeout            = 60 * time.Second
+	testDomainName                = "testme"
 )
 
 var _ = Describe("ApplicationConnector controller", func() {
@@ -58,19 +59,19 @@ var _ = Describe("ApplicationConnector controller", func() {
 			"The application-connector is created properly with given specification (network policies enabled)",
 			// the table function that will be executed for each entry
 			testInstance,
-			Entry("with default arguments", defaultTestTimeout, appConWithNetworkPolicies),
+			Entry("with default arguments", testDomainName, defaultTestTimeout, appConWithNetworkPolicies),
 		)
 		DescribeTable(
 			"The application-connector is created properly with given specification (network policies disabled)",
 			// the table function that will be executed for each entry
 			testInstance,
-			Entry("with default arguments", defaultTestTimeout, appConWithoutNetworkPolicies),
+			Entry("with default arguments", testDomainName, defaultTestTimeout, appConWithoutNetworkPolicies),
 		)
 		DescribeTable(
 			"Network policies are successfully disabled",
 			// the table function that will be executed for each entry
 			testInstance,
-			Entry("with default arguments", defaultTestTimeout, appConWithoutNetworkPolicies),
+			Entry("with default arguments", testDomainName, defaultTestTimeout, appConWithoutNetworkPolicies),
 		)
 	})
 })
