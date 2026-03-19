@@ -82,6 +82,9 @@ func validateAppConState(ctx context.Context, expected State, key types.Namespac
 }
 
 func testInstance(testDomainName string, t time.Duration, ac v1alpha1.ApplicationConnector) {
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+	defer cancel()
+
 	By(fmt.Sprintf("create application-connector instance: %s/%s", ac.Namespace, ac.Name))
 	Expect(k8sClient.Create(ctx, &ac)).To(Succeed())
 

@@ -52,9 +52,6 @@ var (
 	k8sClient client.Client
 	testEnv   *envtest.Environment
 
-	ctx    context.Context
-	cancel context.CancelFunc
-
 	externalDependencyDataPath = "../hack/common/k3d-patches/patch-istio-crds.yaml"
 )
 
@@ -177,8 +174,6 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	cancel()
-
 	By("tearing down the test environment")
 	err := testEnv.Stop()
 	Expect(err).NotTo(HaveOccurred())
