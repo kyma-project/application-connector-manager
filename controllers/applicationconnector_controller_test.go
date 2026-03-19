@@ -32,7 +32,7 @@ const (
 
 var _ = Describe("ApplicationConnector controller", func() {
 
-	appConWithNetworkPolicies := applicationConnector("appConWithNetworkPolicies", "kyma-system", v1alpha1.ApplicationConnectorSpec{
+	appConWithNetworkPolicies := applicationConnector("app-conn-with-np", "kyma-system", v1alpha1.ApplicationConnectorSpec{
 		ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
 			LogLevel: v1alpha1.LogLevel("info"),
 		},
@@ -43,7 +43,7 @@ var _ = Describe("ApplicationConnector controller", func() {
 		NetworkPoliciesEnabled: true,
 	})
 
-	appConWithoutNetworkPolicies := applicationConnector("appConWithoutNetworkPolicies", "kyma-system", v1alpha1.ApplicationConnectorSpec{
+	appConWithoutNetworkPolicies := applicationConnector("app-conn-without-np", "kyma-system", v1alpha1.ApplicationConnectorSpec{
 		ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
 			LogLevel: v1alpha1.LogLevel("info"),
 		},
