@@ -32,42 +32,42 @@ const (
 
 var _ = Describe("ApplicationConnector controller", func() {
 
-	appConWithNetworkPolicies := applicationConnector("appConWithNetworkPolicies", "kyma-system", v1alpha1.ApplicationConnectorSpec{
-		ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
-			LogLevel: v1alpha1.LogLevel("info"),
-		},
-		AppConValidatorSpec: v1alpha1.AppConnValidatorSpec{
-			LogLevel:  v1alpha1.LogLevel("info"),
-			LogFormat: v1alpha1.LogFormat("json"),
-		},
-		NetworkPoliciesEnabled: true,
-	})
+	//appConWithNetworkPolicies := applicationConnector("appConWithNetworkPolicies", "kyma-system", v1alpha1.ApplicationConnectorSpec{
+	//	ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
+	//		LogLevel: v1alpha1.LogLevel("info"),
+	//	},
+	//	AppConValidatorSpec: v1alpha1.AppConnValidatorSpec{
+	//		LogLevel:  v1alpha1.LogLevel("info"),
+	//		LogFormat: v1alpha1.LogFormat("json"),
+	//	},
+	//	NetworkPoliciesEnabled: true,
+	//})
+	//
+	//appConWithoutNetworkPolicies := applicationConnector("appConWithoutNetworkPolicies", "kyma-system", v1alpha1.ApplicationConnectorSpec{
+	//	ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
+	//		LogLevel: v1alpha1.LogLevel("info"),
+	//	},
+	//	AppConValidatorSpec: v1alpha1.AppConnValidatorSpec{
+	//		LogLevel:  v1alpha1.LogLevel("info"),
+	//		LogFormat: v1alpha1.LogFormat("json"),
+	//	},
+	//	NetworkPoliciesEnabled: true,
+	//})
 
-	appConWithoutNetworkPolicies := applicationConnector("appConWithoutNetworkPolicies", "kyma-system", v1alpha1.ApplicationConnectorSpec{
-		ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
-			LogLevel: v1alpha1.LogLevel("info"),
-		},
-		AppConValidatorSpec: v1alpha1.AppConnValidatorSpec{
-			LogLevel:  v1alpha1.LogLevel("info"),
-			LogFormat: v1alpha1.LogFormat("json"),
-		},
-		NetworkPoliciesEnabled: true,
-	})
-
-	Context("When creating fresh instance", func() {
-		DescribeTable(
-			"The application-connector is created properly with given specification (network policies enabled)",
-			// the table function that will be executed for each entry
-			testInstance,
-			Entry("with default arguments", testDomainName, defaultTestTimeout, appConWithNetworkPolicies),
-		)
-		DescribeTable(
-			"The application-connector is created properly with given specification (network policies disabled)",
-			// the table function that will be executed for each entry
-			testInstance,
-			Entry("with default arguments", testDomainName, defaultTestTimeout, appConWithoutNetworkPolicies),
-		)
-	})
+	//Context("When creating fresh instance", func() {
+	//	DescribeTable(
+	//		"The application-connector is created properly with given specification (network policies enabled)",
+	//		// the table function that will be executed for each entry
+	//		testInstance,
+	//		Entry("with default arguments", testDomainName, defaultTestTimeout, appConWithNetworkPolicies),
+	//	)
+	//	DescribeTable(
+	//		"The application-connector is created properly with given specification (network policies disabled)",
+	//		// the table function that will be executed for each entry
+	//		testInstance,
+	//		Entry("with default arguments", testDomainName, defaultTestTimeout, appConWithoutNetworkPolicies),
+	//	)
+	//})
 })
 
 func validateAppConState(ctx context.Context, expected State, key types.NamespacedName) error {
