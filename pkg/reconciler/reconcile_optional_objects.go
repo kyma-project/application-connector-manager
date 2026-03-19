@@ -22,6 +22,7 @@ const (
 
 func sFnReconcileOptionalObjects(ctx context.Context, r *fsm, s *systemState) (stateFn, *ctrl.Result, error) {
 	if s.instance.Spec.NetworkPoliciesEnabled {
+	 r.log.Infow("Applying optional network policies", "count", len(r.OptionalObjs))
 		for _, obj := range r.OptionalObjs {
 			if err := patchObject(ctx, r, obj); err != nil {
 				s.instance.UpdateStateFromErr(
