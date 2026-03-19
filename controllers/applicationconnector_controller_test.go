@@ -119,7 +119,7 @@ func testInstanceUpdate(t time.Duration, ac v1alpha1.ApplicationConnector, updat
 
 	Expect(k8sClient.Update(ctx, &updatedAC)).To(Succeed())
 
-	testReconcile(ac, ctx, t)
+	testReconcile(updatedAC, ctx, t)
 }
 
 func testReconcile(ac v1alpha1.ApplicationConnector, ctx context.Context, t time.Duration) {
