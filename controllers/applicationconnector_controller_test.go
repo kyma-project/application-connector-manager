@@ -135,6 +135,7 @@ func testInstance(testDomainName string, t time.Duration, ac v1alpha1.Applicatio
 
 	// check if domain name was set
 	Expect(validateGateway(ctx, testDomainName)).To(BeNil())
+	Expect(k8sClient.Delete(ctx, &ac)).To(Succeed())
 }
 
 func validateGateway(ctx context.Context, expectedDomainName string) error {
