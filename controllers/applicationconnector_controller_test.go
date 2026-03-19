@@ -31,7 +31,18 @@ const (
 var _ = Describe("ApplicationConnector controller", func() {
 
 	defaultTestTimeout := 60 * time.Second
-	defaultAppCon := applicationConnector("test", "kyma-system", v1alpha1.ApplicationConnectorSpec{
+	appConWithNetworkPolicies := applicationConnector("appConWithNetworkPolicies", "kyma-system", v1alpha1.ApplicationConnectorSpec{
+		ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
+			LogLevel: v1alpha1.LogLevel("info"),
+		},
+		AppConValidatorSpec: v1alpha1.AppConnValidatorSpec{
+			LogLevel:  v1alpha1.LogLevel("info"),
+			LogFormat: v1alpha1.LogFormat("json"),
+		},
+		NetworkPoliciesEnabled: true,
+	})
+
+	appConWithoutNetworkPolicies := applicationConnector("appConWithoutNetworkPolicies", "kyma-system", v1alpha1.ApplicationConnectorSpec{
 		ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
 			LogLevel: v1alpha1.LogLevel("info"),
 		},
@@ -44,10 +55,16 @@ var _ = Describe("ApplicationConnector controller", func() {
 
 	Context("When creating fresh instance", func() {
 		DescribeTable(
-			"The application-connector is created properly with given specification",
+			"The application-connector is created properly with given specification (network policies enabled)",
 			// the table function that will be executed for each entry
 			testInstance,
-			Entry("with default arguments", defaultTestTimeout, defaultAppCon),
+			Entry("with default arguments", defaultTestTimeout, appConWithNetworkPolicies),
+		)
+		DescribeTable(
+			"The application-connector is created properly with given specification (network policies disabled)",
+			// the table function that will be executed for each entry
+			testInstance,
+			Entry("with default arguments", defaultTestTimeout, appConWithoutNetworkPolicies),
 		)
 	})
 })
