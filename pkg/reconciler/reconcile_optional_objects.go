@@ -34,7 +34,7 @@ func sFnReconcileOptionalObjects(ctx context.Context, r *fsm, s *systemState) (s
 			}
 		}
 	} else {
-		if err := removeNetworkPolicies(ctx, r.Client); err != nil {
+		if err := removeNetworkPolicies(ctx, r.Client); err != nil {r.log.Info("Removing network policies as they are disabled")
 			s.instance.UpdateStateFromErr(
 				v1alpha1.ConditionTypeInstalled,
 				v1alpha1.ConditionReasonOptionalManifestsReconciliationErr,
