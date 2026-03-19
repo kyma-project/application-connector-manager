@@ -53,41 +53,13 @@ var _ = Describe("ApplicationConnector controller", func() {
 		NetworkPoliciesEnabled: true,
 	})
 
-	Context("When creating fresh instance", func() {
-		DescribeTable(
-			"The application-connector is created properly with given specification (network policies enabled)",
-			// the table function that will be executed for each entry
-			testInstance,
-			Entry("with default arguments", defaultTestTimeout, appConWithNetworkPolicies),
-		)
-		DescribeTable(
-			"The application-connector is created properly with given specification (network policies disabled)",
-			// the table function that will be executed for each entry
-			testInstance,
-			Entry("with default arguments", defaultTestTimeout, appConWithoutNetworkPolicies),
-		)
-	})
-})
-
-func validateAppConState(ctx context.Context, expected State, key types.NamespacedName) error {
-	state, err := getApplicationConnectorState(ctx, key)
-	if err != nil {
-		return err
-	}
-	if state != expected {
-		return fmt.Errorf("invalid state")
-	}
-	return nil
-}
-
-func testInstance(t time.Duration, ac v1alpha1.ApplicationConnector) {
 	testDomainName := "testme"
 
-	ctx, cancel := context.WithTimeout(context.Background(), t)
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 	defer cancel()
 
-	By(fmt.Sprintf("create namespace: %s", ac.Namespace))
-	ns := namespace(ac.Namespace)
+	By(fmt.Sprintf("create namespace: %s", "kyma-system"))
+	ns := namespace("kyma-system")
 	Expect(k8sClient.Create(ctx, &ns)).To(Succeed())
 
 	By(fmt.Sprintf("create namespace: %s", istioNamespace))
@@ -106,10 +78,44 @@ func testInstance(t time.Duration, ac v1alpha1.ApplicationConnector) {
 	}
 	Expect(k8sClient.Create(ctx, &gardenerCM)).Should(BeNil())
 
-	By(fmt.Sprintf("create compass-runtime-agent configuration: %s/compass-agent-configuration", ac.Namespace))
-	compassRtAgentSecret := secret(ac.Namespace)
+	By(fmt.Sprintf("create compass-runtime-agent configuration: %s/compass-agent-configuration", "kyma-system"))
+	compassRtAgentSecret := secret("kyma-system")
 	Expect(k8sClient.Create(ctx, &compassRtAgentSecret)).To(Succeed())
 
+	Context("When creating fresh instance", func() {
+		DescribeTable(
+			"The application-connector is created properly with given specification (network policies enabled)",
+			// the table function that will be executed for each entry
+			testInstance,
+			Entry("with default arguments", defaultTestTimeout, appConWithNetworkPolicies),
+		)
+		DescribeTable(
+			"The application-connector is created properly with given specification (network policies disabled)",
+			// the table function that will be executed for each entry
+			testInstance,
+			Entry("with default arguments", defaultTestTimeout, appConWithoutNetworkPolicies),
+		)
+		DescribeTable(
+			"Network policies are successfully disabled",
+			// the table function that will be executed for each entry
+			testInstance,
+			Entry("with default arguments", defaultTestTimeout, appConWithoutNetworkPolicies),
+		)
+	})
+})
+
+func validateAppConState(ctx context.Context, expected State, key types.NamespacedName) error {
+	state, err := getApplicationConnectorState(ctx, key)
+	if err != nil {
+		return err
+	}
+	if state != expected {
+		return fmt.Errorf("invalid state")
+	}
+	return nil
+}
+
+func testInstance(testDomainName string, t time.Duration, ac v1alpha1.ApplicationConnector) {
 	By(fmt.Sprintf("create application-connector instance: %s/%s", ac.Namespace, ac.Name))
 	Expect(k8sClient.Create(ctx, &ac)).To(Succeed())
 
