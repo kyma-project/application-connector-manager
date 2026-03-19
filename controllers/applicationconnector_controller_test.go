@@ -95,6 +95,7 @@ func testInstanceCreate(t time.Duration, ac v1alpha1.ApplicationConnector) {
 	Expect(k8sClient.Create(ctx, &ac)).To(Succeed())
 
 	testReconcile(ac, ctx, t)
+	Expect(k8sClient.Delete(ctx, &ac)).To(Succeed())
 }
 
 func testInstanceDisableNetworkPolicy(t time.Duration, ac v1alpha1.ApplicationConnector) {
@@ -170,7 +171,6 @@ func testReconcile(ac v1alpha1.ApplicationConnector, ctx context.Context, t time
 
 	// check if domain name was set
 	Expect(validateGateway(ctx, testDomainName)).To(BeNil())
-	Expect(k8sClient.Delete(ctx, &ac)).To(Succeed())
 }
 
 func validateGateway(ctx context.Context, expectedDomainName string) error {
