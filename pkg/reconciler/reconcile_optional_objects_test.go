@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/kyma-project/application-connector-manager/pkg/yaml"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	"os"
 	"testing"
 
@@ -35,7 +36,7 @@ func TestFnReconcileOptionalObjects_NetworkPoliciesEnabled_Applies(t *testing.T)
 
 	fakeClient := buildFakeClient(scheme)
 
-	r := buildFsm(fakeClient, data)
+	r := buildFsm(t, fakeClient, data)
 
 	s := &systemState{
 		instance: v1alpha1.ApplicationConnector{
@@ -71,7 +72,7 @@ func TestFnReconcileOptionalObjects_NetworkPoliciesDisabled_Removes(t *testing.T
 
 	fakeClient := buildFakeClient(scheme, np1, np2, unmanagedNp)
 
-	r := buildFsm(fakeClient, []unstructured.Unstructured{})
+	r := buildFsm(t, fakeClient, []unstructured.Unstructured{})
 
 	s := &systemState{
 		instance: v1alpha1.ApplicationConnector{
@@ -125,7 +126,10 @@ func managedNetworkPolicy(name, namespace string) *networkingv1.NetworkPolicy {
 	}
 }
 
-func buildFsm(fakeClient client.Client, optionalObjs []unstructured.Unstructured) *fsm {
+func buildFsm(t *testing.T, fakeClient client.Client, optionalObjs []unstructured.Unstructured) *fsm {
+	logger, err := zap.NewDevelopmentConfig().Build()
+	assert.NoError(t, err)
+
 	return &fsm{
 		K8s: K8s{
 			Client: fakeClient,
@@ -133,5 +137,6 @@ func buildFsm(fakeClient client.Client, optionalObjs []unstructured.Unstructured
 		Cfg: Cfg{
 			OptionalObjs: optionalObjs,
 		},
+		log: logger.Sugar(),
 	}
 }
