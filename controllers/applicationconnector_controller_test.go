@@ -59,13 +59,13 @@ var _ = Describe("ApplicationConnector controller", func() {
 			"The application-connector is created properly with given specification (network policies enabled)",
 			// the table function that will be executed for each entry
 			testInstanceCreate,
-			Entry(defaultTestTimeout, appConWithNetworkPolicies),
+			Entry("with default arguments", defaultTestTimeout, appConWithNetworkPolicies),
 		)
 		DescribeTable(
 			"The application-connector is created properly with given specification (network policies disabled)",
 			// the table function that will be executed for each entry
 			testInstanceCreate,
-			Entry(defaultTestTimeout, appConWithoutNetworkPolicies),
+			Entry("with default arguments", defaultTestTimeout, appConWithoutNetworkPolicies),
 		)
 	})
 })
@@ -81,7 +81,7 @@ func validateAppConState(ctx context.Context, expected State, key types.Namespac
 	return nil
 }
 
-func testInstanceCreate(_ string, t time.Duration, ac v1alpha1.ApplicationConnector) {
+func testInstanceCreate(t time.Duration, ac v1alpha1.ApplicationConnector) {
 	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 	defer cancel()
 
@@ -91,7 +91,7 @@ func testInstanceCreate(_ string, t time.Duration, ac v1alpha1.ApplicationConnec
 	testReconcile(ac, ctx, t)
 }
 
-func testInstanceDisableNetworkPolicy(_ string, t time.Duration, ac v1alpha1.ApplicationConnector) {
+func testInstanceDisableNetworkPolicy(t time.Duration, ac v1alpha1.ApplicationConnector) {
 	testInstanceUpdate(t, ac, func(ac *v1alpha1.ApplicationConnector) {
 		ac.Spec.NetworkPoliciesEnabled = false
 	})
