@@ -56,7 +56,7 @@ create-k3d: ## Create k3d with kyma CRDs.
 		--k3s-arg "--flannel-backend=none@server:*" \
 		--k3s-arg "--disable=traefik@server:0" \
 		--k3s-arg "--tls-san=host.docker.internal@server:*" \
-		--image rancher/k3s:v1.31.7-k3s1 \
+		--image docker.io/rancher/k3s:v1.35.0-k3s1 \
 		--registry-create k3d-${REGISTRY_NAME}:${REGISTRY_PORT}
 	@echo "::endgroup::"
 
