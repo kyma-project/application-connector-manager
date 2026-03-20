@@ -2,7 +2,7 @@
 
 The Application Connector module relies on Istio Ingress Gateway as an endpoint for incoming requests from external systems.
 
-The Kyma Istio module is pre-installed by default on a managed Kyma runtime. Alternatively, a [custom Istio installation](https://kyma-project.io/#/02-get-started/01-quick-install) is also possible.
+The Kyma Istio module is pre-installed by default on a managed Kyma runtime. Alternatively, a [custom Istio installation](https://kyma-project.io/02-get-started/01-quick-install) is also possible.
 
 Istio Gateway is created during the Application Connector module installation.
 
