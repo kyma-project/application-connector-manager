@@ -105,7 +105,7 @@ type ApplicationConnectorSpec struct {
 	AppConValidatorSpec AppConnValidatorSpec `json:"appConnValidator"`
 	DomainName          string               `json:"domainName,omitempty"`
 	// +optional
-    // +kubebuilder:default:=false
+	// +kubebuilder:default:=false
 	NetworkPoliciesEnabled bool `json:"networkPoliciesEnabled"`
 }
 

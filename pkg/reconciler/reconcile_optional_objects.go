@@ -3,6 +3,7 @@ package reconciler
 import (
 	"context"
 	"fmt"
+
 	"github.com/kyma-project/application-connector-manager/api/v1alpha1"
 	"github.com/kyma-project/application-connector-manager/pkg/unstructured"
 	"k8s.io/apimachinery/pkg/types"
@@ -36,8 +37,8 @@ func sFnReconcileOptionalObjects(ctx context.Context, r *fsm, s *systemState) (s
 			}
 		}
 	} else {
+		r.log.Info("Removing network policies as they are disabled")
 		if err := removeNetworkPolicies(ctx, r.Client); err != nil {
-			r.log.Info("Removing network policies as they are disabled")
 			s.instance.UpdateStateFromErr(
 				v1alpha1.ConditionTypeInstalled,
 				v1alpha1.ConditionReasonOptionalManifestsReconciliationErr,

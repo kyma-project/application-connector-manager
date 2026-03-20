@@ -3,7 +3,6 @@ module github.com/kyma-project/application-connector-manager
 go 1.26.0
 
 require (
-	github.com/goccy/go-yaml v1.18.0
 	github.com/onsi/ginkgo/v2 v2.27.5
 	github.com/onsi/gomega v1.39.0
 	github.com/stretchr/testify v1.11.1
