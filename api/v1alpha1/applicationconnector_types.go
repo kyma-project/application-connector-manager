@@ -34,14 +34,15 @@ const (
 	ServedTrue  = "True"
 	ServedFalse = "False"
 
-	ConditionReasonVerificationErr = ConditionReason("VerificationErr")
-	ConditionReasonVerified        = ConditionReason("Verified")
-	ConditionReasonApplyObjError   = ConditionReason("ApplyObjError")
-	ConditionReasonVerification    = ConditionReason("Verification")
-	ConditionReasonInitialized     = ConditionReason("Initialized")
-	ConditionReasonDeletion        = ConditionReason("Deletion")
-	ConditionReasonDeletionErr     = ConditionReason("DeletionErr")
-	ConditionReasonDeleted         = ConditionReason("Deleted")
+	ConditionReasonVerificationErr                    = ConditionReason("VerificationErr")
+	ConditionReasonVerified                           = ConditionReason("Verified")
+	ConditionReasonApplyObjError                      = ConditionReason("ApplyObjError")
+	ConditionReasonVerification                       = ConditionReason("Verification")
+	ConditionReasonInitialized                        = ConditionReason("Initialized")
+	ConditionReasonDeletion                           = ConditionReason("Deletion")
+	ConditionReasonDeletionErr                        = ConditionReason("DeletionErr")
+	ConditionReasonDeleted                            = ConditionReason("Deleted")
+	ConditionReasonOptionalManifestsReconciliationErr = ConditionReason("OptionalManifestsReconciliationErr")
 
 	ConditionTypeInstalled = ConditionType("Installed")
 	ConditionTypeDeleted   = ConditionType("Deleted")
@@ -103,6 +104,9 @@ type ApplicationConnectorSpec struct {
 	// +kubebuilder:default:={ logLevel: "info", logFormat: "json" }
 	AppConValidatorSpec AppConnValidatorSpec `json:"appConnValidator"`
 	DomainName          string               `json:"domainName,omitempty"`
+	// +optional
+	// +kubebuilder:default:=false
+	NetworkPoliciesEnabled bool `json:"networkPoliciesEnabled"`
 }
 
 //+kubebuilder:object:root=true
