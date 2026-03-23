@@ -88,14 +88,16 @@ verify-network-policies: ## Verify that managed NetworkPolicies exist when netwo
 		echo "networkPoliciesEnabled=true, checking for managed NetworkPolicies..."; \
 		COUNT=$$(kubectl get networkpolicy --all-namespaces \
 			-l app.kubernetes.io/managed-by=application-connector-manager \
-			--no-headers 2>/dev/null | wc -l); \
+			--no-headers 2>/dev/null | grep -c .); \
 		echo "Found $$COUNT managed NetworkPolicy(ies)"; \
 		if [ "$$COUNT" -lt 1 ]; then \
 			echo "ERROR: expected at least one managed NetworkPolicy but found none"; \
 			exit 1; \
 		fi; \
-	else \
+	elif [ "$$NP_ENABLED" = "false" ]; then \
 		echo "networkPoliciesEnabled=false, skipping NetworkPolicy verification"; \
+	else \
+		echo "WARNING: networkPoliciesEnabled is unset or has unexpected value '$$NP_ENABLED', skipping verification"; \
 	fi
 	@echo "::endgroup::"
 
