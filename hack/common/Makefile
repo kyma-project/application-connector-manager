@@ -43,7 +43,8 @@ run-without-lifecycle-manager: \
 	module-image \
 	deploy \
 	apply-appcon \
-	verify-appcon
+	verify-appcon \
+	verify-network-policies
 
 ##@ K3D
 .PHONY: create-k3d
@@ -77,6 +78,26 @@ patch-with-istio-crds: ## Delete k3d kyma cluster.
 .PHONY: verify-appcon
 verify-appcon: ## Wait for ApplicationConnector CR to be in Ready state.
 	@./verify_appcon_status.sh
+
+.PHONY: verify-network-policies
+verify-network-policies: ## Verify that managed NetworkPolicies exist when networkPoliciesEnabled is true.
+	@echo "::group::verify-network-policies"
+	@NP_ENABLED=$$(kubectl get applicationconnector -n kyma-system applicationconnector-sample \
+		-o jsonpath='{.spec.networkPoliciesEnabled}'); \
+	if [ "$$NP_ENABLED" = "true" ]; then \
+		echo "networkPoliciesEnabled=true, checking for managed NetworkPolicies..."; \
+		COUNT=$$(kubectl get networkpolicy --all-namespaces \
+			-l app.kubernetes.io/managed-by=application-connector-manager \
+			--no-headers 2>/dev/null | wc -l); \
+		echo "Found $$COUNT managed NetworkPolicy(ies)"; \
+		if [ "$$COUNT" -lt 1 ]; then \
+			echo "ERROR: expected at least one managed NetworkPolicy but found none"; \
+			exit 1; \
+		fi; \
+	else \
+		echo "networkPoliciesEnabled=false, skipping NetworkPolicy verification"; \
+	fi
+	@echo "::endgroup::"
 
 .PHONY: verify-kyma
 verify-kyma: ## Wait for Kyma CR to be in Ready state.

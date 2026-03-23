@@ -12,6 +12,7 @@ on:
       - api/**
       - pkg/**
       - controllers/**
+      - hack/common/**
       - application-connector.yaml
       - application-connector-dependencies.yaml
       - application-connector-optional.yaml
@@ -28,6 +29,7 @@ on:
       - api/**
       - pkg/**
       - controllers/**
+      - hack/common/**
       - application-connector.yaml
       - application-connector-dependencies.yaml
       - application-connector-optional.yaml
