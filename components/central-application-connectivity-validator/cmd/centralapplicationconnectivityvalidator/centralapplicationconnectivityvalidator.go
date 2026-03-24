@@ -94,7 +94,7 @@ func main() {
 		log.WithContext().
 			With("controller", "cache_janitor").
 			With("name", key).
-			Warnf("Deleted the application from the cache with values %v.", i)
+			Warnf("TEST.Deleted the application from the cache with values %v.", i)
 	})
 
 	proxyHandler := validationproxy.NewProxyHandler(
