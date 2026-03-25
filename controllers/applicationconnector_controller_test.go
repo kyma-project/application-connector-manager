@@ -26,12 +26,13 @@ const (
 	appConValidatorDeploymentName = "central-application-connectivity-validator"
 	compassRtAgentDeploymentName  = "compass-runtime-agent"
 	istioNamespace                = "istio-system"
+	defaultTestTimeout            = 60 * time.Second
+	testDomainName                = "testme"
 )
 
 var _ = Describe("ApplicationConnector controller", func() {
 
-	defaultTestTimeout := 60 * time.Second
-	defaultAppCon := applicationConnector("test", "kyma-system", v1alpha1.ApplicationConnectorSpec{
+	appConWithNetworkPolicies := applicationConnector("app-conn-with-np", "kyma-system", v1alpha1.ApplicationConnectorSpec{
 		ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
 			LogLevel: v1alpha1.LogLevel("info"),
 		},
@@ -39,14 +40,32 @@ var _ = Describe("ApplicationConnector controller", func() {
 			LogLevel:  v1alpha1.LogLevel("info"),
 			LogFormat: v1alpha1.LogFormat("json"),
 		},
+		NetworkPoliciesEnabled: true,
+	})
+
+	appConWithoutNetworkPolicies := applicationConnector("app-conn-without-np", "kyma-system", v1alpha1.ApplicationConnectorSpec{
+		ApplicationGatewaySpec: v1alpha1.AppGatewaySpec{
+			LogLevel: v1alpha1.LogLevel("info"),
+		},
+		AppConValidatorSpec: v1alpha1.AppConnValidatorSpec{
+			LogLevel:  v1alpha1.LogLevel("info"),
+			LogFormat: v1alpha1.LogFormat("json"),
+		},
+		NetworkPoliciesEnabled: false,
 	})
 
 	Context("When creating fresh instance", func() {
 		DescribeTable(
-			"The application-connector is created properly with given specification",
+			"The application-connector is created properly with given specification (network policies enabled)",
 			// the table function that will be executed for each entry
-			testInstance,
-			Entry("with default arguments", defaultTestTimeout, defaultAppCon),
+			testInstanceCreate,
+			Entry("with default arguments", defaultTestTimeout, appConWithNetworkPolicies),
+		)
+		DescribeTable(
+			"The application-connector is created properly with given specification (network policies disabled)",
+			// the table function that will be executed for each entry
+			testInstanceCreate,
+			Entry("with default arguments", defaultTestTimeout, appConWithoutNetworkPolicies),
 		)
 	})
 })
@@ -62,39 +81,18 @@ func validateAppConState(ctx context.Context, expected State, key types.Namespac
 	return nil
 }
 
-func testInstance(t time.Duration, ac v1alpha1.ApplicationConnector) {
-	testDomainName := "testme"
-
-	ctx, cancel := context.WithTimeout(context.Background(), t)
+func testInstanceCreate(t time.Duration, ac v1alpha1.ApplicationConnector) {
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 	defer cancel()
-
-	By(fmt.Sprintf("create namespace: %s", ac.Namespace))
-	ns := namespace(ac.Namespace)
-	Expect(k8sClient.Create(ctx, &ns)).To(Succeed())
-
-	By(fmt.Sprintf("create namespace: %s", istioNamespace))
-	iNs := namespace(istioNamespace)
-	Expect(k8sClient.Create(ctx, &iNs)).To(Succeed())
-
-	By("create gardener config")
-	gardenerCM := corev1.ConfigMap{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "shoot-info",
-			Namespace: "kube-system",
-		},
-		Data: map[string]string{
-			"domain": testDomainName,
-		},
-	}
-	Expect(k8sClient.Create(ctx, &gardenerCM)).Should(BeNil())
-
-	By(fmt.Sprintf("create compass-runtime-agent configuration: %s/compass-agent-configuration", ac.Namespace))
-	compassRtAgentSecret := secret(ac.Namespace)
-	Expect(k8sClient.Create(ctx, &compassRtAgentSecret)).To(Succeed())
 
 	By(fmt.Sprintf("create application-connector instance: %s/%s", ac.Namespace, ac.Name))
 	Expect(k8sClient.Create(ctx, &ac)).To(Succeed())
 
+	testReconcile(ac, ctx, t)
+	Expect(k8sClient.Delete(ctx, &ac)).To(Succeed())
+}
+
+func testReconcile(ac v1alpha1.ApplicationConnector, ctx context.Context, t time.Duration) {
 	instanceNsName := types.NamespacedName{Name: ac.Name, Namespace: ac.Namespace}
 	// both deployments should not be ready, the CR status should be in
 	// processing state

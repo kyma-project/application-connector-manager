@@ -8,11 +8,11 @@ In this example, Kyma sends authenticated requests to an external service.
 
 ## Prerequisites
 
-1. Create Kyma runtime either by using the [SAP BTP cockpit](https://help.sap.com/docs/btp/sap-business-technology-platform/create-kyma-environment-instance) or by following the [Kyma Quick Install](https://kyma-project.io/#/02-get-started/01-quick-install) tutorial.
+1. Create Kyma runtime either by using the [SAP BTP cockpit](https://help.sap.com/docs/btp/sap-business-technology-platform/create-kyma-environment-instance) or by following the [Kyma Quick Install](https://kyma-project.io/02-get-started/01-quick-install) tutorial.
 2. Besides the Kyma default modules like Istio and API Gateway, you must enable the following Kyma modules:
     * Application Connector: it includes the Application Gateway for proxying requests to external systems.
     * Serverless: used to run a Function that sends an HTTP request to an external system.
-    If you created Kyma runtime using SAP BTP cockpit, follow this tutorial for [Adding and Deleting a Kyma Module](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-and-disable-kyma-module?#add-and-delete-a-kyma-module-using-kyma-dashboard). Alternatively, continue with the steps described in the [Kyma Quick Install](https://kyma-project.io/#/02-get-started/01-quick-install?id=steps) tutorial.
+    If you created Kyma runtime using SAP BTP cockpit, follow this tutorial for [Adding and Deleting a Kyma Module](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-and-disable-kyma-module?#add-and-delete-a-kyma-module-using-kyma-dashboard). Alternatively, continue with the steps described in the [Kyma Quick Install](https://kyma-project.io/02-get-started/01-quick-install#steps) tutorial.
 
 ## Integrate an External System with Kyma Runtime
 

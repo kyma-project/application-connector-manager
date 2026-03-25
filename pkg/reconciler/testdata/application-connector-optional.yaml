@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kyma-project.io--acm-compass-allow-from-health-check
+  namespace: kyma-system
+  labels:
+    kyma-project.io/module: application-connector
+    release: application-connector
+    app.kubernetes.io/managed-by: application-connector-manager
+    app.kubernetes.io/instance: application-connector
+    app.kubernetes.io/part-of: application-connector-manager
+spec:
+  ingress:
+    - ports:
+        - port: 8090
+          protocol: TCP
+  podSelector:
+    matchLabels:
+      app: compass-runtime-agent
+  policyTypes:
+    - Ingress

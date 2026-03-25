@@ -25,7 +25,7 @@ patch-compass-runtime-agent:
 test-compass-runtime-agent: install-compass-runtime-agent-test
 	@echo "::group::fetch-compass-runtime-agent-test-logs"
 	${PWD}/tests/scripts/fetch-test-logs.sh compass-runtime-agent-test ${PWD}
-	kubectl logs -n kyma-system deployments/compass-runtime-agent --all-pods --ignore-errors > "${LOGS_OUT}/compass-runtime-agent.log"
+	kubectl logs -n kyma-system deployments/compass-runtime-agent --all-pods --ignore-errors > "${LOGS_OUT}/compass-runtime-agent.txt"
 	@echo "::endgroup::"
 
 .PHONY: create-resources

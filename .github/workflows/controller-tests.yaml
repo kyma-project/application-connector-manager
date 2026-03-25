@@ -1,20 +1,30 @@
-name: ACM
+name: ACM Controller tests
 
 on:
+  workflow_call:
+    outputs:
+      tag:
+        description: "Tag name if this is a tag push"
+        value: ${{ jobs.setup.outputs.tag }}
+      tag-experimental:
+        description: "Experimental tag name"
+        value: ${{ jobs.setup.outputs.tag-experimental }}
+      latest:
+        description: "Latest tag if this is a push to main"
+        value: ${{ jobs.setup.outputs.latest }}
   push:
     branches:
       - main
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+"
-      - "[0-9]+.[0-9]+.[0-9]+-*"
     paths:
-      - .github/workflows/acm.yaml
+      - .github/workflows/controller.yaml
+      - .github/workflows/controller-tests.yaml
       - main.go
       - api/**
       - pkg/**
       - controllers/**
       - application-connector.yaml
       - application-connector-dependencies.yaml
+      - application-connector-optional.yaml
       - go.sum
       - go.mod
       - Dockerfile
@@ -22,20 +32,18 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
-      - .github/workflows/acm.yaml
+      - .github/workflows/controller.yaml
+      - .github/workflows/controller-tests.yaml
       - main.go
       - api/**
       - pkg/**
       - controllers/**
       - application-connector.yaml
       - application-connector-dependencies.yaml
+      - application-connector-optional.yaml
       - go.sum
       - go.mod
       - Dockerfile
-
-permissions:
-  id-token: write # This is required for requesting the JWT token
-  contents: read # This is required for actions/checkout
 
 jobs:
   setup:
@@ -68,7 +76,14 @@ jobs:
       - name: Run unit tests
         run: |
           set -o pipefail
-          make test | tee test.log
+          mkdir -p ./components/controller
+          make test | tee ./components/controller/test-unit.txt
+      - name: Upload test output artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: controller-test-unit
+          path: ./components/controller/test-unit.txt
       - name: filter out coverage
         run: |
           #!/bin/bash
@@ -101,12 +116,6 @@ jobs:
           flag-name: ACM
           carryforward: CACV,CAG,CRA
           build-number: ${{ github.sha }}
-      - name: Archive test results
-        uses: actions/upload-artifact@v4
-        if: success() || failure()
-        with:
-          name: acm-unit-test.log
-          path: test.log
       - name: Generate summary
         if: success() || failure()
         run: |
@@ -115,32 +124,11 @@ jobs:
             echo "<details>"
             echo "<summary>click to expand logs</summary>"
             printf '\n```\n'
-            cat test.log
+            if [ -f ./components/controller/test-unit.txt ]; then
+              cat ./components/controller/test-unit.txt
+            else
+              echo "Test output file not found. Test may have failed before producing output."
+            fi
             printf '\n```\n'
             echo "</details>"
-          } >> $GITHUB_STEP_SUMMARY
-
-  build-image:
-    needs: setup
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: application-connector-manager
-      dockerfile: Dockerfile
-      context: .
-      tags: |
-        ${{ needs.setup.outputs.tag }}
-        ${{ needs.setup.outputs.tag-experimental }}
-        ${{ needs.setup.outputs.latest }}
-
-  print-images:
-    runs-on: ubuntu-latest
-    needs: [build-image]
-    steps:
-      - name: "Generate summary"
-        run: |
-          {
-            echo '## ACM Images'
-            printf '\n```json\n'
-            echo '${{ needs.build-image.outputs.images }}' | jq
-            printf '\n```\n'
           } >> $GITHUB_STEP_SUMMARY

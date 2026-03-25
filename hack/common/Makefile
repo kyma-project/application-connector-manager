@@ -36,6 +36,7 @@ create-cra-config:
 run-without-lifecycle-manager: ## Create k3d cluster and deploy module without the lifecycle-manager.
 run-without-lifecycle-manager: \
 	create-k3d \
+	install-calico \
 	create-kyma-system-ns \
 	install-istio \
 	create-cra-config \
@@ -45,19 +46,18 @@ run-without-lifecycle-manager: \
 	verify-appcon
 
 ##@ K3D
-
 .PHONY: create-k3d
 create-k3d: ## Create k3d with kyma CRDs.
 	@echo "::group::create-k3d"
 	k3d cluster create ${CLUSTER_NAME} \
-		--image docker.io/rancher/k3s:v1.35.0-k3s1 \
-		--api-port 6550 \
-		-p 8080:80@loadbalancer \
-		-p 8443:443@loadbalancer \
-		-p 9090-9099:9090-9099@loadbalancer \
+		--port 80:80@loadbalancer \
+		--port 443:443@loadbalancer \
 		--agents 2 \
+		--k3s-arg "--flannel-backend=none@server:*" \
+		--k3s-arg "--disable=traefik@server:0" \
+		--k3s-arg "--tls-san=host.docker.internal@server:*" \
+		--image docker.io/rancher/k3s:v1.35.0-k3s1 \
 		--registry-create k3d-${REGISTRY_NAME}:${REGISTRY_PORT}
-	kubectl version
 	@echo "::endgroup::"
 
 .PHONY: delete-k3d
@@ -143,3 +143,16 @@ deploy:
 .PHONY: yq-install
 yq-install:
 	@make -C ${PROJECT_ROOT} yq
+
+.PHONY: install-calico
+install-calico: ## Install Calico CNI for proper NetworkPolicy support.
+	@echo "::group::install-calico"
+	@echo "Waiting for Kubernetes API server..."
+	@until kubectl get nodes >/dev/null 2>&1; do sleep 2; done
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/operator-crds.yaml
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/tigera-operator.yaml
+	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/custom-resources.yaml
+	kubectl rollout status -n kube-system deployment coredns --timeout=300s
+	kubectl patch installation default --type=merge \
+		-p '{"spec":{"cni":{"binDir":"/var/lib/rancher/k3s/data/cni","confDir":"/var/lib/rancher/k3s/agent/etc/cni/net.d"}}}'
+	@echo "::endgroup::"
