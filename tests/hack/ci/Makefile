@@ -26,7 +26,7 @@ application-connector-deploy:
 	@echo "::endgroup::"
 
 .PHONY: install-application-connector
-install-application-connector: application-connector-module-image application-connector-deploy patch-api-server-networkpolicy apply-appcon
+install-application-connector: application-connector-module-image application-connector-deploy apply-appcon
 	@echo "::group::install-application-connector"
 	kubectl wait -n kyma-system \
 		applicationconnectors/applicationconnector-sample \
@@ -94,35 +94,6 @@ apply-compass-connection-crd: ## Apply the compass-connection CRD
 	kubectl apply -f ${PROJECT_ROOT}/tests/hack/ci/deps/compass-connection.crd.yaml
 	@echo "::endgroup::"
 
-.PHONY: patch-api-server-networkpolicy
-patch-api-server-networkpolicy: ## Patch NetworkPolicy to use k3d API server port (6443 instead of 443)
-	@echo "::group::patch-api-server-networkpolicy"
-	@echo "Patching NetworkPolicy to use API server targetPort 6443 for k3d..."
-	kubectl patch networkpolicy -n kyma-system \
-		application-connector-kyma-project.io--acm-module-to-api-server \
-		--type='json' \
-		-p='[{"op": "replace", "path": "/spec/egress/0/ports/0/port", "value": 6443}]'
-	@echo "::endgroup::"
-
-.PHONY: patch-validator-networkpolicy
-patch-validator-networkpolicy: ## Patch NetworkPolicy to allow test namespace to access validator and validator to reach echoserver
-	@echo "::group::patch-validator-networkpolicy"
-	@echo "Patching NetworkPolicy to allow ingress on port 8080 (for sidecar to app traffic)"
-	kubectl patch networkpolicy application-connector-kyma-project.io--acm-module-allow-from-sidecar \
-		-n kyma-system --type='json' \
-		-p='[{"op": "add", "path": "/spec/ingress/0/ports/-", "value": {"port": 8080, "protocol": "TCP"}}]'
-	@echo "Patching NetworkPolicy to allow egress to echoserver in test namespace"
-	kubectl patch networkpolicy -n kyma-system \
-		application-connector-kyma-project.io--acm-validator-allow-to-eventing \
-		--type='json' \
-		-p='[{"op": "add", "path": "/spec/egress/-", "value": {"to": [{"namespaceSelector": {"matchLabels": {"kubernetes.io/metadata.name": "test"}}}], "ports": [{"protocol": "TCP", "port": 80}]}}]'
-	@echo "Patching core NetworkPolicy to allow egress to echoserver in test namespace"
-	kubectl patch networkpolicy -n kyma-system \
-		application-connector-kyma-project.io--acm-module-allow-to-sidecar \
-		--type='json' \
-		-p='[{"op": "add", "path": "/spec/egress/-", "value": {"to": [{"namespaceSelector": {"matchLabels": {"kubernetes.io/metadata.name": "test"}}}], "ports": [{"protocol": "TCP", "port": 80}]}}]'
-	@echo "::endgroup::"
-
 .PHONY: gateway-tests
 gateway-tests: 
 	@echo "::group::gateway-tests"
@@ -161,7 +132,6 @@ k3d-validator-tests: patch-validator \
 	install-calico \
 	install-istio \
 	install-application-connector \
-	patch-validator-networkpolicy \
 	apply-appcon-crd \
 	validator-tests
 

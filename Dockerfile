@@ -26,6 +26,7 @@ WORKDIR /
 COPY --chown=65532:65532 --from=builder /acm-workspace/manager .
 COPY --chown=65532:65532 --from=builder /acm-workspace/application-connector.yaml .
 COPY --chown=65532:65532 --from=builder /acm-workspace/application-connector-dependencies.yaml .
+COPY --chown=65532:65532 --from=builder /acm-workspace/application-connector-optional.yaml .
 USER 65532:65532
 
 ENTRYPOINT ["/manager"]

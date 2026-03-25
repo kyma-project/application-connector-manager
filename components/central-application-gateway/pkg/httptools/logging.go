@@ -24,7 +24,7 @@ func LogResponse(log *zap.SugaredLogger, res *http.Response) error {
 			"code", res.StatusCode,
 			"contentLength", res.ContentLength,
 			"kind", "response",
-		).Debugf("%s %s %s %s", req.Method, req.Host, req.URL.RequestURI(), req.Proto)
+		).Debug("HTTP response")
 
 	return nil
 }
@@ -38,7 +38,7 @@ func LogRequest(log *zap.SugaredLogger, r *http.Request) {
 		"url", r.URL.RequestURI(),
 		"proto", r.Proto,
 		"kind", "request",
-	).Debugf("%s %s %s %s", r.Method, r.Host, r.URL.RequestURI(), r.Proto)
+	).Debug("HTTP request")
 }
 
 func RequestLogger(label string, h http.Handler) http.Handler {

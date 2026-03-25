@@ -8,6 +8,7 @@ rules:
   - ""
   resources:
   - configmaps
+  - secrets
   verbs:
   - create
   - delete
@@ -62,11 +63,6 @@ rules:
   - ""
   resources:
   - serviceaccounts
-  verbs:
-  - '*'
-- apiGroups:
-  - ""
-  resources:
   - services
   verbs:
   - create
@@ -74,17 +70,6 @@ rules:
   - get
   - list
   - patch
-  - update
-  - watch
-- apiGroups:
-  - '*'
-  resources:
-  - secrets
-  verbs:
-  - create
-  - delete
-  - get
-  - list
   - update
   - watch
 - apiGroups:
@@ -164,6 +149,18 @@ rules:
   resources:
   - gateways
   - virtualservices
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
   verbs:
   - create
   - delete

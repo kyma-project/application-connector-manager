@@ -18,6 +18,9 @@ package controllers
 
 import (
 	"context"
+	"fmt"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"os"
 	"path/filepath"
 	"testing"
@@ -48,9 +51,6 @@ var (
 	config    *rest.Config
 	k8sClient client.Client
 	testEnv   *envtest.Environment
-
-	ctx    context.Context
-	cancel context.CancelFunc
 
 	externalDependencyDataPath = "../hack/common/k3d-patches/patch-istio-crds.yaml"
 )
@@ -115,6 +115,12 @@ var _ = BeforeSuite(func() {
 	depsData, err := yaml.LoadData(depsFile)
 	Expect(err).ShouldNot(HaveOccurred())
 
+	optionalFile, err := os.Open("../application-connector-optional.yaml")
+	Expect(err).ShouldNot(HaveOccurred())
+
+	optionalData, err := yaml.LoadData(optionalFile)
+	Expect(err).ShouldNot(HaveOccurred())
+
 	err = (&applicationConnectorReconciler{
 		log: mgrLogger.Sugar(),
 		K8s: reconciler.K8s{
@@ -122,13 +128,40 @@ var _ = BeforeSuite(func() {
 			EventRecorder: record.NewFakeRecorder(100),
 		},
 		Cfg: reconciler.Cfg{
-			Finalizer: "application-connector-manager.kyma-project.io/deletion-hook",
-			Objs:      objsData,
-			Deps:      depsData,
+			Finalizer:    "application-connector-manager.kyma-project.io/deletion-hook",
+			Objs:         objsData,
+			Deps:         depsData,
+			OptionalObjs: optionalData,
 		},
 	}).SetupWithManager(k8sManager)
 	Expect(err).ToNot(HaveOccurred())
 
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+	defer cancel()
+
+	By(fmt.Sprintf("create namespace: %s", "kyma-system"))
+	ns := namespace("kyma-system")
+	Expect(k8sClient.Create(ctx, &ns)).To(Succeed())
+
+	By(fmt.Sprintf("create namespace: %s", istioNamespace))
+	iNs := namespace(istioNamespace)
+	Expect(k8sClient.Create(ctx, &iNs)).To(Succeed())
+
+	By("create gardener config")
+	gardenerCM := corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "shoot-info",
+			Namespace: "kube-system",
+		},
+		Data: map[string]string{
+			"domain": testDomainName,
+		},
+	}
+	Expect(k8sClient.Create(ctx, &gardenerCM)).Should(BeNil())
+
+	By(fmt.Sprintf("create compass-runtime-agent configuration: %s/compass-agent-configuration", "kyma-system"))
+	compassRtAgentSecret := secret("kyma-system")
+	Expect(k8sClient.Create(ctx, &compassRtAgentSecret)).To(Succeed())
 	go func() {
 		defer GinkgoRecover()
 
@@ -141,8 +174,6 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	cancel()
-
 	By("tearing down the test environment")
 	err := testEnv.Stop()
 	Expect(err).NotTo(HaveOccurred())

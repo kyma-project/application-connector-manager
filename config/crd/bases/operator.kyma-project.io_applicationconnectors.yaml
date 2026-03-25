@@ -93,6 +93,9 @@ spec:
                 type: object
               domainName:
                 type: string
+              networkPoliciesEnabled:
+                default: false
+                type: boolean
             type: object
           status:
             properties:

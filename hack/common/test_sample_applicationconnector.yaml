@@ -11,3 +11,4 @@ metadata:
   name: applicationconnector-sample
 spec:
   domainName: kyma.test.cluster.com
+  networkPoliciesEnabled: false
