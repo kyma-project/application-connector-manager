@@ -34,6 +34,10 @@ permissions:
 jobs:
   setup-and-test:
     uses: ./.github/workflows/cra-tests.yaml
+    secrets:
+      COMPASS_HOST: ${{ secrets.COMPASS_HOST }}
+      COMPASS_CLIENT_ID: ${{ secrets.COMPASS_CLIENT_ID }}
+      COMPASS_CLIENT_SECRET: ${{ secrets.COMPASS_CLIENT_SECRET }}
 
   tags:
     runs-on: ubuntu-latest
