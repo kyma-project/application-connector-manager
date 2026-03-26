@@ -21,6 +21,10 @@ jobs:
       contents: read
       pull-requests: read  # Required by cra-tests.yaml setup job for changed-files detection
     uses: ./.github/workflows/cra-tests.yaml
+    secrets:
+      COMPASS_HOST: ${{ secrets.COMPASS_HOST }}
+      COMPASS_CLIENT_ID: ${{ secrets.COMPASS_CLIENT_ID }}
+      COMPASS_CLIENT_SECRET: ${{ secrets.COMPASS_CLIENT_SECRET }}
 
   run-controller-tests:
     permissions:
