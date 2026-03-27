@@ -50,33 +50,39 @@ jobs:
           COMPASS_CLIENT_ID: ${{ secrets.compass-client-id }}
           COMPASS_CLIENT_SECRET: ${{ secrets.compass-client-secret }}
           COMPASS_HOST: ${{ secrets.compass-host }}
-        run: make -C tests/hack/ci k3d-agent-tests
+        run: |
+          make -C tests/hack/ci k3d-agent-tests
+          mv ./compass-runtime-agent-test.txt ./components/compass-runtime-agent/test-integration.txt
+          mv ./compass-runtime-agent.txt ./components/compass-runtime-agent/test-integration-logs.txt
       - name: archive-test-logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{inputs.artifact-prefix}}k3d-agent-test-logs
-          path: compass-runtime-agent-test.log
-      - name: archive-cra-logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{inputs.artifact-prefix}}k3d-agent-logs
-          path: compass-runtime-agent.log
+          name: ${{inputs.artifact-prefix}}compass-runtime-agent-test-integration
+          path: ./components/
       - name: test summary
+        if: success() || failure()
         run: |
           {
             echo "# K3D Agent Test Summary:"
             echo "<details>"
             echo "<summary>Click to expand test logs</summary>"
             printf '\n```\n'
-            cat compass-runtime-agent-test.log
+            if [ -f ./components/compass-runtime-agent/test-integration.txt ]; then
+              cat ./components/compass-runtime-agent/test-integration.txt
+            else
+              echo "Test output file not found. Test may have failed before producing output."
+            fi
             printf '\n```\n'
             echo "</details>"
             echo "<details>"
             echo "<summary>Click to expand CRA logs</summary>"
             printf '\n```\n'
-            cat compass-runtime-agent.log
+            if [ -f ./components/compass-runtime-agent/test-integration-logs.txt ]; then
+              cat ./components/compass-runtime-agent/test-integration-logs.txt
+            else
+              echo "CRA logs file not found."
+            fi
             printf '\n```\n'
             echo "</details>"
           } >> $GITHUB_STEP_SUMMARY

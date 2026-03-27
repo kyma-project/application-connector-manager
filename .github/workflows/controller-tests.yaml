@@ -16,14 +16,20 @@ on:
     branches:
       - main
     paths:
+<<<<<<<< HEAD:.github/workflows/controller/tests.yaml
       - .github/workflows/controller/acm.yaml
       - .github/workflows/controller/tests.yaml
+========
+      - .github/workflows/controller.yaml
+      - .github/workflows/controller-tests.yaml
+>>>>>>>> upstream/main:.github/workflows/controller-tests.yaml
       - main.go
       - api/**
       - pkg/**
       - controllers/**
       - application-connector.yaml
       - application-connector-dependencies.yaml
+      - application-connector-optional.yaml
       - go.sum
       - go.mod
       - Dockerfile
@@ -31,14 +37,20 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
+<<<<<<<< HEAD:.github/workflows/controller/tests.yaml
       - .github/workflows/controller/acm.yaml
       - .github/workflows/controller/tests.yaml
+========
+      - .github/workflows/controller.yaml
+      - .github/workflows/controller-tests.yaml
+>>>>>>>> upstream/main:.github/workflows/controller-tests.yaml
       - main.go
       - api/**
       - pkg/**
       - controllers/**
       - application-connector.yaml
       - application-connector-dependencies.yaml
+      - application-connector-optional.yaml
       - go.sum
       - go.mod
       - Dockerfile
@@ -74,7 +86,14 @@ jobs:
       - name: Run unit tests
         run: |
           set -o pipefail
-          make test | tee test.log
+          mkdir -p ./components/controller
+          make test | tee ./components/controller/test-unit.txt
+      - name: Upload test output artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: controller-test-unit
+          path: ./components/controller/test-unit.txt
       - name: filter out coverage
         run: |
           #!/bin/bash
@@ -107,12 +126,15 @@ jobs:
           flag-name: ACM
           carryforward: CACV,CAG,CRA
           build-number: ${{ github.sha }}
+<<<<<<<< HEAD:.github/workflows/controller/tests.yaml
       - name: Archive test results
         uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
           name: controller-unit-test
           path: test.log
+========
+>>>>>>>> upstream/main:.github/workflows/controller-tests.yaml
       - name: Generate summary
         if: success() || failure()
         run: |
@@ -121,7 +143,15 @@ jobs:
             echo "<details>"
             echo "<summary>click to expand logs</summary>"
             printf '\n```\n'
-            cat test.log
+            if [ -f ./components/controller/test-unit.txt ]; then
+              cat ./components/controller/test-unit.txt
+            else
+              echo "Test output file not found. Test may have failed before producing output."
+            fi
             printf '\n```\n'
             echo "</details>"
+<<<<<<<< HEAD:.github/workflows/controller/tests.yaml
           } >> $GITHUB_STEP_SUMMARY
+========
+          } >> $GITHUB_STEP_SUMMARY
+>>>>>>>> upstream/main:.github/workflows/controller-tests.yaml

@@ -4,8 +4,7 @@ on:
 
 permissions:
   id-token: write # This is required for requesting the JWT token
-  contents: write # This is required for actions/checkout
-  pull-requests: write
+  contents: read # This is required for actions/checkout
 
 jobs:
   setup:
@@ -38,7 +37,7 @@ jobs:
       context: components/compass-runtime-agent
       tags: |
         ${{ needs.setup.outputs.tag }}
-        ${{ needs.setup.outputs.tag-experimental }}        
+        ${{ needs.setup.outputs.tag-experimental }}
 
   build-gateway:
     needs: setup

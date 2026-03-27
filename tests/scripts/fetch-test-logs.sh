@@ -26,7 +26,7 @@ function fetch_tests() {
   kubectl logs \
 	  -n $NAMESPACE \
 	  -f job/$JOB_NAME \
-	  2>&1 > "$LOGS_OUT"/$JOB_NAME.log
+	  2>&1 > "$LOGS_OUT"/$JOB_NAME.txt
   # exit with original job exit code
   exit $__job_result__
 }

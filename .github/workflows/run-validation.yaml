@@ -26,14 +26,14 @@ jobs:
     - name: Run integration tests without lifecycle-manager
       run: |
         set -o pipefail
-        make -C hack/ci run-without-lifecycle-manager 2>&1 | tee module-integration-test.log
+        make -C hack/ci run-without-lifecycle-manager 2>&1 | tee module-integration-test.txt
 
     - name: Archive test results
       if: success() || failure()
       uses: actions/upload-artifact@v4
       with:
         name: module-integration-test
-        path: module-integration-test.log
+        path: module-integration-test.txt
 
     - name: Integration test summary
       if: success() || failure()
@@ -43,7 +43,11 @@ jobs:
           echo "<details>"
           echo "<summary>click to expand logs</summary>"
           printf '\n```\n'
-          cat module-integration-test.log
+          if [ -f module-integration-test.txt ]; then
+            cat module-integration-test.txt
+          else
+            echo "Test output file not found. Test may have failed before producing output."
+          fi
           printf '\n```\n'
           echo "</details>"
         } >> $GITHUB_STEP_SUMMARY
