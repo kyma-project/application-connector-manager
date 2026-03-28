@@ -43,7 +43,7 @@ func main() {
 		}
 	}(setupLogger)
 
-	setupLogger.Info("Starting Application Gateway")
+	setupLogger.Info("Starting Application Gatewwwway")
 
 	options := parseArgs(setupLogger)
 
