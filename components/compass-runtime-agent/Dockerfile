@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.26.0-alpine3.23 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.26.2-alpine3.23 AS builder
 ARG TARGETOS
 ARG TARGETARCH
 ARG DOCK_PKG_DIR=/compass-runtime-agent
