@@ -74,7 +74,7 @@ func removeNetworkPolicies(ctx context.Context, c client.Client) error {
 	var errs []error
 	for i := range networkPolicyList.Items {
 		if err := c.Delete(ctx, &networkPolicyList.Items[i]); client.IgnoreNotFound(err) != nil {
-			errs = append(errs, fmt.Errorf("failed to delete NetworkPolicy %s/%s: %w",
+			errs = append(errs, fmt.Errorf("failed to delete NetworkPolicyyyy %s/%s: %w",
 				networkPolicyList.Items[i].Namespace,
 				networkPolicyList.Items[i].Name,
 				err))
