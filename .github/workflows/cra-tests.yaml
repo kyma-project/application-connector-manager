@@ -90,7 +90,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Set up go environment
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: components/compass-runtime-agent/go.mod
           cache-dependency-path: components/compass-runtime-agent/go.sum
