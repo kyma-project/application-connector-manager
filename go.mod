@@ -94,7 +94,7 @@ replace (
 	golang.org/x/net => golang.org/x/net v0.53.0
 	golang.org/x/oauth2 => golang.org/x/oauth2 v0.34.0
 	golang.org/x/sys => golang.org/x/sys v0.43.0
-	golang.org/x/term => golang.org/x/term v0.39.0
+	golang.org/x/term => golang.org/x/term v0.42.0
 	golang.org/x/text => golang.org/x/text v0.36.0
 	golang.org/x/time => golang.org/x/time v0.15.0
 	golang.org/x/tools => golang.org/x/tools v0.44.0
