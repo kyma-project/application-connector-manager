@@ -79,7 +79,7 @@ jobs:
           mkdir -p ./components/controller
           make test | tee ./components/controller/test-unit.txt
       - name: Upload test output artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success() || failure()
         with:
           name: controller-test-unit
