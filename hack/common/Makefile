@@ -158,5 +158,5 @@ install-calico: ## Install Calico CNI for proper NetworkPolicy support.
 	@i=0; until kubectl get daemonset calico-node -n calico-system >/dev/null 2>&1; do sleep 2; i=$$((i+1)); if [ $$i -ge 150 ]; then echo "Timed out waiting for calico-node daemonset"; exit 1; fi; done
 
 	kubectl rollout status daemonset calico-node -n calico-system --timeout=300s
-	kubectl rollout status -n kube-system deployment coredns --timeout=300s
+	kubectl rollout status -n kube-system deployment coredns --timeout=600s
 	@echo "::endgroup::"
