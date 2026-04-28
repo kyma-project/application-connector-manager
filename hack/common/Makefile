@@ -153,6 +153,7 @@ install-calico: ## Install Calico CNI for proper NetworkPolicy support.
 	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/tigera-operator.yaml
 	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/custom-resources.yaml
 	kubectl rollout status deployment tigera-operator -n tigera-operator --timeout=300s
+	@i=0; until kubectl get namespace calico-system >/dev/null 2>&1; do sleep 2; i=$$((i+1)); if [ $$i -ge 150 ]; then echo "Timed out waiting for calico-system namespace"; exit 1; fi; done
 	kubectl rollout status daemonset calico-node -n calico-system --timeout=300s
 	kubectl patch installation default --type=merge \
 		-p '{"spec":{"cni":{"type":"Calico", "binDir":"/var/lib/rancher/k3s/data/cni","confDir":"/var/lib/rancher/k3s/agent/etc/cni/net.d"}}}'
