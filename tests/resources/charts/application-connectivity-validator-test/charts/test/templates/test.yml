@@ -15,3 +15,50 @@ spec:
           image: {{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.validatorTest) }}
           imagePullPolicy: Always
       restartPolicy: OnFailure
+---
+# Allow the test job (test namespace) to reach the validator on port 8080.
+# Needed because networkPoliciesEnabled=true restricts validator ingress to istio-ingressgateway only.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: validator-test-allow-to-validator
+  namespace: kyma-system
+spec:
+  podSelector:
+    matchLabels:
+      app: central-application-connectivity-validator
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.global.namespace }}
+      ports:
+        - port: 8080
+          protocol: TCP
+---
+# Allow the validator to reach the echoserver (eventing stand-in) in the test namespace on port 80.
+# The production policy only permits egress to eventing-publisher-proxy pods.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: validator-test-allow-to-echoserver
+  namespace: kyma-system
+spec:
+  podSelector:
+    matchLabels:
+      app: central-application-connectivity-validator
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.global.namespace }}
+          podSelector:
+            matchLabels:
+              app: echoserver
+      ports:
+        - port: 80
+          protocol: TCP
