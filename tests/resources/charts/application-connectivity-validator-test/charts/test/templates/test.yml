@@ -8,10 +8,67 @@ spec:
   template:
     metadata:
       annotations:
-        traffic.sidecar.istio.io/excludeOutboundPorts: "8080"
+        sidecar.istio.io/inject: "false"
     spec:
+      initContainers:
+        - name: wait-for-cache
+          image: curlimages/curl:8.2.1
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "Waiting for validator Application CR cache to sync..."
+              for i in $(seq 1 60); do
+                CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+                  http://central-application-connectivity-validator.kyma-system:8080/event-test-compass/v1/events)
+                if [ "$CODE" != "404" ] && [ "$CODE" != "000" ]; then
+                  echo "Cache ready (HTTP $CODE)"
+                  exit 0
+                fi
+                echo "  Attempt $i: HTTP $CODE, retrying in 3s..."
+                sleep 3
+              done
+              echo "ERROR: validator cache did not sync within 180s"
+              exit 1
       containers:
         - name: application-connectivity-validator-test
           image: {{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.validatorTest) }}
           imagePullPolicy: Always
       restartPolicy: OnFailure
+---
+# Allow the test job (test namespace) to reach the validator on port 8080.
+# Needed because networkPoliciesEnabled=true restricts validator ingress to istio-ingressgateway only.
+# No "from" restriction because Calico + kube-proxy DNAT loses source namespace identity through ClusterIP.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: validator-test-allow-to-validator
+  namespace: kyma-system
+spec:
+  podSelector:
+    matchLabels:
+      app: central-application-connectivity-validator
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 8080
+          protocol: TCP
+---
+# Allow the validator to reach the echoserver (eventing stand-in) in the test namespace on port 80.
+# The production policy only permits egress to eventing-publisher-proxy pods.
+# No destination restriction because Calico + kube-proxy DNAT loses namespace identity through ClusterIP.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: validator-test-allow-to-echoserver
+  namespace: kyma-system
+spec:
+  podSelector:
+    matchLabels:
+      app: central-application-connectivity-validator
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - port: 80
+          protocol: TCP
