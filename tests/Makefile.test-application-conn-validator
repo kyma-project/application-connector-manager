@@ -34,7 +34,7 @@ create-resources:
 	@echo "::endgroup::"
 	@echo "::group::create-resources::install-test"
 	@helm template ${PWD}/tests/resources/charts/application-connectivity-validator-test/charts/test \
-    		--set namespace=$(NAMESPACE) \
+    		--set global.namespace=$(NAMESPACE) \
     		--values ${PWD}/tests/resources/charts/application-connectivity-validator-test/values.yaml \
 		| kubectl apply -f -
 	@echo "::endgroup::"

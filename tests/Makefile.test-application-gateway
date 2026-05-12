@@ -36,7 +36,7 @@ create-resources:
 	@echo "::endgroup::"
 	@echo "::group::create-resources::install-test"
 	helm template ${PWD}/tests/resources/charts/gateway-test/charts/test \
-		--set namespace=$(NAMESPACE) \
+		--set global.namespace=$(NAMESPACE) \
 		--set mockServiceName=$(MOCK_SERVICE_NAME) \
 		--values ${PWD}/tests/resources/charts/gateway-test/values.yaml \
 		| kubectl apply -f -

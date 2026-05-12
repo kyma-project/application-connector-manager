@@ -73,7 +73,7 @@ install-calico: ## Install Calico CNI for proper NetworkPolicy support.
 	kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/custom-resources.yaml
 	kubectl rollout status -n kube-system deployment coredns --timeout=300s
 	kubectl patch installation default --type=merge \
-		-p '{"spec":{"cni":{"binDir":"/var/lib/rancher/k3s/data/cni","confDir":"/var/lib/rancher/k3s/agent/etc/cni/net.d"}}}'
+		-p '{"spec":{"cni":{"type":"Calico", "binDir":"/var/lib/rancher/k3s/data/cni","confDir":"/var/lib/rancher/k3s/agent/etc/cni/net.d"}}}'
 	@echo "::endgroup::"
 
 .PHONY: apply-appcon
