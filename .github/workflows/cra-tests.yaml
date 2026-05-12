@@ -28,6 +28,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.compass-runtime-agent"
+      - "hack/common/**"
   pull_request_target:
     types: [ opened, synchronize, reopened ]
     paths:
@@ -40,6 +41,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.compass-runtime-agent"
+      - "hack/common/**"
 
 jobs:
   setup:
@@ -68,6 +70,7 @@ jobs:
               - ".github/workflows/cra-tests.yaml"
             test:
               - tests/**
+              - hack/common/**
               - ".github/workflows/cra.yaml"
               - ".github/workflows/cra-tests.yaml"
       - name: Fallback values

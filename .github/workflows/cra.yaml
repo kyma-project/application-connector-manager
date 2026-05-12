@@ -14,6 +14,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.compass-runtime-agent"
+      - "hack/common/**"
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
@@ -26,6 +27,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.compass-runtime-agent"
+      - "hack/common/**"
 
 permissions:
   id-token: write # This is required for requesting the JWT token
