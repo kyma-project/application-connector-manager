@@ -13,7 +13,7 @@ function fetch_tests() {
     exit 1
   fi
   local LOGS_OUT=${2:-${PWD}}
-  local NAMESPACE=${3:-test}
+  local NAMESPACE=${3:-istio-system}
   local TEST_TIMEOUT=${4:-300s}
   # wait for the job to finish
   kubectl wait job/$JOB_NAME \
