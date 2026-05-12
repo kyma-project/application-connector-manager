@@ -14,6 +14,7 @@ spec:
     metadata:
       labels:
         app: echoserver
+        app.kubernetes.io/name: eventing-publisher-proxy
     spec:
       containers:
         - image: ealen/echo-server:0.7.0
