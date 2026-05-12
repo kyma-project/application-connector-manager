@@ -26,11 +26,35 @@ create-resources:
 		| kubectl apply -f -
 	kubectl label namespace $(NAMESPACE) istio-injection=enabled --overwrite
 	@echo "::endgroup::"
+	@echo "::group::create-resources::wait-for-validator"
+	@echo "Waiting for validator deployment to stabilize..."
+	@for i in $$(seq 1 60); do \
+		READY=$$(kubectl get deployment central-application-connectivity-validator -n kyma-system \
+			-o jsonpath='{.status.readyReplicas}' 2>/dev/null); \
+		DESIRED=$$(kubectl get deployment central-application-connectivity-validator -n kyma-system \
+			-o jsonpath='{.status.replicas}' 2>/dev/null); \
+		if [ "$$READY" = "$$DESIRED" ] && [ -n "$$READY" ] && [ "$$READY" != "0" ]; then \
+			echo "  Validator ready ($$READY/$$DESIRED). Checking stability..."; \
+			sleep 10; \
+			READY2=$$(kubectl get deployment central-application-connectivity-validator -n kyma-system \
+				-o jsonpath='{.status.readyReplicas}' 2>/dev/null); \
+			if [ "$$READY2" = "$$DESIRED" ]; then \
+				echo "  Validator stable."; \
+				break; \
+			fi; \
+		fi; \
+		echo "  Attempt $$i: validator not ready ($$READY/$$DESIRED), waiting 10s..."; \
+		sleep 10; \
+	done
+	@echo "::endgroup::"
 	@echo "::group::create-resources::install-echoserver"
 	@helm template ${PWD}/tests/resources/charts/application-connectivity-validator-test/charts/echoserver \
 		--set global.namespace=$(NAMESPACE) \
 		| kubectl apply -f -
 	kubectl rollout status deployment echoserver -n test --timeout=90s
+	@echo "::endgroup::"
+	@echo "::group::create-resources::install-applications"
+	kubectl apply -f ${PWD}/tests/resources/charts/application-connectivity-validator-test/charts/test/templates/applications/
 	@echo "::endgroup::"
 	@echo "::group::create-resources::install-test"
 	@helm template ${PWD}/tests/resources/charts/application-connectivity-validator-test/charts/test \
