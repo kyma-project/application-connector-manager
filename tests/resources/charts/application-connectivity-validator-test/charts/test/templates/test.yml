@@ -3,6 +3,8 @@ kind: Job
 metadata:
   name: application-connectivity-validator-test
   namespace: {{ .Values.global.namespace }}
+  labels:
+    app.kubernetes.io/name: istio-ingressgateway
 spec:
   backoffLimit: 3
   template:
