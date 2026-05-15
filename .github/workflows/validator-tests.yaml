@@ -70,6 +70,8 @@ jobs:
     needs: setup
     if: needs.setup.outputs.validator == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

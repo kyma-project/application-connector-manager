@@ -68,6 +68,8 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     needs: setup
+    permissions:
+      contents: read
     if: needs.setup.outputs.gateway == 'true'
     steps:
       - name: Checkout code
