@@ -65,7 +65,9 @@ jobs:
 
   build-test-image:
     needs: setup-and-test
-    if: needs.setup-and-test.outputs.test == 'true'
+    if: >-
+      needs.setup-and-test.outputs.test == 'true' &&
+      (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: compass-runtime-agent-test
@@ -74,7 +76,9 @@ jobs:
 
   build-image:
     needs: [setup-and-test, tags]
-    if: needs.setup-and-test.outputs.cra == 'true'
+    if: >-
+      needs.setup-and-test.outputs.cra == 'true' &&
+      (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: compass-runtime-agent

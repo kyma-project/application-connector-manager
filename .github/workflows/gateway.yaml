@@ -44,7 +44,9 @@ jobs:
 
   build-test-image:
     needs: setup-and-test
-    if: needs.setup-and-test.outputs.test == 'true'
+    if: >-
+      needs.setup-and-test.outputs.test == 'true' &&
+      (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: gateway-test
@@ -53,7 +55,9 @@ jobs:
 
   build-mock-app-image:
     needs: setup-and-test
-    if: needs.setup-and-test.outputs.test == 'true'
+    if: >-
+      needs.setup-and-test.outputs.test == 'true' &&
+      (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: mock-app
@@ -62,7 +66,9 @@ jobs:
 
   build-image:
     needs: [setup-and-test, tags]
-    if: needs.setup-and-test.outputs.gateway == 'true'
+    if: >-
+      needs.setup-and-test.outputs.gateway == 'true' &&
+      (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: central-application-gateway

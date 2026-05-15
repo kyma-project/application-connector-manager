@@ -45,6 +45,7 @@ jobs:
 
   build-image:
     needs: setup-and-tests
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: application-connector-manager
