@@ -32,6 +32,16 @@ permissions:
   contents: read # This is required for actions/checkout
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'pull_request_target' &&
+      github.event.pull_request.head.repo.full_name != github.repository
+    environment: ${{ vars.PROTECTED_ENVIRONMENT }}
+    steps:
+      - name: Approve fork PR image build
+        run: echo "Image build approved for fork PR #${{ github.event.pull_request.number }} by ${{ github.event.pull_request.user.login }}"
+  
   setup-and-test:
     uses: ./.github/workflows/cra-tests.yaml
     secrets:
@@ -64,10 +74,10 @@ jobs:
       compass-client-secret: ${{ secrets.COMPASS_CLIENT_SECRET }}
 
   build-test-image:
-    needs: setup-and-test
+    needs: [setup-and-test, gate]
     if: >-
       needs.setup-and-test.outputs.test == 'true' &&
-      (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: compass-runtime-agent-test
@@ -75,10 +85,10 @@ jobs:
       context: tests
 
   build-image:
-    needs: [setup-and-test, tags]
+    needs: [setup-and-test, tags, gate]
     if: >-
       needs.setup-and-test.outputs.cra == 'true' &&
-      (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: compass-runtime-agent
