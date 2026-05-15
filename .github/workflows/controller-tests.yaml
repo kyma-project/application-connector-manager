@@ -62,6 +62,8 @@ jobs:
         run: echo "latest=latest" >> $GITHUB_OUTPUT
 
   unit-tests:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
