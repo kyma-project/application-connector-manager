@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Approve fork PR image build
         run: echo "Image build approved for fork PR #${{ github.event.pull_request.number }} by ${{ github.event.pull_request.user.login }}"
-  
+
   setup-and-test:
     uses: ./.github/workflows/cra-tests.yaml
     secrets:
