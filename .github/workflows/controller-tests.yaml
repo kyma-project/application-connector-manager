@@ -29,7 +29,7 @@ on:
       - go.mod
       - Dockerfile
 
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - .github/workflows/controller.yaml
