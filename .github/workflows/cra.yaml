@@ -45,6 +45,8 @@ jobs:
   setup-and-test:
     needs: [gate]
     if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
+    permissions:
+      pull-requests: read
     uses: ./.github/workflows/cra-tests.yaml
     secrets:
       COMPASS_HOST: ${{ secrets.COMPASS_HOST }}
