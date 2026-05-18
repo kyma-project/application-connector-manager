@@ -30,6 +30,7 @@ on:
 permissions:
   id-token: write # This is required for requesting the JWT token
   contents: read # This is required for actions/checkout
+  pull-requests: read # This is required for setup job in cra-tests.yaml
 
 jobs:
   gate:
@@ -45,8 +46,6 @@ jobs:
   setup-and-test:
     needs: [gate]
     if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
-    permissions:
-      pull-requests: read
     uses: ./.github/workflows/cra-tests.yaml
     secrets:
       COMPASS_HOST: ${{ secrets.COMPASS_HOST }}
