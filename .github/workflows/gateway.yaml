@@ -41,9 +41,13 @@ jobs:
         run: echo "Image build approved for fork PR"
 
   setup-and-test:
+    needs: [gate]
+    if: needs.gate.result == 'success' || needs.gate.result == 'skipped'
     uses: ./.github/workflows/gateway-tests.yaml
 
   tags:
+    needs: [gate]
+    if: needs.gate.result == 'success' || needs.gate.result == 'skipped'
     runs-on: ubuntu-latest
     outputs:
       latest: ${{ steps.latest.outputs.latest || '' }}

@@ -51,6 +51,8 @@ jobs:
         run: echo "Image build approved for fork PR"
 
   setup-and-tests:
+    needs: [gate]
+    if: needs.gate.result == 'success' || needs.gate.result == 'skipped'
     uses: ./.github/workflows/controller-tests.yaml
 
   build-image:
