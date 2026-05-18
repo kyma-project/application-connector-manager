@@ -52,7 +52,7 @@ jobs:
 
   setup-and-tests:
     needs: [gate]
-    if: needs.gate.result == 'success' || needs.gate.result == 'skipped'
+    if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     uses: ./.github/workflows/controller-tests.yaml
 
   build-image:
