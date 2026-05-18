@@ -44,6 +44,7 @@ jobs:
   
   setup-and-test:
     needs: [gate]
+    if: needs.gate.result == 'success' || needs.gate.result == 'skipped'
     uses: ./.github/workflows/cra-tests.yaml
     secrets:
       COMPASS_HOST: ${{ secrets.COMPASS_HOST }}
@@ -52,6 +53,7 @@ jobs:
 
   tags:
     needs: [gate]
+    if: needs.gate.result == 'success' || needs.gate.result == 'skipped'
     runs-on: ubuntu-latest
     outputs:
       latest: ${{ steps.latest.outputs.latest || '' }}
@@ -64,7 +66,7 @@ jobs:
     # we're using reusable because we can't modify workflows as contributors
     # it could cause the secret leakeages
     uses: "./.github/workflows/reusable-k3d-agent-test.yaml"
-    needs: [build-image, gate]
+    needs: [build-image]
     if: needs.build-image.result == 'success'
     with:
       k3d-version: v5.8.3
@@ -103,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # if any of the build jobs succeeded - run this job
-    needs: [build-image, build-test-image, gate]
+    needs: [build-image, build-test-image]
     if: always() && contains(needs.*.result, 'success')
 
     steps:

@@ -42,10 +42,12 @@ jobs:
 
   setup-and-test:
     needs: [gate]
+    if: needs.gate.result == 'success' || needs.gate.result == 'skipped'
     uses: ./.github/workflows/validator-tests.yaml
 
   tags:
     needs: [gate]
+    if: needs.gate.result == 'success' || needs.gate.result == 'skipped'
     runs-on: ubuntu-latest
     outputs:
       latest: ${{ steps.latest.outputs.latest || '' }}
@@ -82,7 +84,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # if any of the build jobs succeeded - run this job
-    needs: [build-image, build-test-image, gate]
+    needs: [build-image, build-test-image]
     if: always() && contains(needs.*.result, 'success')
 
     steps:
