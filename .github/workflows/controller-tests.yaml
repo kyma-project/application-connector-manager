@@ -29,7 +29,7 @@ on:
       - go.mod
       - Dockerfile
 
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - .github/workflows/controller.yaml
@@ -62,12 +62,14 @@ jobs:
         run: echo "latest=latest" >> $GITHUB_OUTPUT
 
   unit-tests:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Set up go environment
         uses: actions/setup-go@v6
