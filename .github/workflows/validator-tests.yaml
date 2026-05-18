@@ -48,7 +48,7 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Detect files
         id: detect-files
-        uses: step-security/changed-files@v47
+        uses: step-security/changed-files@2e07db73e5ccdb319b9a6c7766bd46d39d304bad
         with:
           files_yaml: |
             validator:
