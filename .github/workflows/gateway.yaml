@@ -42,12 +42,12 @@ jobs:
 
   setup-and-test:
     needs: [gate]
-    if: needs.gate.result == 'success' || needs.gate.result == 'skipped'
+    if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     uses: ./.github/workflows/gateway-tests.yaml
 
   tags:
     needs: [gate]
-    if: needs.gate.result == 'success' || needs.gate.result == 'skipped'
+    if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     runs-on: ubuntu-latest
     outputs:
       latest: ${{ steps.latest.outputs.latest || '' }}
