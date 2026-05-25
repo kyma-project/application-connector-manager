@@ -19,7 +19,17 @@ patch-validator:
 .PHONY: test-validator
 test-validator: patch-validator create-resources
 	@echo "::group::test-validator"
-	${PWD}/tests/scripts/fetch-test-logs.sh application-connectivity-validator-test ${PWD}
+	@${PWD}/tests/scripts/fetch-test-logs.sh application-connectivity-validator-test ${PWD} || \
+	  ( echo "::endgroup::"; \
+	    echo "::group::test-validator-failure-diagnostics"; \
+	    kubectl get jobs,pods -n $(NAMESPACE) -o wide; \
+	    kubectl describe job/application-connectivity-validator-test -n $(NAMESPACE); \
+	    for p in $$(kubectl get pods -n $(NAMESPACE) -l job-name=application-connectivity-validator-test -o name); do \
+	      echo "--- logs $$p ---"; \
+	      kubectl logs -n $(NAMESPACE) $$p --all-containers --prefix --tail=-1; \
+	    done; \
+	    echo "::endgroup::"; \
+	    exit 1 )
 	@echo "::endgroup::"
 
 .PHONY: create-resources
