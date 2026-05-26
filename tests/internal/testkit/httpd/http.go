@@ -69,8 +69,7 @@ func isConnectError(err error) bool {
 	if !errors.As(err, &opErr) {
 		return false
 	}
-	var sce syscall.Errno
-	if errors.As(opErr.Err, &sce) {
+	if sce, ok := errors.AsType[syscall.Errno](opErr.Err); ok {
 		switch sce {
 		case syscall.ECONNREFUSED, syscall.ECONNRESET, syscall.ENETUNREACH, syscall.EHOSTUNREACH, syscall.ETIMEDOUT:
 			return true
