@@ -7,8 +7,8 @@ spec:
   backoffLimit: 3
   template:
     metadata:
-      annotations:
-        traffic.sidecar.istio.io/excludeOutboundPorts: "8080"
+      labels:
+        sidecar.istio.io/inject: "false"
     spec:
       containers:
         - name: application-connectivity-validator-test
