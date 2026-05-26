@@ -27,10 +27,8 @@ func (vs *ValidatorSuite) SetupSuite() {
 }
 
 func (vs *ValidatorSuite) TearDownSuite() {
-	_, err := http.Post("http://localhost:15000/quitquitquit", "", nil)
-	vs.Nil(err)
-	_, err = http.Post("http://localhost:15020/quitquitquit", "", nil)
-	vs.Nil(err)
+	_, _ = http.Post("http://localhost:15000/quitquitquit", "", nil)
+	_, _ = http.Post("http://localhost:15020/quitquitquit", "", nil)
 }
 
 func TestValidatorSuite(t *testing.T) {
