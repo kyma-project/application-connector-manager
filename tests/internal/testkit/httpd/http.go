@@ -30,7 +30,6 @@ func (c LogHttp) Get(url string) (resp *http.Response, body []byte, err error) {
 
 }
 
-// trigger build
 func (c LogHttp) Do(req *http.Request) (res *http.Response, body []byte, err error) {
 	c.t.Helper()
 	c.t.Logf("%s %s", req.Method, req.URL)

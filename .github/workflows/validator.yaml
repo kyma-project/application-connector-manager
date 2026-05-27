@@ -57,6 +57,10 @@ jobs:
         run: echo "latest=latest" >> $GITHUB_OUTPUT
 
   build-test-image:
+    needs: [setup-and-test, gate]
+    if: >-
+      needs.setup-and-test.outputs.test == 'true' &&
+      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: connectivity-validator-test
