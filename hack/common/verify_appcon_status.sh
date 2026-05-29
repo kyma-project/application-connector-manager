@@ -2,7 +2,7 @@
 
 function get_appcon_status () {
 	local number=1
-	echo "test"
+	echo "test test"
 	while [[ $number -le 100 ]] ; do
 		echo ">--> checking application-connector status #$number"
 		local STATUS=$(kubectl get applicationconnector -n kyma-system applicationconnector-sample -o jsonpath='{.status.state}')
