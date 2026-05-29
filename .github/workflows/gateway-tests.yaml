@@ -21,7 +21,7 @@ on:
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.gateway"
       - "hack/common/**"
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - ".github/workflows/gateway.yaml"
@@ -43,13 +43,13 @@ jobs:
       test: ${{ steps.detect-files.outputs.test_any_changed || steps.fallback-values.outputs.test_any_changed }}
     steps:
       - name: checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Detect files
         id: detect-files
-        uses: step-security/changed-files@89030a259c7f36d294c5ad1184fd3ca4a76942de
+        uses: step-security/changed-files@2e07db73e5ccdb319b9a6c7766bd46d39d304bad
         with:
           files_yaml: |
             gateway:
@@ -71,12 +71,14 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     needs: setup
+    permissions:
+      contents: read
     if: needs.setup.outputs.gateway == 'true'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Set up go environment
         uses: actions/setup-go@v6
@@ -123,13 +125,15 @@ jobs:
 
   integration-tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: azure/setup-helm@v5.0.0
         id: install
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Set up go environment
         uses: actions/setup-go@v6

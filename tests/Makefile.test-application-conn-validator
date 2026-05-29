@@ -12,11 +12,24 @@ test: test-validator
 .PHONY: patch-validator
 patch-validator:
 	yq e -i '. |= (select(.kind == "Deployment" and .metadata.name == "central-application-connectivity-validator") | .spec.template.spec.containers[0].args[5] = "--eventingPublisherHost=echoserver.test.svc.cluster.local" | .spec.template.spec.containers[0].args[6] = "--eventingDestinationPath=/anything/rewrite" | .spec.template.metadata.annotations.["traffic.sidecar.istio.io/excludeInboundPorts"] = "8080")' ${PWD}/application-connector.yaml
+	yq e -i '. |= (select(.kind == "NetworkPolicy" and .metadata.name == "kyma-project.io--acm-module-to-api-server") | .spec.egress[0].ports |= (. + [{"port": 6443, "protocol": "TCP"}] | unique_by(. | tojson)))' ${PWD}/application-connector-optional.yaml
+	yq e -i '. |= (select(.kind == "NetworkPolicy" and .metadata.name == "kyma-project.io--acm-validator-allow-from-istio-ingressgateway") | .spec.ingress[0].from |= (. + [{"namespaceSelector": {"matchLabels": {"kubernetes.io/metadata.name": "test"}}}] | unique_by(. | tojson)))' ${PWD}/application-connector-optional.yaml
+	yq e -i '. |= (select(.kind == "NetworkPolicy" and .metadata.name == "kyma-project.io--acm-validator-allow-to-eventing") | .spec.egress |= (. + [{"ports": [{"port": 80, "protocol": "TCP"}], "to": [{"namespaceSelector": {"matchLabels": {"kubernetes.io/metadata.name": "test"}}}]}] | unique_by(. | tojson)))' ${PWD}/application-connector-optional.yaml
 
 .PHONY: test-validator
 test-validator: patch-validator create-resources
 	@echo "::group::test-validator"
-	${PWD}/tests/scripts/fetch-test-logs.sh application-connectivity-validator-test ${PWD}
+	@${PWD}/tests/scripts/fetch-test-logs.sh application-connectivity-validator-test ${PWD} || \
+	  ( echo "::endgroup::"; \
+	    echo "::group::test-validator-failure-diagnostics"; \
+	    kubectl get jobs,pods -n $(NAMESPACE) -o wide; \
+	    kubectl describe job/application-connectivity-validator-test -n $(NAMESPACE); \
+	    for p in $$(kubectl get pods -n $(NAMESPACE) -l job-name=application-connectivity-validator-test -o name); do \
+	      echo "--- logs $$p ---"; \
+	      kubectl logs -n $(NAMESPACE) $$p --all-containers --prefix --tail=-1; \
+	    done; \
+	    echo "::endgroup::"; \
+	    exit 1 )
 	@echo "::endgroup::"
 
 .PHONY: create-resources
@@ -38,4 +51,3 @@ create-resources:
     		--values ${PWD}/tests/resources/charts/application-connectivity-validator-test/values.yaml \
 		| kubectl apply -f -
 	@echo "::endgroup::"
-

@@ -32,10 +32,24 @@ permissions:
   contents: read # This is required for actions/checkout
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'pull_request_target' &&
+      github.event.pull_request.head.repo.full_name != github.repository
+    environment: ${{ vars.PROTECTED_ENVIRONMENT }}
+    steps:
+      - name: Approve fork PR image build
+        run: echo "Image build approved for fork PR"
+
   setup-and-test:
+    needs: [gate]
+    if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     uses: ./.github/workflows/validator-tests.yaml
 
   tags:
+    needs: [gate]
+    if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     runs-on: ubuntu-latest
     outputs:
       latest: ${{ steps.latest.outputs.latest || '' }}
@@ -45,8 +59,10 @@ jobs:
         run: echo "latest=latest" >> $GITHUB_OUTPUT
 
   build-test-image:
-    needs: setup-and-test
-    if: needs.setup-and-test.outputs.test == 'true'
+    needs: [setup-and-test, gate]
+    if: >-
+      needs.setup-and-test.outputs.test == 'true' &&
+      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: connectivity-validator-test
@@ -54,8 +70,10 @@ jobs:
       context: tests
 
   build-image:
-    needs: [setup-and-test, tags]
-    if: needs.setup-and-test.outputs.validator == 'true'
+    needs: [setup-and-test, tags, gate]
+    if: >-
+      needs.setup-and-test.outputs.validator == 'true' &&
+      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: central-application-connectivity-validator
