@@ -8,7 +8,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/zap v1.27.1
 	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f
-	istio.io/client-go v1.29.2
+	istio.io/client-go v1.30.0
 	k8s.io/api v0.35.4
 	k8s.io/apiextensions-apiserver v0.35.4
 	k8s.io/apimachinery v0.35.4
@@ -80,7 +80,7 @@ require (
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	istio.io/api v1.29.2-0.20260408155000-a0e4e1cbfcc5 // indirect
+	istio.io/api v1.30.0-rc.0.0.20260508191950-a283232d9647 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20260427204847-8949caaa1199 // indirect
 	sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 // indirect
