@@ -20,6 +20,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.gateway"
+      - "hack/common/**"
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -31,6 +32,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.gateway"
+      - "hack/common/**"
 jobs:
   setup:
     permissions:
@@ -56,6 +58,7 @@ jobs:
               - ".github/workflows/gateway-tests.yaml"
             test:
               - tests/**
+              - hack/common/**
               - ".github/workflows/gateway.yaml"
               - ".github/workflows/gateway-tests.yaml"
       - name: Fallback values

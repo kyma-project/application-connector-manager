@@ -20,6 +20,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.connectivity-validator"
+      - "hack/common/**"
   pull_request:
     types: [ opened, synchronize, reopened ]
     paths:
@@ -31,6 +32,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.connectivity-validator"
+      - "hack/common/**"
 
 jobs:
   setup:
@@ -57,6 +59,7 @@ jobs:
               - ".github/workflows/validator-tests.yaml"
             test:
               - tests/**
+              - hack/common/**
               - ".github/workflows/validator.yaml"
               - ".github/workflows/validator-tests.yaml"
       - name: Fallback values
