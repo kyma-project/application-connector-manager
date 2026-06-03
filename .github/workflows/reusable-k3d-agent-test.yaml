@@ -23,7 +23,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    environment: ${{ vars.PROTECTED_ENVIRONMENT }}
+    environment: ${{ vars.PROTECTED_ENVIRONMENT || 'protected' }}
     steps:
       - uses: azure/setup-helm@v5.0.0
         id: install-helm
