@@ -21,9 +21,20 @@ on:
       compass-client-secret:
         required: true
 jobs:
+  check-protected-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify PROTECTED_ENVIRONMENT is configured
+        run: |
+          if [ -z "${{ vars.PROTECTED_ENVIRONMENT }}" ]; then
+            echo "Error: vars.PROTECTED_ENVIRONMENT is not set. Configure the variable in the repository or organization settings."
+            exit 1
+          fi
+
   test:
     runs-on: ubuntu-latest
-    environment: ${{ vars.PROTECTED_ENVIRONMENT || 'protected' }}
+    needs: check-protected-environment
+    environment: ${{ vars.PROTECTED_ENVIRONMENT }}
     steps:
       - uses: azure/setup-helm@v5.0.0
         id: install-helm
