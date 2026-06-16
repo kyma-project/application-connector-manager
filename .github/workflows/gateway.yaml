@@ -13,6 +13,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.gateway"
+      - "hack/common/**"
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
@@ -24,16 +25,29 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.gateway"
+      - "hack/common/**"
 
 permissions:
   id-token: write # This is required for requesting the JWT token
   contents: read # This is required for actions/checkout
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_target' && github.actor != 'renovate[bot]'
+    environment: ${{ vars.PROTECTED_ENVIRONMENT }}
+    steps:
+      - name: Approve fork PR image build
+        run: echo "Image build approved for fork PR"
+
   setup-and-test:
+    needs: [gate]
+    if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     uses: ./.github/workflows/gateway-tests.yaml
 
   tags:
+    needs: [gate]
+    if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     runs-on: ubuntu-latest
     outputs:
       latest: ${{ steps.latest.outputs.latest || '' }}
@@ -43,8 +57,10 @@ jobs:
         run: echo "latest=latest" >> $GITHUB_OUTPUT
 
   build-test-image:
-    needs: setup-and-test
-    if: needs.setup-and-test.outputs.test == 'true'
+    needs: [setup-and-test, gate]
+    if: >-
+      needs.setup-and-test.outputs.test == 'true' &&
+      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: gateway-test
@@ -52,8 +68,10 @@ jobs:
       context: tests
 
   build-mock-app-image:
-    needs: setup-and-test
-    if: needs.setup-and-test.outputs.test == 'true'
+    needs: [setup-and-test, gate]
+    if: >-
+      needs.setup-and-test.outputs.test == 'true' &&
+      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: mock-app
@@ -61,8 +79,10 @@ jobs:
       context: tests
 
   build-image:
-    needs: [setup-and-test, tags]
-    if: needs.setup-and-test.outputs.gateway == 'true'
+    needs: [setup-and-test, tags, gate]
+    if: >-
+      needs.setup-and-test.outputs.gateway == 'true' &&
+      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: central-application-gateway

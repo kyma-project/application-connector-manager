@@ -14,6 +14,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.compass-runtime-agent"
+      - "hack/common/**"
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
@@ -26,16 +27,34 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.compass-runtime-agent"
+      - "hack/common/**"
 
 permissions:
   id-token: write # This is required for requesting the JWT token
   contents: read # This is required for actions/checkout
+  pull-requests: read # This is required for setup job in cra-tests.yaml
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_target' && github.actor != 'renovate[bot]'
+    environment: ${{ vars.PROTECTED_ENVIRONMENT }}
+    steps:
+      - name: Approve fork PR image build
+        run: echo "Image build approved for fork PR"
+  
   setup-and-test:
+    needs: [gate]
+    if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     uses: ./.github/workflows/cra-tests.yaml
+    secrets:
+      COMPASS_HOST: ${{ secrets.COMPASS_HOST }}
+      COMPASS_CLIENT_ID: ${{ secrets.COMPASS_CLIENT_ID }}
+      COMPASS_CLIENT_SECRET: ${{ secrets.COMPASS_CLIENT_SECRET }}
 
   tags:
+    needs: [gate]
+    if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     runs-on: ubuntu-latest
     outputs:
       latest: ${{ steps.latest.outputs.latest || '' }}
@@ -44,11 +63,35 @@ jobs:
         if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && github.event_name == 'push'
         run: echo "latest=latest" >> $GITHUB_OUTPUT
 
+  build-test-image:
+    needs: [setup-and-test, gate]
+    if: >-
+      needs.setup-and-test.outputs.test == 'true' &&
+      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: compass-runtime-agent-test
+      dockerfile: Dockerfile.compass-runtime-agent
+      context: tests
+
+  build-image:
+    needs: [setup-and-test, tags, gate]
+    if: >-
+      needs.setup-and-test.outputs.cra == 'true' &&
+      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: compass-runtime-agent
+      dockerfile: Dockerfile
+      context: components/compass-runtime-agent
+      tags: |
+        ${{ needs.tags.outputs.latest }}
+
   k3d-PR-integration:
     # we're using reusable because we can't modify workflows as contributors
     # it could cause the secret leakeages
     uses: "./.github/workflows/reusable-k3d-agent-test.yaml"
-    needs: build-image
+    needs: [build-image]
     if: needs.build-image.result == 'success'
     with:
       k3d-version: v5.8.3
@@ -58,26 +101,6 @@ jobs:
       compass-host: ${{ secrets.COMPASS_HOST }}
       compass-client-id: ${{ secrets.COMPASS_CLIENT_ID }}
       compass-client-secret: ${{ secrets.COMPASS_CLIENT_SECRET }}
-
-  build-test-image:
-    needs: setup-and-test
-    if: needs.setup-and-test.outputs.test == 'true'
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: compass-runtime-agent-test
-      dockerfile: Dockerfile.compass-runtime-agent
-      context: tests
-
-  build-image:
-    needs: [setup-and-test, tags]
-    if: needs.setup-and-test.outputs.cra == 'true'
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: compass-runtime-agent
-      dockerfile: Dockerfile
-      context: components/compass-runtime-agent
-      tags: |
-        ${{ needs.tags.outputs.latest }}
 
   print-images:
     runs-on: ubuntu-latest

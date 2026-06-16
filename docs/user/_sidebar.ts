@@ -16,6 +16,7 @@ export default [
         ] }
       ] }
     ] },
+  { text: 'Network Policies', link: './03-15-network-policies'},
   { text: 'Resources', link: './resources/README', collapsed: true, items: [
     { text: 'Application CR', link: './resources/04-10-application' },
     { text: 'Application Connector CR', link: './resources/04-30-application-connector' },

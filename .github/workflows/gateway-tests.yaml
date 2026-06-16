@@ -20,7 +20,8 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.gateway"
-  pull_request_target:
+      - "hack/common/**"
+  pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - ".github/workflows/gateway.yaml"
@@ -31,6 +32,7 @@ on:
       - "!tests/**.md"
       - "!tests/Dockerfile.*"
       - "tests/Dockerfile.gateway"
+      - "hack/common/**"
 jobs:
   setup:
     permissions:
@@ -41,13 +43,13 @@ jobs:
       test: ${{ steps.detect-files.outputs.test_any_changed || steps.fallback-values.outputs.test_any_changed }}
     steps:
       - name: checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Detect files
         id: detect-files
-        uses: step-security/changed-files@89030a259c7f36d294c5ad1184fd3ca4a76942de
+        uses: step-security/changed-files@2e07db73e5ccdb319b9a6c7766bd46d39d304bad
         with:
           files_yaml: |
             gateway:
@@ -56,6 +58,7 @@ jobs:
               - ".github/workflows/gateway-tests.yaml"
             test:
               - tests/**
+              - hack/common/**
               - ".github/workflows/gateway.yaml"
               - ".github/workflows/gateway-tests.yaml"
       - name: Fallback values
@@ -68,15 +71,17 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     needs: setup
+    permissions:
+      contents: read
     if: needs.setup.outputs.gateway == 'true'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Set up go environment
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: components/central-application-gateway/go.mod
           cache-dependency-path: components/central-application-gateway/go.sum
@@ -86,7 +91,7 @@ jobs:
           set -o pipefail
           go test -coverprofile cover.out ./... | tee test-unit.txt
       - name: Upload test output artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success() || failure()
         with:
           name: central-application-gateway-test-unit
@@ -120,16 +125,18 @@ jobs:
 
   integration-tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: azure/setup-helm@v4.3.0
+      - uses: azure/setup-helm@v5.0.0
         id: install
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Set up go environment
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: 'go.mod'
       - name: Install k3d
@@ -143,7 +150,7 @@ jobs:
           make -C tests/hack/ci k3d-gateway-tests
           mv ./application-gateway-test.txt ./components/central-application-gateway/test-integration.txt
       - name: Upload test output artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success() || failure()
         with:
           name: central-application-gateway-test-integration

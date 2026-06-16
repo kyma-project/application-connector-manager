@@ -36,7 +36,7 @@ jobs:
         run: echo "RUN_ID=${{ inputs.run_id || github.run_id }}" >> $GITHUB_ENV
 
       - name: Download all test artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: "*-test*"
           path: ./artifacts
@@ -65,12 +65,12 @@ jobs:
             ./artifacts/
 
       - name: Authenticate to GCP
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           credentials_json: ${{ secrets.RELEASE_LOG_UPLOADER_SA }}
 
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
         with:
           project_id: ${{ vars.GCP_KYMA_PROJECT_PROJECT_ID }}
 
