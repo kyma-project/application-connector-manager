@@ -17,6 +17,7 @@ jobs:
     uses: ./.github/workflows/validator-tests.yaml
 
   run-cra-tests:
+    environment: ${{ vars.PROTECTED_ENVIRONMENT }}
     permissions:
       contents: read
       pull-requests: read  # Required by cra-tests.yaml setup job for changed-files detection
