@@ -5,7 +5,7 @@ go 1.26.2
 require (
 	github.com/go-logr/zapr v1.3.0
 	github.com/gorilla/mux v1.8.1
-	github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260429120130-2a7c7fefbf5f
+	github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260622065755-c50b15932d35
 	github.com/oklog/run v1.2.0
 	github.com/onsi/ginkgo/v2 v2.31.0
 	github.com/onsi/gomega v1.40.0
