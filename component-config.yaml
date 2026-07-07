@@ -1,0 +1,7 @@
+name: kyma-project.io/kyma-runtime/kyma-components/application-connector-manager
+team: kyma/framefrog
+images:
+  - europe-docker.pkg.dev/kyma-project/prod/application-connector-manager:latest
+  - europe-docker.pkg.dev/kyma-project/prod/central-application-connectivity-validator:latest
+  - europe-docker.pkg.dev/kyma-project/prod/central-application-gateway:latest
+  - europe-docker.pkg.dev/kyma-project/prod/compass-runtime-agent:latest
