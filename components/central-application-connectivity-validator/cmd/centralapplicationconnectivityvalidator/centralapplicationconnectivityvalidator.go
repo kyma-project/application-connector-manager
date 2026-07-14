@@ -21,6 +21,7 @@ import (
 	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/controller"
 	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/externalapi"
 	"github.com/kyma-project/application-connector-manager/components/central-application-connectivity-validator/internal/validationproxy"
+	"github.com/go-logr/zapr"
 	"github.com/oklog/run"
 	"github.com/patrickmn/go-cache"
 
@@ -83,6 +84,7 @@ func main() {
 		log.WithContext().Error("While initialising klog logger: %s", err.Error())
 		os.Exit(5)
 	}
+	ctrl.SetLogger(zapr.NewLogger(log.WithContext().Desugar()))
 
 	log.WithContext().With("options", options).Info("Starting Validation Proxy.")
 
