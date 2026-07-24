@@ -48,6 +48,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          allow-unsafe-pr-checkout: true
       - name: Detect files
         id: detect-files
         uses: step-security/changed-files@2e07db73e5ccdb319b9a6c7766bd46d39d304bad
@@ -81,6 +82,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          allow-unsafe-pr-checkout: true
       - name: Set up go environment
         uses: actions/setup-go@v6
         with:
@@ -136,6 +138,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          allow-unsafe-pr-checkout: true
       - name: Set up go environment
         uses: actions/setup-go@v6
         with:

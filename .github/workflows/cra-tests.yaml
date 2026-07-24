@@ -58,6 +58,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          allow-unsafe-pr-checkout: true
       - name: Detect files
         continue-on-error: true
         id: detect-files
@@ -92,6 +93,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          allow-unsafe-pr-checkout: true
       - name: Set up go environment
         uses: actions/setup-go@v6
         with:
