@@ -27,6 +27,34 @@ function fetch_tests() {
   local TEST_TIMEOUT_S
   TEST_TIMEOUT_S=$(to_seconds "$TEST_TIMEOUT_RAW")
 
+  # Start follow-streamers for all pods so logs appear on the console in real time.
+  # These run in the background and are killed once the job reaches a terminal state.
+  local follow_pids=()
+  local known_pods=()
+
+  start_followers() {
+    local current_pods
+    current_pods=$(kubectl get pods -n "$NAMESPACE" -l "job-name=$JOB_NAME" \
+      -o jsonpath='{.items[*].metadata.name}' 2>/dev/null)
+    for pod in $current_pods; do
+      # Only start a new follower if we haven't already for this pod.
+      local already=0
+      for kp in "${known_pods[@]:-}"; do [ "$kp" = "$pod" ] && already=1 && break; done
+      if [ "$already" -eq 0 ]; then
+        known_pods+=("$pod")
+        kubectl logs -f -n "$NAMESPACE" --all-containers --prefix "$pod" &
+        follow_pids+=($!)
+      fi
+    done
+  }
+
+  stop_followers() {
+    for pid in "${follow_pids[@]:-}"; do
+      kill "$pid" 2>/dev/null || true
+    done
+    wait "${follow_pids[@]:-}" 2>/dev/null || true
+  }
+
   # Poll the job's terminal conditions directly. Racing two `kubectl wait`
   # commands via `wait -n` is unreliable: when the job fails, the failed-wait
   # exits 0 *and* its chained `kill` exits 0, so the shell can return 0 for
@@ -34,6 +62,7 @@ function fetch_tests() {
   local deadline=$(( $(date +%s) + TEST_TIMEOUT_S ))
   local job_result=
   while [ "$(date +%s)" -lt "$deadline" ]; do
+    start_followers
     local complete failed
     complete=$(kubectl get job "$JOB_NAME" -n "$NAMESPACE" \
       -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' 2>/dev/null)
@@ -53,6 +82,8 @@ function fetch_tests() {
     echo "timed out after ${TEST_TIMEOUT_S}s waiting for job/$JOB_NAME to reach a terminal condition"
     job_result=1
   fi
+
+  stop_followers
 
   # Capture logs per-pod via selector. `kubectl logs job/X` is unreliable —
   # if the picked pod has been GC'd or hasn't reached a loggable state,
