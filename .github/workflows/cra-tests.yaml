@@ -54,10 +54,11 @@ jobs:
       test: ${{ steps.detect-files.outputs.test_any_changed || steps.fallback-values.outputs.test_any_changed }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          allow-unsafe-pr-checkout: true
       - name: Detect files
         continue-on-error: true
         id: detect-files
@@ -88,10 +89,11 @@ jobs:
     if: needs.setup.outputs.cra == 'true'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          allow-unsafe-pr-checkout: true
       - name: Set up go environment
         uses: actions/setup-go@v6
         with:
