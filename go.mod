@@ -68,12 +68,12 @@ require (
 	golang.org/x/mod v0.37.0 // indirect
 	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
-	golang.org/x/sync v0.21.0 // indirect
+	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/term v0.44.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	golang.org/x/tools v0.46.0 // indirect
+	golang.org/x/tools v0.47.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.5.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260427160629-7cedc36a6bc4 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
@@ -95,8 +95,8 @@ replace (
 	golang.org/x/oauth2 => golang.org/x/oauth2 v0.36.0
 	golang.org/x/sys => golang.org/x/sys v0.46.0
 	golang.org/x/term => golang.org/x/term v0.42.0
-	golang.org/x/text => golang.org/x/text v0.38.0
+	golang.org/x/text => golang.org/x/text v0.40.0
 	golang.org/x/time => golang.org/x/time v0.15.0
-	golang.org/x/tools => golang.org/x/tools v0.46.0
+	golang.org/x/tools => golang.org/x/tools v0.47.0
 	google.golang.org/protobuf => google.golang.org/protobuf v1.36.11
 )

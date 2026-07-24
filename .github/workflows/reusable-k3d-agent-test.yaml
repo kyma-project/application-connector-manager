@@ -39,10 +39,11 @@ jobs:
       - uses: azure/setup-helm@v5.0.0
         id: install-helm
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          allow-unsafe-pr-checkout: true
       - name: Set up go environment
         uses: actions/setup-go@v6
         with:
