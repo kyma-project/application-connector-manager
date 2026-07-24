@@ -25,7 +25,11 @@ patch-compass-runtime-agent:
 test-compass-runtime-agent: install-compass-runtime-agent-test
 	@echo "::group::fetch-compass-runtime-agent-test-logs"
 	${PWD}/tests/scripts/fetch-test-logs.sh compass-runtime-agent-test ${PWD}
-	kubectl logs -n kyma-system deployments/compass-runtime-agent --all-pods --ignore-errors > "${LOGS_OUT}/compass-runtime-agent.txt"
+	# Best-effort diagnostic capture. The suite teardown restarts the CRA
+	# deployment, so its pod may be mid-rollout here; `kubectl logs` would then
+	# emit "timed out waiting for the condition" and fail the build despite green
+	# tests. Never let a post-mortem log grab gate the result.
+	kubectl logs -n kyma-system deployments/compass-runtime-agent --all-pods --ignore-errors --pod-running-timeout=10s > "${LOGS_OUT}/compass-runtime-agent.txt" 2>&1 || true
 	@echo "::endgroup::"
 
 .PHONY: create-resources
