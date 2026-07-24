@@ -94,6 +94,9 @@ spec:
                 type: object
               domainName:
                 type: string
+              networkPoliciesEnabled:
+                default: false
+                type: boolean
             type: object
           status:
             properties:
@@ -299,6 +302,17 @@ rules:
   - patch
 - apiGroups:
   - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - ""
   resourceNames:
   - cluster-client-certificates
   - compass-agent-configuration
@@ -312,7 +326,13 @@ rules:
   resources:
   - serviceaccounts
   verbs:
-  - '*'
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
 - apiGroups:
   - ""
   resources:
@@ -323,17 +343,6 @@ rules:
   - get
   - list
   - patch
-  - update
-  - watch
-- apiGroups:
-  - '*'
-  resources:
-  - secrets
-  verbs:
-  - create
-  - delete
-  - get
-  - list
   - update
   - watch
 - apiGroups:
@@ -424,6 +433,18 @@ rules:
   - networking.istio.io
   resources:
   - virtualservices
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
   verbs:
   - create
   - delete
@@ -639,7 +660,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: europe-docker.pkg.dev/kyma-project/prod/application-connector-manager:1.2.0
+        image: europe-docker.pkg.dev/kyma-project/prod/application-connector-manager:1.3.2
         livenessProbe:
           httpGet:
             path: /healthz
@@ -670,325 +691,3 @@ spec:
         runAsNonRoot: true
       serviceAccountName: application-connector-controller-manager
       terminationGracePeriodSeconds: 10
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-compass-allow-from-health-check
-  namespace: kyma-system
-spec:
-  ingress:
-  - ports:
-    - port: 8090
-      protocol: TCP
-  podSelector:
-    matchLabels:
-      app: compass-runtime-agent
-  policyTypes:
-  - Ingress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-gateway-allow-from-cluster-workload
-  namespace: kyma-system
-spec:
-  ingress:
-  - ports:
-    - port: 8080
-      protocol: TCP
-    - port: 8082
-      protocol: TCP
-  podSelector:
-    matchLabels:
-      app: central-application-gateway
-  policyTypes:
-  - Ingress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-gateway-allow-from-health-check
-  namespace: kyma-system
-spec:
-  ingress:
-  - ports:
-    - port: 8081
-      protocol: TCP
-  podSelector:
-    matchLabels:
-      app: central-application-gateway
-  policyTypes:
-  - Ingress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-gateway-allow-to-external-system
-  namespace: kyma-system
-spec:
-  egress:
-  - ports:
-    - port: 443
-      protocol: TCP
-  podSelector:
-    matchLabels:
-      app: central-application-gateway
-  policyTypes:
-  - Egress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-module-allow-from-sidecar
-  namespace: kyma-system
-spec:
-  ingress:
-  - ports:
-    - port: 15021
-      protocol: TCP
-    - port: 15090
-      protocol: TCP
-  podSelector:
-    matchExpressions:
-    - key: app
-      operator: In
-      values:
-      - application-connector-manager
-      - compass-runtime-agent
-      - central-application-gateway
-      - central-application-connectivity-validator
-  policyTypes:
-  - Ingress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-module-allow-metrics
-  namespace: kyma-system
-spec:
-  ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: kyma-system
-      podSelector:
-        matchLabels:
-          networking.kyma-project.io/metrics-scraping: allowed
-    ports:
-    - port: 8080
-      protocol: TCP
-  podSelector:
-    matchLabels:
-      app: application-connector-manager
-  policyTypes:
-  - Ingress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-module-allow-to-external-system
-  namespace: kyma-system
-spec:
-  egress:
-  - to:
-    - ipBlock:
-        cidr: 0.0.0.0/0
-        except:
-        - 169.254.0.0/16
-  podSelector:
-    matchExpressions:
-    - key: app
-      operator: In
-      values:
-      - compass-runtime-agent
-      - central-application-gateway
-  policyTypes:
-  - Egress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-module-allow-to-sidecar
-  namespace: kyma-system
-spec:
-  egress:
-  - ports:
-    - port: 15012
-      protocol: TCP
-    to:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: istio-system
-      podSelector:
-        matchLabels:
-          app.kubernetes.io/name: istiod
-  podSelector:
-    matchExpressions:
-    - key: app
-      operator: In
-      values:
-      - application-connector-manager
-      - compass-runtime-agent
-      - central-application-gateway
-      - central-application-connectivity-validator
-  policyTypes:
-  - Egress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-module-to-api-server
-  namespace: kyma-system
-spec:
-  egress:
-  - ports:
-    - port: 443
-      protocol: TCP
-  podSelector:
-    matchExpressions:
-    - key: app
-      operator: In
-      values:
-      - application-connector-manager
-      - compass-runtime-agent
-      - central-application-gateway
-      - central-application-connectivity-validator
-  policyTypes:
-  - Egress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-module-to-dns
-  namespace: kyma-system
-spec:
-  egress:
-  - ports:
-    - port: 53
-      protocol: UDP
-    - port: 53
-      protocol: TCP
-    to:
-    - ipBlock:
-        cidr: 0.0.0.0/0
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: kube-system
-      podSelector:
-        matchLabels:
-          k8s-app: node-local-dns
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: kube-system
-      podSelector:
-        matchLabels:
-          k8s-app: kube-dns
-  - ports:
-    - port: 8053
-      protocol: UDP
-    - port: 8053
-      protocol: TCP
-    to:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: kube-system
-      podSelector:
-        matchLabels:
-          k8s-app: kube-dns
-  podSelector:
-    matchExpressions:
-    - key: app
-      operator: In
-      values:
-      - application-connector-manager
-      - compass-runtime-agent
-      - central-application-gateway
-      - central-application-connectivity-validator
-  policyTypes:
-  - Egress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-validator-allow-from-health-check
-  namespace: kyma-system
-spec:
-  ingress:
-  - ports:
-    - port: 8081
-      protocol: TCP
-  podSelector:
-    matchLabels:
-      app: central-application-connectivity-validator
-  policyTypes:
-  - Ingress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-validator-allow-from-istio-ingressgateway
-  namespace: kyma-system
-spec:
-  ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: istio-system
-      podSelector:
-        matchLabels:
-          app.kubernetes.io/name: istio-ingressgateway
-    ports:
-    - port: 8080
-      protocol: TCP
-  podSelector:
-    matchLabels:
-      app: central-application-connectivity-validator
-  policyTypes:
-  - Ingress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    kyma-project.io/module: application-connector
-  name: application-connector-kyma-project.io--acm-validator-allow-to-eventing
-  namespace: kyma-system
-spec:
-  egress:
-  - ports:
-    - port: 8080
-      protocol: TCP
-    to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/name: eventing-publisher-proxy
-  podSelector:
-    matchLabels:
-      app: central-application-connectivity-validator
-  policyTypes:
-  - Egress
