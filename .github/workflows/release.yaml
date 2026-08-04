@@ -6,17 +6,26 @@ on:
       - '*'  # Trigger on tag pushes
 
 jobs:
+  build-release-images:
+    permissions:
+      id-token: write  # Required for OIDC keyless auth in image-builder
+      contents: read   # Required for checkout
+    uses: ./.github/workflows/release-bump-images.yaml
+
   run-gateway-tests:
+    needs: build-release-images
     permissions:
       contents: read
     uses: ./.github/workflows/gateway-tests.yaml
 
   run-validator-tests:
+    needs: build-release-images
     permissions:
       contents: read
     uses: ./.github/workflows/validator-tests.yaml
 
   run-cra-tests:
+    needs: build-release-images
     permissions:
       contents: read
       pull-requests: read  # Required by cra-tests.yaml setup job for changed-files detection
@@ -27,27 +36,16 @@ jobs:
       COMPASS_CLIENT_SECRET: ${{ secrets.COMPASS_CLIENT_SECRET }}
 
   run-controller-tests:
+    needs: build-release-images
     permissions:
       contents: read
     uses: ./.github/workflows/controller-tests.yaml
 
   run-integration-tests:
+    needs: build-release-images
     permissions:
       contents: read
     uses: ./.github/workflows/run-validation.yaml
-
-  build-release-images:
-    needs: [run-gateway-tests, run-validator-tests, run-cra-tests, run-controller-tests, run-integration-tests]
-    if: |
-      needs.run-gateway-tests.result == 'success' &&
-      needs.run-validator-tests.result == 'success' &&
-      needs.run-cra-tests.result == 'success' &&
-      needs.run-controller-tests.result == 'success' &&
-      needs.run-integration-tests.result == 'success'
-    permissions:
-      id-token: write  # Required for OIDC keyless auth in image-builder
-      contents: read   # Required for checkout
-    uses: ./.github/workflows/release-bump-images.yaml
 
   generate-release:
     needs: build-release-images
