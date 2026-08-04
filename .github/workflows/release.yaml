@@ -48,8 +48,14 @@ jobs:
     uses: ./.github/workflows/run-validation.yaml
 
   generate-release:
-    needs: build-release-images
-    if: needs.build-release-images.result == 'success'
+    needs: [run-gateway-tests, run-validator-tests, run-cra-tests, run-controller-tests, run-integration-tests]
+    if: |
+      needs.run-gateway-tests.result == 'success' &&
+      needs.run-validator-tests.result == 'success' &&
+      needs.run-cra-tests.result == 'success' &&
+      needs.run-controller-tests.result == 'success' &&
+      needs.run-integration-tests.result == 'success'
+    
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Needed for creating releases and uploading assets
