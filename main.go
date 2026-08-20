@@ -78,7 +78,8 @@ func main() {
 		LeaderElectionID:       "3e432b4e.acm.operator.kyma-project.io",
 		Cache: cache.Options{
 			DefaultNamespaces: map[string]cache.Config{
-				"kyma-system": {},
+				"kyma-system":  {},
+				"istio-system": {},
 			},
 		},
 		// LeaderElectionReleaseOnCancel defines if the leader should step down voluntarily
