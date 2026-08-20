@@ -179,6 +179,3 @@ func (k *ApplicationConnector) UpdateStateDeletion(c ConditionType, r ConditionR
 	meta.SetStatusCondition(&k.Status.Conditions, condition)
 }
 
-func init() {
-	SchemeBuilder.Register(&ApplicationConnector{}, &ApplicationConnectorList{})
-}

@@ -76,7 +76,11 @@ func main() {
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
 		LeaderElectionID:       "3e432b4e.acm.operator.kyma-project.io",
-		Cache:                  cache.Options{},
+		Cache: cache.Options{
+			DefaultNamespaces: map[string]cache.Config{
+				"kyma-system": {},
+			},
+		},
 		// LeaderElectionReleaseOnCancel defines if the leader should step down voluntarily
 		// when the Manager ends. This requires the binary to immediately end when the
 		// Manager is stopped, otherwise, this setting is unsafe. Setting this significantly
@@ -89,10 +93,13 @@ func main() {
 		// after the manager stops then its usage might be unsafe.
 		// LeaderElectionReleaseOnCancel: true,
 	})
+
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
+
+	setupLog.Info("created controller manager for kyma-system namespace")
 
 	file, err := os.Open("application-connector.yaml")
 
