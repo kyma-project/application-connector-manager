@@ -78,7 +78,9 @@ func main() {
 		LeaderElectionID:       "3e432b4e.acm.operator.kyma-project.io",
 		Cache: cache.Options{
 			DefaultNamespaces: map[string]cache.Config{
-				"kyma-system": {},
+				"kyma-system":  {},
+				"istio-system": {},
+				"kube-system":  {},
 			},
 		},
 		// LeaderElectionReleaseOnCancel defines if the leader should step down voluntarily
@@ -99,7 +101,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	setupLog.Info("created controller manager for kyma-system namespace")
+	setupLog.Info("created controller manager for kyma-system, istio-system and kube-system namespaces")
 
 	file, err := os.Open("application-connector.yaml")
 
