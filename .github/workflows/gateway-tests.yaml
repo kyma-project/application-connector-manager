@@ -83,7 +83,7 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           allow-unsafe-pr-checkout: true
       - name: Set up go environment
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: components/central-application-gateway/go.mod
           cache-dependency-path: components/central-application-gateway/go.sum
@@ -139,7 +139,7 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           allow-unsafe-pr-checkout: true
       - name: Set up go environment
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: 'go.mod'
       - name: Install k3d
