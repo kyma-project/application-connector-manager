@@ -1,6 +1,6 @@
 module github.com/kyma-project/application-connector-manager/tests
 
-go 1.26.2
+go 1.27
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
@@ -71,11 +71,11 @@ require (
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.53.0 // indirect
-	golang.org/x/net v0.56.0 // indirect
+	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/oauth2 v0.34.0 // indirect
-	golang.org/x/sys v0.46.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/term v0.44.0 // indirect
-	golang.org/x/text v0.38.0 // indirect
+	golang.org/x/text v0.41.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
@@ -94,7 +94,7 @@ replace (
 	golang.org/x/crypto => golang.org/x/crypto v0.53.0
 	golang.org/x/net => golang.org/x/net v0.56.0
 	golang.org/x/oauth2 => golang.org/x/oauth2 v0.34.0
-	golang.org/x/text => golang.org/x/text v0.40.0
+	golang.org/x/text => golang.org/x/text v0.41.0
 	golang.org/x/time => golang.org/x/time v0.14.0
 	google.golang.org/protobuf => google.golang.org/protobuf v1.36.11
 )
