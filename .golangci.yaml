@@ -24,6 +24,7 @@ linters:
     govet:
       disable:
         - fieldalignment
+        - inline
     mnd:
       ignored-functions:
         - os.Chmod
@@ -38,6 +39,10 @@ linters:
       - common-false-positives
       - legacy
       - std-error-handling
+    rules:
+      - linters:
+          - staticcheck
+        text: "SA1019.*Requeue is deprecated"
     paths:
       - third_party$
       - builtin$
