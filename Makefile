@@ -171,12 +171,11 @@ $(LOCALBIN):
 ########## Kustomize ###########
 KUSTOMIZE ?= $(LOCALBIN)/kustomize
 KUSTOMIZE_VERSION ?= v4.5.5
-KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
 
 .PHONY: kustomize
 kustomize: $(KUSTOMIZE) ## Download kustomize locally if necessary.
 $(KUSTOMIZE): $(LOCALBIN)
-	test -s $(LOCALBIN)/kustomize || { curl -s $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(LOCALBIN); }
+	test -s $(LOCALBIN)/kustomize || GOBIN=$(LOCALBIN) go install sigs.k8s.io/kustomize/kustomize/v4@$(KUSTOMIZE_VERSION)
 
 ########## Controller-Gen ###########
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen

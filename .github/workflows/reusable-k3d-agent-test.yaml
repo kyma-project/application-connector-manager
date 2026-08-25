@@ -48,6 +48,11 @@ jobs:
         uses: actions/setup-go@v7
         with:
           go-version-file: 'go.mod'
+      - name: Cache local bin tools
+        uses: actions/cache@v4
+        with:
+          path: bin
+          key: ${{ runner.os }}-local-bin-${{ hashFiles('Makefile') }}
       - name: install-k3d
         env:
           K3D_URL: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh
