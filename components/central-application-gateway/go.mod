@@ -1,6 +1,6 @@
 module github.com/kyma-project/application-connector-manager/components/central-application-gateway
 
-go 1.26.7
+go 1.27
 
 require (
 	github.com/gorilla/mux v1.8.1
