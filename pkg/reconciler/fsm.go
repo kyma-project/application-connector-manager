@@ -82,9 +82,7 @@ loop:
 		return *result, err
 	}
 
-	return ctrl.Result{
-		Requeue: false,
-	}, err
+	return ctrl.Result{}, err
 }
 
 func NewFsm(log *zap.SugaredLogger, cfg Cfg, k8s K8s, depsACK *bool) Fsm {

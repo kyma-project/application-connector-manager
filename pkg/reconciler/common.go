@@ -18,7 +18,7 @@ func stopWithNoRequeue() (stateFn, *ctrl.Result, error) {
 }
 
 func stopWithRequeue() (stateFn, *ctrl.Result, error) {
-	return sFnUpdateStatus(&ctrl.Result{Requeue: true}, nil), nil, nil
+	return sFnUpdateStatus(&ctrl.Result{RequeueAfter: time.Second}, nil), nil, nil
 }
 
 func switchState(fn stateFn) (stateFn, *ctrl.Result, error) {

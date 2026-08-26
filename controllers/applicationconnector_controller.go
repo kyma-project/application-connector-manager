@@ -256,9 +256,7 @@ var requCounter = 0
 func (r *applicationConnectorReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	var instance v1alpha1.ApplicationConnector
 	if err := r.Get(ctx, req.NamespacedName, &instance); err != nil {
-		return ctrl.Result{
-			Requeue: true,
-		}, client.IgnoreNotFound(err)
+		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
 	stateFSM := reconciler.NewFsm(
