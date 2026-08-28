@@ -180,10 +180,10 @@ gopkg.in/evanphx/json-patch.v4 v4.13.0 h1:czT3CmqEaQ1aanPc5SdlgQrrEIb8w/wwCvWWnf
 gopkg.in/evanphx/json-patch.v4 v4.13.0/go.mod h1:p8EYWUEYMpynmqDbY58zCKCFZw8pRWMG4EsWvDvM72M=
 gopkg.in/inf.v0 v0.9.1 h1:73M5CoZyi3ZLMOyDlQh031Cx6N9NDJ2Vvfl76EDAgDc=
 gopkg.in/inf.v0 v0.9.1/go.mod h1:cWUDdTG/fYaXco+Dcufb5Vnc6Gp2YChqWtbxRZE0mXw=
-istio.io/api v1.30.1-0.20260529120535-23c54ad84d6e h1:GPtgMkMjv1bE0m/bhVzoQdPm2abGy24bD7I4mFLJ55k=
-istio.io/api v1.30.1-0.20260529120535-23c54ad84d6e/go.mod h1:+brQWcBHoROuyA6fv8rbgg8Kfn0RCGuqoY0duCMuSLA=
-istio.io/client-go v1.30.1 h1:xOkdcxewkuc0ayw5o/osNINAAZfS9hevmnDq6GThrkU=
-istio.io/client-go v1.30.1/go.mod h1:M6zHgHi2uud1EMrphZ9gcKx+6Wwn3j1UjtHss5TQyA4=
+istio.io/api v1.30.4-0.20260824163423-69099aec2678 h1:IQMhvrEnCrGPPBv2ntB8G12DxXAW+CWSBY30iEn6tMw=
+istio.io/api v1.30.4-0.20260824163423-69099aec2678/go.mod h1:+brQWcBHoROuyA6fv8rbgg8Kfn0RCGuqoY0duCMuSLA=
+istio.io/client-go v1.30.4 h1:jki4dFqwUd4So77N8TFuWvlV/zVGAtZM/plw7LtnOAY=
+istio.io/client-go v1.30.4/go.mod h1:SRLV85/XqNX2MUAC/n2hcj+8tUIQEyS0zYMQ6ztEHH0=
 k8s.io/api v0.36.4 h1:RxrvqCL6vgH5/+UnTeu1IIFqYmGfy0hnyrod1rn35Oo=
 k8s.io/api v0.36.4/go.mod h1:S2B3orCFBDhrgyWbLeuKcT2QdHIpQesBkCYSlWtwUOw=
 k8s.io/apiextensions-apiserver v0.36.4 h1:SfvCVt+4CqKWvzuVytYDT5g9hyb9MztoiYELIkPVrFc=
