@@ -23,6 +23,12 @@ jobs:
       with:
           go-version-file: 'go.mod'
 
+    - name: Cache local bin tools
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      with:
+        path: bin
+        key: ${{ runner.os }}-local-bin-${{ hashFiles('Makefile') }}
+
     - name: Run integration tests without lifecycle-manager
       run: |
         set -o pipefail
