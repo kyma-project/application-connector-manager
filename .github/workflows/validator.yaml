@@ -51,10 +51,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       latest: ${{ steps.latest.outputs.latest || '' }}
+      pr-tag: ${{ steps.pr-tag.outputs.pr-tag || '' }}
     steps:
       - id: latest
         if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && github.event_name == 'push'
         run: echo "latest=latest" >> $GITHUB_OUTPUT
+      - id: pr-tag
+        if: github.event_name == 'pull_request_target'
+        run: echo "pr-tag=0.0.0-PR-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
 
   build-test-image:
     needs: [setup-and-test, gate]
@@ -79,6 +83,7 @@ jobs:
       context: components/central-application-connectivity-validator
       tags: |
         ${{ needs.tags.outputs.latest }}
+        ${{ needs.tags.outputs.pr-tag }}
 
   print-images:
     runs-on: ubuntu-latest

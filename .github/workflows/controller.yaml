@@ -53,8 +53,19 @@ jobs:
     if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     uses: ./.github/workflows/controller-tests.yaml
 
+  tags:
+    needs: [gate]
+    if: ${{ !cancelled() && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    outputs:
+      pr-tag: ${{ steps.pr-tag.outputs.pr-tag || '' }}
+    steps:
+      - id: pr-tag
+        if: github.event_name == 'pull_request_target'
+        run: echo "pr-tag=0.0.0-PR-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+
   build-image:
-    needs: [setup-and-tests, gate]
+    needs: [setup-and-tests, tags, gate]
     if: >-
       needs.setup-and-tests.result == 'success' &&
       (needs.gate.result == 'success' || needs.gate.result == 'skipped')
@@ -65,6 +76,7 @@ jobs:
       context: .
       tags: |
         ${{ needs.setup-and-tests.outputs.latest }}
+        ${{ needs.tags.outputs.pr-tag }}
 
   print-images:
     runs-on: ubuntu-latest
