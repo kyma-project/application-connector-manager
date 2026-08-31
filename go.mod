@@ -4,7 +4,7 @@ go 1.27
 
 require (
 	github.com/onsi/ginkgo/v2 v2.32.1
-	github.com/onsi/gomega v1.42.1
+	github.com/onsi/gomega v1.43.0
 	github.com/stretchr/testify v1.12.1
 	go.uber.org/zap v1.28.0
 	golang.org/x/exp v0.0.0-20260820122028-d6e0b57b1a69
