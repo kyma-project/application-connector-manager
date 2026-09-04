@@ -1,6 +1,6 @@
 module github.com/kyma-project/application-connector-manager/tests
 
-go 1.27
+go 1.27.1
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
