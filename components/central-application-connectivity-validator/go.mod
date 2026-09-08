@@ -8,7 +8,7 @@ require (
 	github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260820154722-3309455c4516
 	github.com/oklog/run v1.2.0
 	github.com/onsi/ginkgo/v2 v2.32.1
-	github.com/onsi/gomega v1.42.1
+	github.com/onsi/gomega v1.43.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.12.1
