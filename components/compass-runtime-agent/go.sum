@@ -121,8 +121,8 @@ github.com/kyma-incubator/compass/components/connector v0.0.0-20220104122431-99e
 github.com/kyma-incubator/compass/components/connector v0.0.0-20220104122431-99ed924ea212/go.mod h1:NHpaOE/9XuX0XIEi7ButaDyWejakMXRo/mh4JhjDoxY=
 github.com/kyma-incubator/compass/components/director v0.0.0-20220126084901-92232f5eced0 h1:5pDxnqY8TK59Zp+9PqsC8uEG6ZeeURJKHxUo19ez+jY=
 github.com/kyma-incubator/compass/components/director v0.0.0-20220126084901-92232f5eced0/go.mod h1:62mrVWDkGdPxAqj+X97FKiA/e8jYSZ/MARgzoThk9AU=
-github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260820154722-3309455c4516 h1:xzz5zxSkXmGK4Vv1yqe9c5p5/P8Bm4ApcTAyf4W8KL8=
-github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260820154722-3309455c4516/go.mod h1:YlFATBX5c/eEDDavXk+tcuuUvORgquXvFQEjdWtqsko=
+github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260908064748-19d5fb20f223 h1:83qLC/JfTaF3POM1wKycNZ1WTNuIioTAPgK8o8HRnBw=
+github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260908064748-19d5fb20f223/go.mod h1:MHK6EqKtQvg0h34IkS+O6OUcRYOoIAYhBUvG947XP6Q=
 github.com/lib/pq v1.10.4 h1:SO9z7FRPzA03QhHKJrH5BXA6HU1rS4V2nIVrrNC1iYk=
 github.com/lib/pq v1.10.4/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381/go.mod h1:7rIyQOR62GCctdiQpZ/zOJlFyk6y+94wXzv6RNZgaR4=
