@@ -8,7 +8,7 @@ require (
 	github.com/kofalt/go-memoize v0.0.0-20240506050413-9e5eb99a0f2a
 	github.com/kyma-incubator/compass/components/connector v0.0.0-20220104122431-99ed924ea212
 	github.com/kyma-incubator/compass/components/director v0.0.0-20220126084901-92232f5eced0
-	github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260820154722-3309455c4516
+	github.com/kyma-project/application-connector-manager/components/central-application-gateway v0.0.0-20260908064748-19d5fb20f223
 	github.com/machinebox/graphql v0.2.3-0.20181106130121-3a9253180225
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.10.1
