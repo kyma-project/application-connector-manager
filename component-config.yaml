@@ -1,4 +1,4 @@
-name: kyma-project.io/kyma-runtime/kyma-components/application-connector-manager
+name: kyma-project.io/module/application-connector
 team: kyma/framefrog
 images:
   - europe-docker.pkg.dev/kyma-project/prod/application-connector-manager:latest
