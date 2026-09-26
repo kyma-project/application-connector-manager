@@ -36,7 +36,7 @@ jobs:
     needs: check-protected-environment
     environment: ${{ vars.PROTECTED_ENVIRONMENT }}
     steps:
-      - uses: azure/setup-helm@v5.0.0
+      - uses: azure/setup-helm@v5.0.1
         id: install-helm
       - name: checkout
         uses: actions/checkout@v7
