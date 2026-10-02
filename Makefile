@@ -86,8 +86,14 @@ build: generate fmt vet ## Build manager binary.
 	go build -o bin/manager main.go
 
 .PHONY: build-for-codeql
-build-for-codeql: ## Build all packages for CodeQL analysis (no code generation).
+build-for-codeql: ## Build all packages (incl. components/* modules) for CodeQL analysis (no code generation).
 	GOFIPS140=v1.0.0 go build -o /dev/null ./...
+	for module in \
+		components/central-application-connectivity-validator \
+		components/central-application-gateway \
+		components/compass-runtime-agent; do \
+		(cd "$$module" && GOFIPS140=v1.0.0 go build -o /dev/null ./...); \
+	done
 
 .PHONY: run
 run: manifests generate fmt vet ## Run a controller from your host.
