@@ -3,7 +3,6 @@ channel: {{.Channel}}
 version: {{.Version}}
 defaultCR: config/samples/operator_v1alpha1_applicationconnector.yaml
 manifest: application-connector-manager.yaml
-security: sec-scanners-config.yaml
 annotations:
   "operator.kyma-project.io/doc-url": "https://help.sap.com/docs/btp/sap-business-technology-platform/application-connector-module"
 moduleRepo: https://github.com/kyma-project/application-connector-manager.git
