@@ -20,6 +20,9 @@ on:
         required: true
       compass-client-secret:
         required: true
+
+permissions: read-all
+
 jobs:
   check-protected-environment:
     runs-on: ubuntu-latest

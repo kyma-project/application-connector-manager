@@ -45,6 +45,8 @@ on:
       - go.mod
       - Dockerfile
 
+permissions: read-all
+
 jobs:
   setup:
     runs-on: ubuntu-latest
