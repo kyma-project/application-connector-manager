@@ -37,3 +37,4 @@ manifests/*
 mod
 bin
 charts/**/*
+.worktrees
