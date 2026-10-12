@@ -21,7 +21,8 @@ on:
       compass-client-secret:
         required: true
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   check-protected-environment:
