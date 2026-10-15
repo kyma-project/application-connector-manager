@@ -110,7 +110,9 @@ func (cc compassConnectionCRConfiguration) delete() (types.RollbackFunc, error) 
 				return errors.Wrap(err, "failed to update Compass Connection CR")
 			}
 			return err
-		})
+		}, retry.RetryIf(func(err error) bool {
+			return !k8serrors.IsNotFound(err)
+		}))
 	}
 
 	return rollbackFunc, nil
