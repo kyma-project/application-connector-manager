@@ -3,9 +3,10 @@ package director
 import (
 	"errors"
 	"fmt"
-	"github.com/kyma-incubator/compass/components/director/pkg/graphql"
 	"testing"
 	"time"
+
+	"github.com/kyma-incubator/compass/components/director/pkg/graphql"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -81,6 +82,34 @@ const (
 	result: deleteFormation(formation: {
 		name: "Testing-scenario"
 	}) { id } }`
+
+	expectedAddBundleQuery = `mutation {
+	result: addBundle(
+		applicationID: "test-application-ID-12345"
+		in: {
+			name: "bndl-app-1"
+			description: "Foo bar"
+			apiDefinitions: [
+			  {
+				name: "comments-v1"
+				description: "api for adding comments"
+				targetURL: "http://mywordpress.com/comments"
+				group: "comments"
+				spec: {
+				  data: "{\"openapi\":\"3.0.2\"}"
+				  type: OPEN_API
+				  format: YAML
+				}
+				version: {
+				  value: "1.0.0"
+				  deprecated: true
+				  deprecatedSince: "v5"
+				  forRemoval: false
+				}
+			  }
+			]
+		}
+	) { id } }`
 )
 
 var (
@@ -637,16 +666,32 @@ func TestDirectorClient_ApplicationRegistering(t *testing.T) {
 	expectedRequest.Header.Set(AuthorizationHeader, fmt.Sprintf("Bearer %s", validTokenValue))
 	expectedRequest.Header.Set(TenantHeader, tenantValue)
 
-	t.Run("Should register application and return new application ID when the Director access token is valid", func(t *testing.T) {
+	t.Run("Should register application with bundle and return new application ID when the Director access token is valid", func(t *testing.T) {
 		// given
-		expectedResponse := &graphql.Application{
+		expectedAppResponse := &graphql.Application{
 			Name: testAppName,
 			BaseEntity: &graphql.BaseEntity{
 				ID: applicationTestingID,
 			},
 		}
 		expectedID := applicationTestingID
-		gqlClient := newQueryAssertClient(t, expectedRequest, expectedResponse)
+
+		expectedAddBundleRequest := gcli.NewRequest(expectedAddBundleQuery)
+		expectedAddBundleRequest.Header.Set(AuthorizationHeader, fmt.Sprintf("Bearer %s", validTokenValue))
+		expectedAddBundleRequest.Header.Set(TenantHeader, tenantValue)
+
+		gqlClient := gql.NewQueryAssertClient(t, nil, []*gcli.Request{expectedRequest, expectedAddBundleRequest},
+			func(t *testing.T, r interface{}) {
+				cfg, ok := r.(*Response[graphql.Application])
+				require.True(t, ok)
+				cfg.Result = expectedAppResponse
+			},
+			func(t *testing.T, r interface{}) {
+				cfg, ok := r.(*Response[graphql.Application])
+				require.True(t, ok)
+				cfg.Result = expectedAppResponse
+			},
+		)
 
 		token := oauth.Token{
 			AccessToken: validTokenValue,
