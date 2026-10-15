@@ -17,8 +17,8 @@ func TestToolkit(t *testing.T) {
 			ConditionMetFunc: func() bool {
 				return true
 			},
-			Tick:    10 * time.Second,
-			Timeout: 1 * time.Minute,
+			Tick:    10 * time.Millisecond,
+			Timeout: 1 * time.Second,
 		}
 
 		// when
@@ -45,8 +45,8 @@ func TestToolkit(t *testing.T) {
 			ConditionMetFunc: func() bool {
 				return true
 			},
-			Tick:    10 * time.Second,
-			Timeout: 1 * time.Minute,
+			Tick:    10 * time.Millisecond,
+			Timeout: 1 * time.Second,
 		}
 
 		// when
@@ -67,8 +67,8 @@ func TestToolkit(t *testing.T) {
 			ConditionMetFunc: func() bool {
 				return true
 			},
-			Tick:    10 * time.Second,
-			Timeout: 1 * time.Minute,
+			Tick:    10 * time.Millisecond,
+			Timeout: 1 * time.Second,
 		}
 
 		// when
@@ -88,8 +88,8 @@ func TestToolkit(t *testing.T) {
 			ConditionMetFunc: func() bool {
 				return false
 			},
-			Tick:    10 * time.Second,
-			Timeout: 1 * time.Minute,
+			Tick:    10 * time.Millisecond,
+			Timeout: 100 * time.Millisecond,
 		}
 
 		// when
