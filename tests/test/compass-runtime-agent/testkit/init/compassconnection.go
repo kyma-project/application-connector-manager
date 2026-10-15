@@ -43,6 +43,9 @@ func (cc compassConnectionCRConfiguration) Do() (types.RollbackFunc, error) {
 
 	deleteRollback, err := cc.delete()
 	if err != nil {
+		if rollbackErr := backupRollback(); rollbackErr != nil {
+			return nil, errors.Wrapf(err, "failed to clean up Compass Connection CR backup: %v", rollbackErr)
+		}
 		return nil, err
 	}
 
