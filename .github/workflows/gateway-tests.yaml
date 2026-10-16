@@ -130,7 +130,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: azure/setup-helm@v5.0.0
+      - uses: azure/setup-helm@v5.0.1
         id: install
       - name: Checkout code
         uses: actions/checkout@v7
