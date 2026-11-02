@@ -60,3 +60,41 @@ jobs:
       tags: |
         ${{ needs.setup.outputs.tag }}
         ${{ needs.setup.outputs.tag-experimental }}
+
+  open-bump-pr:
+    # After the component images for this tag are built and pushed, open a PR
+    # against main that bumps the component image tags in
+    # application-connector.yaml to the release tag. The release itself is cut
+    # from the tagged commit (which still carries the previous component tags);
+    # merging this PR brings main's operator manifest in line with the images
+    # that were just published, so the next operator build/module deploys the
+    # matching components. This replaces the previous hand-edited bump branches
+    # (e.g. fix/bump-component-images-to-1.3.6).
+    needs: [setup, build-validator, build-cra, build-gateway]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Sync component image tags to the release tag
+        run: make sync-component-images COMPONENT_TAG=${{ needs.setup.outputs.tag }}
+      - name: Open bump PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "fix: bump ACM component images to ${{ needs.setup.outputs.tag }}"
+          branch: ci/bump-component-images-${{ needs.setup.outputs.tag }}
+          base: main
+          delete-branch: true
+          title: "fix: bump ACM component images to ${{ needs.setup.outputs.tag }}"
+          body: |
+            Automated by the release workflow for tag `${{ needs.setup.outputs.tag }}`.
+
+            Sets the validator / gateway / compass-runtime-agent image tags in
+            `application-connector.yaml` to `${{ needs.setup.outputs.tag }}` so the
+            operator deploys the component images that were just built and pushed
+            for this release. Merge to bring `main` in line with the release.
+

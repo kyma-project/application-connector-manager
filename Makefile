@@ -123,6 +123,42 @@ generate-release-manifests: manifests kustomize
 	echo "Generating application-connector-experimental.yaml manifest for version ${IMG}-experimental"
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}-experimental
 	$(KUSTOMIZE) build config/default > config/application-connector-experimental.yaml
+
+# COMPONENT_TAG is the image tag applied to the ACM component images
+# (validator, gateway, compass-runtime-agent) in application-connector.yaml.
+# It must be the release tag so the operator deploys the matching component
+# images. Historically these tags were bumped by hand and drifted behind the
+# module version (e.g. 1.3.7/1.3.8 still shipped 1.3.6 components). The release
+# workflow now runs `sync-component-images` on tag push and opens a bump PR
+# against main; `verify-component-images` is a local pre-release sanity check.
+COMPONENT_TAG ?= $(shell git describe --tags --abbrev=0 2>/dev/null)
+COMPONENT_REGISTRY ?= europe-docker.pkg.dev/kyma-project/prod
+COMPONENTS := central-application-connectivity-validator central-application-gateway compass-runtime-agent
+
+.PHONY: sync-component-images
+sync-component-images: ## Set ACM component image tags in application-connector.yaml to COMPONENT_TAG (defaults to the latest git tag).
+	@test -n "$(COMPONENT_TAG)" || { echo "COMPONENT_TAG is empty (no git tag found); pass COMPONENT_TAG=<tag>"; exit 1; }
+	@echo "Setting component image tags to '$(COMPONENT_TAG)' in application-connector.yaml"
+	@for c in $(COMPONENTS); do \
+		sed -i.bak -E "s|($(subst .,\.,$(COMPONENT_REGISTRY))/$$c):[^[:space:]]+|\1:$(COMPONENT_TAG)|g" application-connector.yaml; \
+	done
+	@rm -f application-connector.yaml.bak
+	@$(MAKE) --no-print-directory verify-component-images
+
+.PHONY: verify-component-images
+verify-component-images: ## Fail if any ACM component image in application-connector.yaml is not at COMPONENT_TAG.
+	@test -n "$(COMPONENT_TAG)" || { echo "COMPONENT_TAG is empty; pass COMPONENT_TAG=<tag>"; exit 1; }
+	@stale=0; \
+	for c in $(COMPONENTS); do \
+		found=$$(grep -oE "$(COMPONENT_REGISTRY)/$$c:[^[:space:]]+" application-connector.yaml | sort -u); \
+		for line in $$found; do \
+			if [ "$$line" != "$(COMPONENT_REGISTRY)/$$c:$(COMPONENT_TAG)" ]; then \
+				echo "stale component image: $$line (expected :$(COMPONENT_TAG))"; stale=1; \
+			fi; \
+		done; \
+	done; \
+	test "$$stale" -eq 0 || { echo "application-connector.yaml has component image tags that differ from COMPONENT_TAG=$(COMPONENT_TAG)"; exit 1; }
+	@echo "All ACM component images are at $(COMPONENT_TAG)"
 ##@ Deployment
 
 IGNORE_NOT_FOUND ?= false
