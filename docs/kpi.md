@@ -25,14 +25,14 @@ The KPIs are designed to surface technical performance, reliability, scalability
 2. [Reliability KPIs](#2-reliability-kpis)
    - [2.1 Module Availability](#21-module-availability)
    - [2.2 Successful UCL Sync Rate](#22-successful-ucl-sync-rate)
-   - [2.3 Certificate Renewal Success Rate](#23-certificate-renewal-success-rate)
+   - [2.3 Certificate Renewal Risk](#23-certificate-renewal-risk)
 3. [Performance KPIs](#3-performance-kpis)
    - [3.1 Application Gateway Latency (p99)](#31-application-gateway-latency-p99)
    - [3.2 Application Gateway Error Rate](#32-application-gateway-error-rate)
    - [3.3 Application Connectivity Validator Error Rate](#33-application-connectivity-validator-error-rate)
 4. [Scalability KPIs](#4-scalability-kpis)
    - [4.1 Number of Connected External Systems per Runtime](#41-number-of-connected-external-systems-per-runtime)
-   - [4.2 Request Throughput](#42-request-throughput)
+   - [4.2 Request Throughput Capacity](#42-request-throughput-capacity)
 5. [Product Health KPIs](#5-product-health-kpis)
    - [5.1 Operator Reconciliation Success Rate](#51-operator-reconciliation-success-rate)
    - [5.2 Module Installation / Upgrade Success Rate](#52-module-installation--upgrade-success-rate)
@@ -83,10 +83,21 @@ ACM sits on the critical path for every inbound event from external systems and 
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | < 99.9 % in a 30-day window | 1. Identify the affected component and the time window. 2. Check pod events and logs for OOMKills, CrashLoops, or evictions. 3. Review recent deployments or config changes. 4. Adjust resource limits or HPA settings if needed. Notify the team at the next standup. |
-| **Critical** | < 99.5 % in a 30-day window, or any 5-minute outage of all replicas of a component | 1. Declare incident. 2. Page on-call engineer. 3. Roll back the last deployment or config change if applicable. 4. Scale up replicas manually if autoscaler is stuck. 5. Post incident summary within 48 h. 6. Create follow-up task to prevent recurrence. |
+**Warning** — < 99.9 % in a 30-day window:
+1. Identify the affected component and the time window.
+2. Check pod events and logs for OOMKills, CrashLoops, or evictions.
+3. Review recent deployments or config changes.
+4. Adjust resource limits or HPA settings if needed.
+5. Notify the team at the next standup.
+
+**Critical** — < 99.5 % in a 30-day window, or any 5-minute outage of all replicas of a component:
+1. Declare incident.
+2. Page on-call engineer.
+3. Roll back the last deployment or config change if applicable.
+4. Scale up replicas manually if autoscaler is stuck.
+5. Post incident summary within 48 h.
+6. Create follow-up task to prevent recurrence.
+
 
 ---
 
@@ -104,10 +115,18 @@ The Runtime Agent is responsible for automatically keeping external system regis
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | < 99 % over 24 h | 1. Check CompassConnection CR status and events. 2. Inspect CRA logs for network errors, auth failures, or UCL API timeouts. 3. Verify UCL Director is reachable from the Kyma cluster. 4. Alert team; monitor for improvement within 1 h. |
-| **Critical** | < 95 % over 24 h, or 3 or more consecutive sync failures | 1. Declare incident. 2. Check UCL Director status (is the issue on ACM's side or UCL's side?). 3. If UCL is healthy, collect CRA heap dump and restart the pod. 4. If UCL is degraded, communicate to affected customers and track UCL's incident. 5. Post root-cause analysis within 48 h. |
+**Warning** — < 99 % over 24 h:
+1. Check CompassConnection CR status and events.
+2. Inspect CRA logs for network errors, auth failures, or UCL API timeouts.
+3. Verify UCL Director is reachable from the Kyma cluster.
+4. Alert team; monitor for improvement within 1 h.
+
+**Critical** — < 95 % over 24 h, or 3 or more consecutive sync failures:
+1. Declare incident.
+2. Check UCL Director status (is the issue on ACM's side or UCL's side?).
+3. If UCL is healthy: collect CRA heap dump and restart the pod.
+4. If UCL is degraded: track UCL's incident.
+5. Post root-cause analysis within 48 h.
 
 ---
 
@@ -125,10 +144,15 @@ ACM uses mTLS as the primary security mechanism for trusted communication betwee
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | Any certificate with fewer than 14 days validity and no successful renewal in 48 h | 1. Check CRA logs for renewal errors. 2. Verify UCL Connector is reachable. 3. Manually trigger a reconnect if the automated path is stuck (see tutorial: reconnect-runtime-agent-with-compass). |
-| **Critical** | Any certificate with fewer than 7 days validity and no successful renewal in 24 h | 1. Declare incident immediately. 2. Manually rotate certificate following the revocation and reconnect runbook. 3. Notify affected customers that event delivery may be at risk. 4. Root-cause analysis required within 24 h of resolution. |
+**Warning** — any certificate with fewer than 14 days validity and no successful renewal in 48 h:
+1. Check CRA logs for renewal errors.
+2. Verify UCL Connector is reachable.
+3. Manually trigger a reconnect if the automated path is stuck (see tutorial: reconnect-runtime-agent-with-compass).
+
+**Critical** — any certificate with fewer than 7 days validity and no successful renewal in 24 h:
+1. Declare incident immediately.
+2. Manually rotate certificate following the revocation and reconnect runbook.
+3. Root-cause analysis required within 24 h of resolution.
 
 ---
 
@@ -148,10 +172,17 @@ Application Gateway sits on every outbound call from a Kyma workload to an exter
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | p99 > 500 ms sustained for 5 min | 1. Check if a specific application or target system is causing the tail latency (filter by `app_name` label). 2. Inspect OAuth token cache hit rate — a miss forces an extra round-trip. 3. Review HPA state: is the gateway under CPU/memory pressure? |
-| **Critical** | p99 > 1 000 ms sustained for 5 min | 1. Declare incident. 2. Immediately check if a single slow target is dragging up the p99 — if so, consider rate-limiting or isolating it. 3. Scale up gateway replicas. 4. If a recent deployment is correlated, roll back. 5. Post incident summary within 48 h. |
+**Warning** — p99 > 500 ms sustained for 5 min:
+1. Check if a specific application or target system is causing the tail latency (filter by `app_name` label).
+2. Inspect OAuth token cache hit rate — a miss forces an extra round-trip.
+3. Review HPA state: is the gateway under CPU/memory pressure?
+
+**Critical** — p99 > 1 000 ms sustained for 5 min:
+1. Declare incident.
+2. Immediately check if a single slow target is dragging up the p99 — if so, consider rate-limiting or isolating it.
+3. Scale up gateway replicas.
+4. If a recent deployment is correlated, roll back.
+5. Post incident summary within 48 h.
 
 ---
 
@@ -168,10 +199,16 @@ Errors from Application Gateway break outbound API calls from Kyma workloads. Un
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | ACM-origin error rate > 0.5 % over 5 min | 1. Check gateway logs for auth failures (OAuth, mTLS), DNS resolution errors, or connection timeouts. 2. Verify the Application CR for the affected app has correct credentials. 3. Alert team. |
-| **Critical** | ACM-origin error rate > 2 % over 5 min | 1. Declare incident. 2. Determine if errors are global (all apps) or isolated (one app/target). 3. If global: check gateway pod health, restart if in bad state. 4. If isolated: investigate the specific Application CR and its credentials secret. 5. Notify affected customer if the issue cannot be resolved within 30 min. |
+**Warning** — ACM-origin error rate > 0.5 % over 5 min:
+1. Check gateway logs for auth failures (OAuth, mTLS), DNS resolution errors, or connection timeouts.
+2. Verify the Application CR for the affected app has correct credentials.
+3. Alert team.
+
+**Critical** — ACM-origin error rate > 2 % over 5 min:
+1. Declare incident.
+2. Determine if errors are global (all apps) or isolated (one app/target).
+3. If global: check gateway pod health, restart if in bad state.
+4. If isolated: investigate the specific Application CR and its credentials secret.
 
 ---
 
@@ -189,10 +226,15 @@ The validator is the security gatekeeper for all inbound event traffic. A high r
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | Rejection rate > 0.1 % over 5 min | 1. Check validator logs for the certificate subject being rejected. 2. Correlate with UCL sync status — a sync failure may have caused a stale certificate. 3. Notify the affected external system owner if the certificate has expired on their side. |
-| **Critical** | Rejection rate > 1 % over 5 min, or a known-good external system is consistently rejected | 1. Declare incident. 2. Inspect the Certificate Secret in the cluster — has the certificate been updated or corrupted? 3. If a UCL sync recently ran, check if it overwrote the correct certificate with an incorrect one. 4. If the certificate looks correct, check Istio Gateway configuration for mTLS policy changes. |
+**Warning** — rejection rate > 0.1 % over 5 min:
+1. Check validator logs for the certificate subject being rejected.
+2. Correlate with UCL sync status — a sync failure may have caused a stale certificate.
+
+**Critical** — rejection rate > 1 % over 5 min, or a known-good external system is consistently rejected:
+1. Declare incident.
+2. Inspect the Certificate Secret in the cluster — has the certificate been updated or corrupted?
+3. If a UCL sync recently ran, check if it overwrote the correct certificate with an incorrect one.
+4. If the certificate looks correct, check Istio Gateway configuration for mTLS policy changes.
 
 ---
 
@@ -211,10 +253,16 @@ One of ACM's core value propositions is that it scales to support many external 
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | p90 count decreases by > 10 % month-over-month without a known cause | 1. Check for UCL sync errors that may be causing Applications to be deleted. 2. Check for operator reconciliation errors that prevent new Applications from being created. 3. Investigate if customer offboarding accounts for the drop. |
-| **Critical** | Any runtime loses > 20 % of its Applications in a single sync cycle | 1. Declare incident. 2. Immediately pause the CRA sync loop if possible (scale CRA to 0 replicas) to prevent further deletions. 3. Inspect what the UCL Director returned in the last sync. 4. Restore missing Application CRs from the last known good state or force a full UCL re-sync. 5. Notify affected customers. |
+**Warning** — p90 count decreases by > 10 % month-over-month without a known cause:
+1. Check for UCL sync errors that may be causing Applications to be deleted.
+2. Check for operator reconciliation errors that prevent new Applications from being created.
+3. Investigate if customer offboarding accounts for the drop.
+
+**Critical** — any runtime loses > 20 % of its Applications in a single sync cycle:
+1. Declare incident.
+2. Immediately pause the CRA sync loop if possible (scale CRA to 0 replicas) to prevent further deletions.
+3. Inspect what the UCL Director returned in the last sync.
+4. Restore missing Application CRs from the last known good state or force a full UCL re-sync.
 
 ---
 
@@ -232,10 +280,15 @@ Throughput capacity establishes the performance envelope of the module under con
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | Capacity drops by > 20 % vs. the previous release under the same load profile | 1. Profile the regression: is the bottleneck CPU, memory, or network? 2. Check if recent code changes to CAG or CACV affected the hot path. 3. Investigate HPA settings — confirm they are not limiting scale-out. |
-| **Critical** | Capacity drops by > 40 % vs. the previous release, or load-test fails to complete | 1. Block the release. 2. Identify the commit(s) responsible for the regression. 3. Fix and re-run the load test before re-staging the release. |
+**Warning** — capacity drops by > 20 % vs. the previous release under the same load profile:
+1. Profile the regression: is the bottleneck CPU, memory, or network?
+2. Check if recent code changes to CAG or CACV affected the hot path.
+3. Investigate HPA settings — confirm they are not limiting scale-out.
+
+**Critical** — capacity drops by > 40 % vs. the previous release, or load-test fails to complete:
+1. Block the release.
+2. Identify the commit(s) responsible for the regression.
+3. Fix and re-run the load test before re-staging the release.
 
 ---
 
@@ -255,10 +308,18 @@ The ACM Kubernetes operator is responsible for the full lifecycle of all module 
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | Success rate < 99 % over 24 h | 1. Inspect ApplicationConnector CR status conditions and events. 2. Check operator logs for the reconcile error. 3. Common causes: missing Istio CRDs (dependency check), apply conflicts, transient API server errors. 4. Verify all dependency components (Istio) are healthy. |
-| **Critical** | Success rate < 95 % over 24 h, or a CR is stuck in `Error` state for > 30 min | 1. Declare incident. 2. Collect operator logs and CR status snapshot. 3. If caused by a bad deployment: roll back. 4. If caused by a broken CR state: delete and recreate the ApplicationConnector CR (last resort, document impact first). 5. Root-cause analysis within 48 h. |
+**Warning** — success rate < 99 % over 24 h:
+1. Inspect ApplicationConnector CR status conditions and events.
+2. Check operator logs for the reconcile error.
+3. Common causes: missing Istio CRDs (dependency check), apply conflicts, transient API server errors.
+4. Verify all dependency components (Istio) are healthy.
+
+**Critical** — success rate < 95 % over 24 h, or a CR is stuck in `Error` state for > 30 min:
+1. Declare incident.
+2. Collect operator logs and CR status snapshot.
+3. If caused by a bad deployment: roll back.
+4. If caused by a broken CR state: delete and recreate the ApplicationConnector CR (last resort, document impact first).
+5. Root-cause analysis within 48 h.
 
 ---
 
@@ -276,10 +337,15 @@ Installation and upgrade success is the first experience a customer has with ACM
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | < 99 % success rate across installations of a given release | 1. Analyse which step fails (dependency check, apply, verify). 2. Check if a specific cluster configuration (Kubernetes version, Istio version) is causing failures. 3. Consider patching the release before broader rollout. |
-| **Critical** | < 95 % success rate, or installation/upgrade failure confirmed on a production customer cluster | 1. Halt further rollout of the affected release. 2. Provide a hotfix or rollback path. 3. Communicate to affected customers with ETA and workaround. 4. Post-mortem required. |
+**Warning** — < 99 % success rate across installations of a given release:
+1. Analyse which step fails (dependency check, apply, verify).
+2. Check if a specific cluster configuration (Kubernetes version, Istio version) is causing failures.
+3. Consider patching the release before broader rollout.
+
+**Critical** — < 95 % success rate, or installation/upgrade failure confirmed on a production customer cluster:
+1. Halt further rollout of the affected release.
+2. Provide a hotfix or rollback path.
+3. Post-mortem required.
 
 ---
 
@@ -297,10 +363,16 @@ This KPI directly reflects the customer experience for the most common integrati
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | p95 > 10 min in CI tests | 1. Profile the integration flow: is the delay in UCL sync, Application CR creation, or event delivery? 2. Check if Runtime Agent sync interval has been inadvertently increased. 3. Check Eventing module latency if the delay is in event delivery. |
-| **Critical** | p95 > 20 min, or the integration test fails entirely | 1. Block the release. 2. Investigate each step of the integration pipeline. 3. If the issue is in ACM: fix and re-run. 4. If the issue is in UCL or Eventing: escalate to the owning team with reproduction steps. |
+**Warning** — p95 > 10 min in CI tests:
+1. Profile the integration flow: is the delay in UCL sync, Application CR creation, or event delivery?
+2. Check if Runtime Agent sync interval has been inadvertently increased.
+3. Check Eventing module latency if the delay is in event delivery.
+
+**Critical** — p95 > 20 min, or the integration test fails entirely:
+1. Block the release.
+2. Investigate each step of the integration pipeline.
+3. If the issue is in ACM: fix and re-run.
+4. If the issue is in UCL or Eventing: escalate to the owning team with reproduction steps.
 
 ---
 
@@ -320,10 +392,15 @@ The rewrite investigation identified critical test gaps (deletion not verified, 
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | Aggregate coverage drops below 80 %, or coverage for `pkg/reconciler` drops below 75 % | 1. Review recent PRs that reduced coverage. 2. Add missing tests before merging the next feature. 3. Prioritise coverage of error paths, specifically: error recovery (deploy fails / patch fails), deletion / finalizer cleanup, `sFnCheckDependencies`, the update path after CR is already Ready, and Compass runtime agent scale-down when its secret is deleted. |
-| **Critical** | Aggregate coverage drops below 70 % | 1. Freeze new feature work until coverage is restored. 2. Identify and resolve the largest uncovered blocks. 3. Treat as a quality incident — add to the team's sprint as explicit tasks. |
+**Warning** — aggregate coverage drops below 80 %, or coverage for `pkg/reconciler` drops below 75 %:
+1. Review recent PRs that reduced coverage.
+2. Add missing tests before merging the next feature.
+3. Prioritise coverage of error paths, specifically: error recovery (deploy fails / patch fails), deletion / finalizer cleanup, `sFnCheckDependencies`, the update path after CR is already Ready, and Compass runtime agent scale-down when its secret is deleted.
+
+**Critical** — aggregate coverage drops below 70 %:
+1. Freeze new feature work until coverage is restored.
+2. Identify and resolve the largest uncovered blocks.
+3. Treat as a quality incident — add to the team's sprint as explicit tasks.
 
 ---
 
@@ -341,10 +418,14 @@ Critical bugs left open degrade customer trust and operational stability. Withou
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | Any critical/high bug open for > 5 business days | 1. Assign the bug to a specific engineer at the next standup. 2. Break the fix into a minimally scoped PR to avoid stalling. 3. Communicate ETA to stakeholders if the bug has customer-visible impact. |
-| **Critical** | Any critical bug open for > 10 business days | 1. Escalate to team lead and stakeholders (Varban, Artur). 2. Re-evaluate whether the bug's priority label is accurate — if it truly is critical, it displaces sprint work. 3. Document the blocker explicitly if external dependency. |
+**Warning** — any critical/high bug open for > 5 business days:
+1. Assign the bug to a specific engineer at the next standup.
+2. Break the fix into a minimally scoped PR to avoid stalling.
+
+**Critical** — any critical bug open for > 10 business days:
+1. Escalate to team lead.
+2. Re-evaluate whether the bug's priority label is accurate — if it truly is critical, it displaces sprint work.
+3. Document the blocker explicitly if external dependency.
 
 ---
 
@@ -362,10 +443,15 @@ MTTR is the most direct measure of the team's ability to respond to production i
 
 **Thresholds and action plan:**
 
-| State | Condition | Action |
-|-------|-----------|--------|
-| **Warning** | 90-day average MTTR > 4 h | 1. Review the last 3 incidents: which step took the most time? 2. If diagnosis was slow: invest in better dashboards, alerting context, or runbooks. 3. If remediation was slow: identify which manual steps could be automated or pre-approved. |
-| **Critical** | 90-day average MTTR > 8 h, or a single incident with MTTR > 24 h | 1. Hold a dedicated retrospective. 2. Identify systemic gaps: missing runbook, insufficient alerting, unclear on-call responsibility, or external dependency. 3. Create follow-up tasks with owners and due dates. 4. Present findings to stakeholders (Varban, Artur) at the next review. |
+**Warning** — 90-day average MTTR > 4 h:
+1. Review the last 3 incidents: which step took the most time?
+2. If diagnosis was slow: invest in better dashboards, alerting context, or runbooks.
+3. If remediation was slow: identify which manual steps could be automated or pre-approved.
+
+**Critical** — 90-day average MTTR > 8 h, or a single incident with MTTR > 24 h:
+1. Hold a dedicated retrospective.
+2. Identify systemic gaps: missing runbook, insufficient alerting, unclear on-call responsibility, or external dependency.
+3. Create follow-up tasks with owners and due dates.
 
 ---
 
