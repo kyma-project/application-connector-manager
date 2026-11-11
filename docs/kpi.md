@@ -3,7 +3,7 @@
 > **Version:** 1.0  
 > **Date:** 2026-11-11  
 > **Stakeholders:** Team, Varban, Artur  
-> **Review cadence:** Monthly
+> **Review cadence:** Quarterly
 
 ---
 
@@ -484,14 +484,14 @@ Prometheus alerting rules should be defined for all KPIs that can be measured in
 
 ## 8. Review Process and Stakeholder Alignment
 
-### Monthly KPI Review
+### Quarterly KPI Review
 
-The team conducts a monthly KPI review meeting covering:
+The team conducts a quarterly KPI review meeting covering:
 
 1. **Status review** — traffic-light status for all KPIs against their targets.
 2. **Trend analysis** — which KPIs are improving, stable, or degrading over time?
-3. **Action item follow-up** — were action items from the previous month completed?
-4. **Stakeholder session** — Varban and Artur are invited to the monthly review to:
+3. **Action item follow-up** — were action items from the previous quarter completed?
+4. **Stakeholder session** — Varban and Artur are invited to the quarterly review to:
    - Validate that the KPIs still reflect business objectives.
    - Raise new requirements or adjust thresholds based on customer feedback.
    - Review open incidents and their resolution quality.
@@ -509,6 +509,6 @@ This document is a living specification. Changes to KPI definitions, thresholds,
 The KPIs defined here support continuous improvement by:
 
 - **Proactive issue identification:** Real-time alerting on warning thresholds catches degradation before it becomes critical.
-- **Transparency across teams:** The shared dashboard and monthly review ensure that reliability and quality are visible to all stakeholders, not just engineers.
+- **Transparency across teams:** The shared dashboard and quarterly review ensure that reliability and quality are visible to all stakeholders, not just engineers.
 - **Learning from incidents:** MTTR tracking and post-mortems feed directly into improvements to runbooks, alerting, and architecture.
 - **Shared understanding:** KPI definitions, measurement methods, and action plans are documented here so any team member can interpret a metric consistently and act without ambiguity.
