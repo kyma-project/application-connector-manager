@@ -52,12 +52,12 @@ The KPIs are designed to surface technical performance, reliability, scalability
 |---|-----|----------|--------|---------|----------|
 | 2.1 | Module Availability | Reliability | ≥ 99.9 % | < 99.9 % | < 99.5 % |
 | 2.2 | UCL Sync Success Rate | Reliability | ≥ 99 % | < 99 % | < 95 % |
-| 2.3 | Certificate Renewal Success Rate | Reliability | 100 % | < 100 % | any failure |
+| 2.3 | Certificate Renewal Risk | Reliability | 0 at-risk certs | any cert < 14d without renewal | any cert < 7d without renewal |
 | 3.1 | Gateway Latency p99 | Performance | ≤ 500 ms | > 500 ms | > 1 000 ms |
 | 3.2 | Gateway Error Rate | Performance | ≤ 0.5 % | > 0.5 % | > 2 % |
 | 3.3 | Validator Error Rate | Performance | ≤ 0.1 % | > 0.1 % | > 1 % |
 | 4.1 | Connected Systems per Runtime | Scalability | ≥ current baseline | — | regression |
-| 4.2 | Request Throughput | Scalability | ≥ baseline | < 80 % baseline | < 60 % baseline |
+| 4.2 | Request Throughput Capacity | Scalability | ≥ baseline | < 80 % baseline (load test) | < 60 % baseline (load test) |
 | 5.1 | Reconciliation Success Rate | Product Health | ≥ 99 % | < 99 % | < 95 % |
 | 5.2 | Install / Upgrade Success Rate | Product Health | ≥ 99 % | < 99 % | < 95 % |
 | 5.3 | Time to First Integration | Product Health | ≤ 10 min | > 10 min | > 20 min |
@@ -111,13 +111,14 @@ The Runtime Agent is responsible for automatically keeping external system regis
 
 ---
 
-### 2.3 Certificate Renewal Success Rate
+### 2.3 Certificate Renewal Risk
 
-**Definition:** Percentage of scheduled certificate renewal attempts by Runtime Agent that succeed.
+**Definition:** Number of managed certificates approaching expiry without a successful Runtime Agent renewal.
 
 **How it is measured:**
 - Source: CompassConnection CR status field `CertificateStatus.NotAfter` and renewal log events from CRA.
 - Alerting rule: trigger if a certificate with `NotAfter` within 7 days has not had a successful renewal attempt in the last 24 h.
+- Note: because `NotAfter` and log events do not expose a durable attempt/result counter, this KPI is expressed as a risk count (number of at-risk certificates) rather than a percentage success rate.
 
 **Why it was chosen:**
 ACM uses mTLS as the primary security mechanism for trusted communication between external systems and Kyma. A missed certificate renewal causes the mTLS handshake to fail, which breaks all inbound event delivery. Because this failure is time-triggered and silent until expiry, it requires proactive monitoring. A failure here is almost always a P1 incident.
@@ -135,15 +136,15 @@ ACM uses mTLS as the primary security mechanism for trusted communication betwee
 
 ### 3.1 Application Gateway Latency (p99)
 
-**Definition:** The 99th-percentile end-to-end request latency added by Application Gateway — measured from request receipt at the gateway to response forwarded back to the Kyma workload. This excludes the latency of the external target system itself.
+**Definition:** The 99th-percentile end-to-end proxied request latency observed by Application Gateway, measured from request receipt at the gateway until the response is forwarded back to the Kyma workload. This includes network and external target-system latency.
 
 **How it is measured:**
-- Source: Application Gateway Prometheus histogram `http_request_duration_seconds` (or equivalent), filtered to exclude 5xx responses caused by the target system.
+- Source: Application Gateway Prometheus histogram `http_request_duration_seconds` (or equivalent).
 - Measured over a 5-minute rolling window.
 - Reported as daily p99 on the dashboard; alert on a 5-minute breach.
 
 **Why it was chosen:**
-Application Gateway sits on every outbound call from a Kyma workload to an external API. High gateway-added latency degrades the responsiveness of every customer extension that calls external systems (S/4HANA, BTP services, third-party APIs). The p99 is chosen over average because tail latency directly affects the worst-case user experience.
+Application Gateway sits on every outbound call from a Kyma workload to an external API. High proxied latency degrades the responsiveness of every customer extension that calls external systems (S/4HANA, BTP services, third-party APIs). The p99 is chosen over average because tail latency directly affects the worst-case user experience. When the p99 spikes, filtering by `app_name` label will reveal whether the cause is a slow external target or a gateway-internal issue (e.g. token-cache miss, connection pool exhaustion).
 
 **Thresholds and action plan:**
 
@@ -217,24 +218,24 @@ One of ACM's core value propositions is that it scales to support many external 
 
 ---
 
-### 4.2 Request Throughput
+### 4.2 Request Throughput Capacity
 
-**Definition:** Total requests processed per second across Application Gateway (outbound) and Application Connectivity Validator (inbound), measured as a rolling average.
+**Definition:** Maximum sustainable requests per second across Application Gateway (outbound) and Application Connectivity Validator (inbound) under a fixed load-test profile while meeting the latency and error-rate targets defined in sections 3.1 and 3.2.
 
 **How it is measured:**
-- Source: Prometheus rate metrics from both components.
-- Baseline is established from the first 30 days after a release and updated each quarter.
-- Reported as daily p50 and peak.
+- Source: Load-test results run against a reference cluster configuration on each release (e.g. using k6 or a similar tool at a fixed concurrency level).
+- Production Prometheus rate metrics are collected as a traffic signal only — they are not used for lower-bound health alerts.
+- Reported as: sustainable RPS at the defined load profile per release, tracked over time for regression.
 
 **Why it was chosen:**
-Throughput establishes the capacity envelope of the module. A drop in throughput relative to the established baseline indicates that the module is under stress, that a component has stopped processing requests (silent failure), or that traffic has been accidentally routed elsewhere. An unexpected increase is equally important as it may signal runaway retry loops or a traffic spike that could exhaust resources.
+Throughput capacity establishes the performance envelope of the module under controlled conditions. Using live production traffic for lower-bound alerts would cause false positives during legitimately low-traffic periods. A load-test-derived capacity metric instead catches genuine regressions (e.g. a new version that degrades under load) without false alerts during quiet periods. An unexpected drop in capacity between releases signals a performance regression requiring investigation before broader rollout.
 
 **Thresholds and action plan:**
 
 | State | Condition | Action |
 |-------|-----------|--------|
-| **Warning** | Throughput drops below 80 % of baseline for > 10 min without a scheduled maintenance window | 1. Check HPA state for both CAG and CACV — are they scaling down unexpectedly? 2. Check for upstream or downstream issues (Istio, Eventing module). 3. Review recent deployments. |
-| **Critical** | Throughput drops below 60 % of baseline, or throughput is zero for > 2 min | 1. Declare incident. 2. Check pod status and recent events for all three components. 3. Check Istio Gateway and VirtualService configuration. 4. Roll back recent changes if correlated. 5. Scale components manually if HPA is not responding. |
+| **Warning** | Capacity drops by > 20 % vs. the previous release under the same load profile | 1. Profile the regression: is the bottleneck CPU, memory, or network? 2. Check if recent code changes to CAG or CACV affected the hot path. 3. Investigate HPA settings — confirm they are not limiting scale-out. |
+| **Critical** | Capacity drops by > 40 % vs. the previous release, or load-test fails to complete | 1. Block the release. 2. Identify the commit(s) responsible for the regression. 3. Fix and re-run the load test before re-staging the release. |
 
 ---
 
@@ -245,8 +246,8 @@ Throughput establishes the capacity envelope of the module. A drop in throughput
 **Definition:** Percentage of ApplicationConnector CR reconciliation cycles that complete without error, as recorded in the CR status.
 
 **How it is measured:**
-- Source: ApplicationConnector CR `.status.state` field — a `Ready` outcome counts as success; `Error` or repeated `Processing` without progress counts as failure.
-- Alternatively: operator log error counters exported as Prometheus metrics.
+- Source: Monotonic operator counters for completed reconciliation cycles, labelled by outcome (`success` or `error`); calculate the rate from counter increases over the measurement window. These counters must be exported as Prometheus metrics by the operator.
+- Note: the ApplicationConnector CR `.status.state` field alone cannot be used — it is overwritten on each reconcile and exposes neither the number nor the outcome of individual cycles. Polling it would miscount a persistent error state as repeated failures.
 - Measured over a rolling 24-hour window.
 
 **Why it was chosen:**
@@ -321,7 +322,7 @@ The rewrite investigation identified critical test gaps (deletion not verified, 
 
 | State | Condition | Action |
 |-------|-----------|--------|
-| **Warning** | Aggregate coverage drops below 80 %, or coverage for `pkg/reconciler` drops below 75 % | 1. Review recent PRs that reduced coverage. 2. Add missing tests before merging the next feature. 3. Prioritise coverage of error paths (see gap list in `docs/rewrite-investigation.md`). |
+| **Warning** | Aggregate coverage drops below 80 %, or coverage for `pkg/reconciler` drops below 75 % | 1. Review recent PRs that reduced coverage. 2. Add missing tests before merging the next feature. 3. Prioritise coverage of error paths, specifically: error recovery (deploy fails / patch fails), deletion / finalizer cleanup, `sFnCheckDependencies`, the update path after CR is already Ready, and Compass runtime agent scale-down when its secret is deleted. |
 | **Critical** | Aggregate coverage drops below 70 % | 1. Freeze new feature work until coverage is restored. 2. Identify and resolve the largest uncovered blocks. 3. Treat as a quality incident — add to the team's sprint as explicit tasks. |
 
 ---
@@ -423,5 +424,5 @@ The KPIs defined here support continuous improvement by:
 
 - **Proactive issue identification:** Real-time alerting on warning thresholds catches degradation before it becomes critical.
 - **Transparency across teams:** The shared dashboard and monthly review ensure that reliability and quality are visible to all stakeholders, not just engineers.
-- **Learning from incidents:** MTTR tracking and post-mortems feed directly into improvements to runbooks, alerting, and architecture (as also captured in `docs/rewrite-investigation.md`).
+- **Learning from incidents:** MTTR tracking and post-mortems feed directly into improvements to runbooks, alerting, and architecture.
 - **Shared understanding:** KPI definitions, measurement methods, and action plans are documented here so any team member can interpret a metric consistently and act without ambiguity.
