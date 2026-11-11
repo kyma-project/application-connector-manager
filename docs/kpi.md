@@ -95,7 +95,7 @@ ACM sits on the critical path for every inbound event from external systems and 
 2. Page on-call engineer.
 3. Roll back the last deployment or config change if applicable.
 4. Scale up replicas manually if autoscaler is stuck.
-5. Post incident summary within 48 business hours.
+5. Post incident summary.
 6. Create follow-up task to prevent recurrence.
 
 
@@ -119,14 +119,14 @@ The Runtime Agent is responsible for automatically keeping external system regis
 1. Check CompassConnection CR status and events.
 2. Inspect CRA logs for network errors, auth failures, or UCL API timeouts.
 3. Verify UCL Director is reachable from the Kyma cluster.
-4. Alert team; monitor for improvement within 1 business hour.
+4. Alert team; monitor for improvement.
 
 **Critical** — < 95 % over 24 h, or 3 or more consecutive sync failures:
 1. Declare incident.
 2. Check UCL Director status (is the issue on ACM's side or UCL's side?).
 3. If UCL is healthy: collect CRA heap dump and restart the pod.
 4. If UCL is degraded: track UCL's incident.
-5. Post root-cause analysis within 48 business hours.
+5. Post root-cause analysis.
 
 ---
 
@@ -152,7 +152,7 @@ ACM uses mTLS as the primary security mechanism for trusted communication betwee
 **Critical** — any certificate with fewer than 7 days validity and no successful renewal in 24 h:
 1. Declare incident immediately.
 2. Manually rotate certificate following the revocation and reconnect runbook.
-3. Root-cause analysis required within 24 business hours of resolution.
+3. Conduct root-cause analysis after resolution.
 
 ---
 
@@ -182,7 +182,7 @@ Application Gateway sits on every outbound call from a Kyma workload to an exter
 2. Immediately check if a single slow target is dragging up the p99 — if so, consider rate-limiting or isolating it.
 3. Scale up gateway replicas.
 4. If a recent deployment is correlated, roll back.
-5. Post incident summary within 48 business hours.
+5. Post incident summary.
 
 ---
 
@@ -319,7 +319,7 @@ The ACM Kubernetes operator is responsible for the full lifecycle of all module 
 2. Collect operator logs and CR status snapshot.
 3. If caused by a bad deployment: roll back.
 4. If caused by a broken CR state: delete and recreate the ApplicationConnector CR (last resort, document impact first).
-5. Root-cause analysis within 48 business hours.
+5. Post root-cause analysis.
 
 ---
 
