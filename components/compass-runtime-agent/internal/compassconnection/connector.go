@@ -189,7 +189,10 @@ func extractSubject(plainSubject string) map[string]string {
 	segments := strings.Split(plainSubject, ",")
 
 	for _, segment := range segments {
-		parts := strings.Split(segment, "=")
+		parts := strings.SplitN(strings.TrimSpace(segment), "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
 		result[parts[0]] = parts[1]
 	}
 
