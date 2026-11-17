@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 
+	"github.com/go-logr/logr"
 	"github.com/google/uuid"
 	"github.com/kyma-incubator/compass/components/director/pkg/correlation"
 	"github.com/kyma-incubator/compass/components/director/pkg/str"
 	ctrlCache "sigs.k8s.io/controller-runtime/pkg/cache"
+	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 
 	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/certificates"
 	"github.com/kyma-project/application-connector-manager/components/compass-runtime-agent/internal/compass"
@@ -29,6 +31,8 @@ import (
 )
 
 func main() {
+	ctrllog.SetLogger(logr.Discard())
+
 	log.Infoln("Starting Runtime Agent")
 
 	var options Config

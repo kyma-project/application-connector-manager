@@ -58,9 +58,7 @@ jobs:
 
   build-test-image:
     needs: [setup-and-test, gate]
-    if: >-
-      needs.setup-and-test.outputs.test == 'true' &&
-      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
+    if: ${{ !cancelled() && needs.setup-and-test.outputs.test == 'true' && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: gateway-test
@@ -69,9 +67,7 @@ jobs:
 
   build-mock-app-image:
     needs: [setup-and-test, gate]
-    if: >-
-      needs.setup-and-test.outputs.test == 'true' &&
-      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
+    if: ${{ !cancelled() && needs.setup-and-test.outputs.test == 'true' && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: mock-app
@@ -80,9 +76,7 @@ jobs:
 
   build-image:
     needs: [setup-and-test, tags, gate]
-    if: >-
-      needs.setup-and-test.outputs.gateway == 'true' &&
-      (needs.gate.result == 'success' || needs.gate.result == 'skipped')
+    if: ${{ !cancelled() && needs.setup-and-test.outputs.gateway == 'true' && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: central-application-gateway

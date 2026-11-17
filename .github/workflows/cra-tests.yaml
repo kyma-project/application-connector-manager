@@ -43,6 +43,9 @@ on:
       - "tests/Dockerfile.compass-runtime-agent"
       - "hack/common/**"
 
+permissions:
+  contents: read
+
 jobs:
   setup:
     permissions:

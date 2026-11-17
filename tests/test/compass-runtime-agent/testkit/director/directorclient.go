@@ -290,7 +290,7 @@ func executeQuery[T any](getQueryFunc func() string, executeQueryFunc func(strin
 		return Response[T]{}, errors.New(fmt.Sprintf("Failed to %s in Director: Received nil response.", operationDescription))
 	}
 
-	log.Infof(successfulLogMessage)
+	log.Info(successfulLogMessage)
 
 	return response, nil
 }

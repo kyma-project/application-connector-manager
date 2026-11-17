@@ -36,7 +36,20 @@ func NewCompassConnectionCRConfiguration(compassConnectionInterface CompassConne
 }
 
 func (cc compassConnectionCRConfiguration) Do() (types.RollbackFunc, error) {
-	return newRollbackFunc(), nil
+	backupRollback, err := cc.backup()
+	if err != nil {
+		return nil, err
+	}
+
+	deleteRollback, err := cc.delete()
+	if err != nil {
+		if rollbackErr := backupRollback(); rollbackErr != nil {
+			return nil, errors.Wrapf(err, "failed to clean up Compass Connection CR backup: %v", rollbackErr)
+		}
+		return nil, err
+	}
+
+	return newRollbackFunc(deleteRollback, backupRollback), nil
 }
 func (cc compassConnectionCRConfiguration) backup() (types.RollbackFunc, error) {
 	compassConnectionCR, err := cc.compassConnectionInterface.Get(context.TODO(), ConnectionCRName, meta.GetOptions{})
@@ -97,7 +110,9 @@ func (cc compassConnectionCRConfiguration) delete() (types.RollbackFunc, error) 
 				return errors.Wrap(err, "failed to update Compass Connection CR")
 			}
 			return err
-		})
+		}, retry.RetryIf(func(err error) bool {
+			return !k8serrors.IsNotFound(err)
+		}))
 	}
 
 	return rollbackFunc, nil
