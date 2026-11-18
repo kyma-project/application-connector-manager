@@ -61,7 +61,7 @@ The KPIs are designed to surface technical performance, reliability, scalability
 | 5.1 | Reconciliation Success Rate | Product Health | ≥ 99 % | < 99 % | < 95 % |
 | 5.2 | Install / Upgrade Success Rate | Product Health | ≥ 99 % | < 99 % | < 95 % |
 | 5.3 | Time to First Integration | Product Health | ≤ 10 min | > 10 min | > 20 min |
-| 6.1 | Test Coverage | Quality | ≥ 80 % | < 80 % | < 70 % |
+| 6.1 | Test Coverage | Quality | reconciler ≥ 60 %, components ≥ 75 % | reconciler < 60 % or any component < 75 % | reconciler < 40 % or any component < 60 % |
 | 6.2 | Critical Bug Age | Quality | ≤ 5 days | > 5 days | > 10 days |
 | 6.3 | MTTR | Quality | ≤ 4 h | > 4 h | > 8 h |
 
@@ -380,27 +380,44 @@ This KPI directly reflects the customer experience for the most common integrati
 
 ### 6.1 Test Coverage
 
-**Definition:** Percentage of ACM operator Go code (excluding generated files and test files themselves) covered by unit and integration tests.
+**Definition:** Percentage of business-critical Go code covered by unit and integration tests. Business-critical code is defined as hand-written logic in the packages that directly implement ACM's core value — excluding generated files (`zz_generated.*`, `pkg/client/**`), test mocks (`**/mocks/**`), and test helpers. This represents approximately 64 % of the total Go source files in the repository (183 of 286 non-test files).
+
+**Business-critical packages and current baseline (as of 2026-11-18):**
+
+| Component | Package(s) | Current coverage |
+|-----------|-----------|-----------------|
+| Operator | `pkg/reconciler` (FSM, apply, verify, delete, dependencies) | **18 %** |
+| Application Gateway | `internal/proxy`, `internal/csrf`, `internal/metadata`, `internal/authorization` | **~83 %** |
+| Compass Runtime Agent | `internal/compass`, `internal/kyma`, `internal/certificates`, `internal/secrets` | **~88 %** |
+| Connectivity Validator | `internal/validationproxy`, `internal/controller` | **~73 %** |
+
+The operator reconciler (`pkg/reconciler`) is the highest-risk gap: it is the control plane of the entire module, yet its current coverage is 18 %. The remaining three components are reasonably well covered at 73–88 %.
 
 **How it is measured:**
-- Source: `go test ./... -coverprofile cover.out` output, run in CI on every pull request.
-- Coverage is reported per package and as an aggregate.
-- Current state (from rewrite investigation): heavy test-to-code ratio (~4.5:1) but with significant gaps, especially in error recovery and deletion paths.
+- Source: `go test ./... -coverprofile cover.out` run per module root in CI on every pull request, excluding generated and mock packages via `-coverpkg` filters.
+- Coverage is reported per business-critical package and tracked over time.
+- The operator reconciler is tracked separately because of its disproportionate risk.
 
 **Why it was chosen:**
-The rewrite investigation identified critical test gaps (deletion not verified, error recovery untested, dependency check not covered). Low coverage in these areas means regressions ship silently. This KPI tracks the team's progress in closing those gaps and maintains the discipline needed to keep the codebase maintainable long-term.
+The test coverage gap in `pkg/reconciler` means that reconciliation failures, deletion errors, and dependency check regressions can ship silently — these are the exact paths most likely to cause customer-visible outages. The KPI targets are set relative to what is achievable and meaningful for each component, not as a single aggregate that would allow the critical operator gap to hide behind healthy component scores.
 
 **Thresholds and action plan:**
 
-**Warning** — aggregate coverage drops below 80 %, or coverage for `pkg/reconciler` drops below 75 %:
-1. Review recent PRs that reduced coverage.
-2. Add missing tests before merging the next feature.
-3. Prioritise coverage of error paths, specifically: error recovery (deploy fails / patch fails), deletion / finalizer cleanup, `sFnCheckDependencies`, the update path after CR is already Ready, and Compass runtime agent scale-down when its secret is deleted.
+**Warning — operator reconciler** (`pkg/reconciler`) coverage drops below 60 %:
+1. Review recent PRs that removed or skipped tests in the reconciler.
+2. Prioritise coverage of: error recovery (deploy fails / patch fails), deletion / finalizer cleanup, `sFnCheckDependencies`, the update path after CR is already `Ready`, and Compass runtime agent scale-down when its secret is deleted.
 
-**Critical** — aggregate coverage drops below 70 %:
-1. Freeze new feature work until coverage is restored.
-2. Identify and resolve the largest uncovered blocks.
-3. Treat as a quality incident — add to the team's sprint as explicit tasks.
+**Warning — components** (Gateway, CRA, Validator) coverage drops below 75 % in any business-critical package:
+1. Identify which package regressed and which PR caused it.
+2. Add missing tests before merging the next feature touching that package.
+
+**Critical — operator reconciler** coverage drops below 40 %:
+1. Freeze new feature work in the operator until coverage is restored to at least 60 %.
+2. Treat as a quality incident — add recovery tasks to the team's sprint with explicit owners.
+
+**Critical — any component** coverage drops below 60 %:
+1. Identify and resolve the largest uncovered blocks before the next release.
+2. Escalate to team lead if the regression cannot be addressed within one sprint.
 
 ---
 
