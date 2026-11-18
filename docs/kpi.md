@@ -328,8 +328,8 @@ The ACM Kubernetes operator is responsible for the full lifecycle of all module 
 **Definition:** Percentage of ACM module installations and upgrades (triggered via Kyma dashboard or lifecycle manager) that complete successfully — reaching `Ready` state — within 15 minutes.
 
 **How it is measured:**
-- Source: Lifecycle manager metrics or CI/CD pipeline results (e2e test pass/fail per release).
-- For production: ApplicationConnector CR status after a module enable/upgrade operation.
+- Source: ApplicationConnector CR status after a module enable/upgrade operation — the operator sets the CR status to `Ready` once all components are healthy.
+- Measuring the elapsed time from enable to `Ready` requires code changes to record a precise `enabledAt` timestamp in the CR status; until that instrumentation is in place, time-to-ready cannot be measured automatically.
 - Tracked per release version.
 
 **Why it was chosen:**
