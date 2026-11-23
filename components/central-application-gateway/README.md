@@ -120,7 +120,7 @@ Invocation of endpoints with duplicate names results in a `400 Bad Request` fail
 
 ### Debugging
 
-The log level is configured at startup via the `-logLevel` CLI flag. Changing it requires restarting the process.
+The log level is configured at startup with the `-logLevel` CLI flag. Changing it requires restarting the process.
 
 
 ## Development
